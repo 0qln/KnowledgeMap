@@ -10,8 +10,10 @@ export default function Root() {
             <div className="absolute right-0 left-0 top-0 bottom-0" id="graph">
                 <Graph data={miserables} width={800} height={600} showGroups={[5, 4, 2]} />                
             </div>
-            <div className="flex" id="detail">
-                <Outlet />
+            <div className="flex justify-end m-5 " id="detail">
+                <div className="w-[30%] bg-slate-300 rounded-md">
+                    <Outlet />
+                </div>
             </div>
         </>
     )

@@ -1,8 +1,13 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import { useNavigate } from "react-router-dom";
 
+// todo: 
+// this has route navigation logic and is only really used once,
+// inline this component in the root component.
 export default function Graph({data, width, height, showGroups}) {
     const ref = useRef();
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Clear the SVG content on re-render
@@ -54,7 +59,8 @@ export default function Graph({data, width, height, showGroups}) {
             .data(nodes)
             .join("circle")
             .attr("r", 5)
-            .attr("fill", d => color(d.group));
+            .attr("fill", d => color(d.group))
+            .on("click", (event, d) => navigate(`/nodes/${d.id}`));
 
         node.append("title")
             .text(d => d.id);
