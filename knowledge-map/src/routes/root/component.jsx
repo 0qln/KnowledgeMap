@@ -8,7 +8,7 @@ export default function Root() {
         <>
             <h1 className="text-center text-2xl">Knowledge Map</h1>
             <div className="absolute right-0 left-0 top-0 bottom-0" id="graph">
-                <Graph data={miserables} width={800} height={600} showGroups={[5, 4, 2]} />                
+                <Graph data={miserables} showGroups={[5, 4, 2]} />                
             </div>
             <div className="flex justify-end m-5 " id="detail">
                 <div className="w-[30%] bg-slate-300 rounded-md">

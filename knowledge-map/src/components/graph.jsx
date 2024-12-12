@@ -5,31 +5,29 @@ import { useNavigate } from "react-router-dom";
 // todo: 
 // this has route navigation logic and is only really used once,
 // inline this component in the root component.
-export default function Graph({data, width, height, showGroups}) {
+export default function Graph({ data, showGroups }) {
     const ref = useRef();
     const navigate = useNavigate();
 
+    // The force simulation mutates links and nodes, so create a copy
+    // so that re-evaluating this cell produces the same result.
+    const nodes = data.nodes
+        .filter(d => showGroups.includes(d.group))
+        .map(d => ({ ...d }));
+
+    const links = data.links
+        .filter(d =>
+            showGroups.includes(data.nodes.find(n => n.id === d.source).group) &&
+            showGroups.includes(data.nodes.find(n => n.id === d.target).group))
+        .map(d => ({ ...d }));
+
+    // Specify the color scale.
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    const width = ref.current.clientWidth;
+    const height = ref.current.clientHeight;
+
     useEffect(() => {
-        // Clear the SVG content on re-render
-        d3.select(ref.current).selectAll("*").remove();
-
-        // Specify the color scale.
-        const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-        const width = ref.current.clientWidth;
-        const height = ref.current.clientHeight;
-
-        // The force simulation mutates links and nodes, so create a copy
-        // so that re-evaluating this cell produces the same result.
-        const nodes = data.nodes
-            .filter(d => showGroups.includes(d.group))
-            .map(d => ({ ...d }));
-
-        const links = data.links
-            .filter(d => 
-                showGroups.includes(data.nodes.find(n => n.id === d.source).group) && 
-                showGroups.includes(data.nodes.find(n => n.id === d.target).group))
-            .map(d => ({ ...d }));
 
         // Create a simulation with several forces.
         const simulation = d3.forceSimulation(nodes)
@@ -41,7 +39,7 @@ export default function Graph({data, width, height, showGroups}) {
         // Create the SVG container.
         const svg = d3.select(ref.current)
             .attr("viewBox", [0, 0, width, height])
-            .attr("style", "max-width: 100%; height: auto;");
+            .attr("style", "max-width: 100%; height: 100%;");
 
         // Add a line for each link, and a circle for each node.
         const link = svg.append("g")
@@ -104,6 +102,8 @@ export default function Graph({data, width, height, showGroups}) {
             event.subject.fx = null;
             event.subject.fy = null;
         }
+
+        return () => d3.select(ref.current).selectAll("*").remove();
     }, [data, width, height, showGroups])
 
     return <svg ref={ref} />;
