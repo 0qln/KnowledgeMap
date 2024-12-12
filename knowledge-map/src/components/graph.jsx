@@ -27,8 +27,6 @@ export default function Graph() {
 
         // Create the SVG container.
         const svg = d3.select(ref.current)
-            .attr("width", width)
-            .attr("height", height)
             .attr("viewBox", [0, 0, width, height])
             .attr("style", "max-width: 100%; height: auto;");
 
@@ -92,12 +90,7 @@ export default function Graph() {
             event.subject.fx = null;
             event.subject.fy = null;
         }
-
-        // When this cell is re-run, stop the previous simulation. (This doesn’t
-        // really matter since the target alpha is zero and the simulation will
-        // stop naturally, but it’s a good practice.)
-        // invalidation.then(() => simulation.stop());
     }, [data])
 
-    return <svg viewBox="0 0 928 600" ref={ref} />;
+    return <svg ref={ref} />;
 }
