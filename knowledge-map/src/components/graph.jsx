@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import { miserables } from "/public/miserables.json";
+import { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import { useNavigate } from "react-router-dom";
 
-export default function Graph({width, height, showGroup: showGroups}) {
-    const [data, setData] = useState(miserables);
+// todo: 
+// this has route navigation logic and is only really used once,
+// inline this component in the root component.
+export default function Graph({data, width, height, showGroups}) {
     const ref = useRef();
+    const navigate = useNavigate();
+
     useEffect(() => {
         // Clear the SVG content on re-render
         d3.select(ref.current).selectAll("*").remove();
@@ -20,6 +24,7 @@ export default function Graph({width, height, showGroup: showGroups}) {
         const nodes = data.nodes
             .filter(d => showGroups.includes(d.group))
             .map(d => ({ ...d }));
+
         const links = data.links
             .filter(d => 
                 showGroups.includes(data.nodes.find(n => n.id === d.source).group) && 
@@ -54,7 +59,8 @@ export default function Graph({width, height, showGroup: showGroups}) {
             .data(nodes)
             .join("circle")
             .attr("r", 5)
-            .attr("fill", d => color(d.group));
+            .attr("fill", d => color(d.group))
+            .on("click", (event, d) => navigate(`/nodes/${d.id}`));
 
         node.append("title")
             .text(d => d.id);

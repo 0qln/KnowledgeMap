@@ -1,0 +1,13 @@
+import { useLoaderData } from "react-router-dom";
+
+export default function ViewNode() {
+    const { node } = useLoaderData();
+
+    return (
+        <div className="m-5">
+            <h1 className="text-left text-slate-900 text-3xl">{node.id}</h1>            
+            <div className="text-left text-slate-800">Id: {node.id}</div>            
+            <div className="text-left text-slate-800">Group: {node.group}</div>            
+        </div>
+    )
+}
