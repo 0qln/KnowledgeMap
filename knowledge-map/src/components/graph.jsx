@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { miserables } from "/public/miserables.json";
+import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-export default function Graph({width, height, showGroup: showGroups}) {
-    const [data, setData] = useState(miserables);
+export default function Graph({data, width, height, showGroups}) {
     const ref = useRef();
+
     useEffect(() => {
         // Clear the SVG content on re-render
         d3.select(ref.current).selectAll("*").remove();
@@ -20,6 +19,7 @@ export default function Graph({width, height, showGroup: showGroups}) {
         const nodes = data.nodes
             .filter(d => showGroups.includes(d.group))
             .map(d => ({ ...d }));
+
         const links = data.links
             .filter(d => 
                 showGroups.includes(data.nodes.find(n => n.id === d.source).group) && 
