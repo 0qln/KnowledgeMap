@@ -1,22 +1,30 @@
 import { useEffect, useRef, useState } from "react";
-import { miserables } from "../assets/miserables.json";
+import { miserables } from "/public/miserables.json";
 import * as d3 from "d3";
 
-export default function Graph() {
+export default function Graph({width, height, showGroup: showGroups}) {
     const [data, setData] = useState(miserables);
     const ref = useRef();
     useEffect(() => {
-        // Specify the dimensions of the chart.
-        const width = 928;
-        const height = 600;
+        // Clear the SVG content on re-render
+        d3.select(ref.current).selectAll("*").remove();
 
         // Specify the color scale.
         const color = d3.scaleOrdinal(d3.schemeCategory10);
 
+        const width = ref.current.clientWidth;
+        const height = ref.current.clientHeight;
+
         // The force simulation mutates links and nodes, so create a copy
         // so that re-evaluating this cell produces the same result.
-        const links = data.links.map(d => ({ ...d }));
-        const nodes = data.nodes.map(d => ({ ...d }));
+        const nodes = data.nodes
+            .filter(d => showGroups.includes(d.group))
+            .map(d => ({ ...d }));
+        const links = data.links
+            .filter(d => 
+                showGroups.includes(data.nodes.find(n => n.id === d.source).group) && 
+                showGroups.includes(data.nodes.find(n => n.id === d.target).group))
+            .map(d => ({ ...d }));
 
         // Create a simulation with several forces.
         const simulation = d3.forceSimulation(nodes)
@@ -90,7 +98,7 @@ export default function Graph() {
             event.subject.fx = null;
             event.subject.fy = null;
         }
-    }, [data])
+    }, [data, width, height, showGroups])
 
     return <svg ref={ref} />;
 }

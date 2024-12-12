@@ -4,9 +4,9 @@ import Graph from "../components/graph";
 export default function Root() {
     return (
         <>
-            <h1>Knowledge Map</h1>
+            <h1 className="text-center text-2xl">Knowledge Map</h1>
             <div id="graph">
-                <Graph />                
+                <Graph width={800} height={600} showGroup={[5, 4, 2]} />                
             </div>
             <div id="detail">
                 <Outlet />
