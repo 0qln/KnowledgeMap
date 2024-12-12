@@ -1,11 +1,5 @@
 import { useLoaderData } from "react-router-dom";
 
-export async function loader({params}) {
-    const miserables = await import("/public/miserables.json");
-    const node = miserables.nodes.find(n => n.id === params.id);
-    return { node };
-}
-
 export default function ViewNode() {
     const { node } = useLoaderData();
 

@@ -2,8 +2,10 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import './index.css';
-import Root, { loader as rootLoader } from './routes/root.jsx';
-import NodeView, { loader as nodeLoader } from './routes/nodes/view.jsx';
+import Root from './routes/root/component.jsx';
+import { loader as rootLoader } from './routes/root/loader.jsx';
+import NodeView from './routes/nodes/view/component.jsx';
+import { loader as nodeLoader } from './routes/nodes/view/loader.jsx';
 
 const router = createBrowserRouter([
   {

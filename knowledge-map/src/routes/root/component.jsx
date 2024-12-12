@@ -1,11 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { useLoaderData } from "react-router-dom";
-import Graph from "../components/graph";
-
-export async function loader() {
-    const data = await import("/public/miserables.json");
-    return { miserables: data.miserables }
-}
+import Graph from "../../components/graph";
 
 export default function Root() {
     const { miserables } = useLoaderData();
