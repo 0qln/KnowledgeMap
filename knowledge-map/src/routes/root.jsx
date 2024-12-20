@@ -1,5 +1,6 @@
 import { Outlet, Link, useLoaderData, Form } from "react-router-dom";
 import { getContacts, createContact } from "../contacts";
+import { Component, PureComponent, memo } from "react";
 
 
 export async function loader() {
@@ -12,60 +13,86 @@ export async function action() {
     return { contact };
 }
 
+const Sidebar = memo(function Sidebar({ contacts }) {
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     // if (this.props.color !== nextProps.color) {
+    //     //   return true;
+    //     // }
+    //     // if (this.state.count !== nextState.count) {
+    //     //   return true;
+    //     // }
+    //     // 
+    //
+    //     console.log(nextProps);
+    //     console.log(this.props);
+    //     console.log(nextProps !== this.props);
+    //
+    //     return false;
+    // }
+
+    // render() {
+    // const { contacts } = p;
+
+    console.log('render');
+    return (
+        <div id="sidebar">
+            <h1>React Router Contacts</h1>
+            <div>
+                <form id="search-form" role="search">
+                    <input
+                        id="q"
+                        aria-label="Search contacts"
+                        placeholder="Search"
+                        type="search"
+                        name="q"
+                    />
+                    <div id="search-spinner" aria-hidden hidden={true} />
+                    <div className="sr-only" aria-live="polite"></div>
+                </form>
+                <Form method="post">
+                    <button type="submit">New</button>
+                </Form>
+            </div>
+            <nav>
+                {contacts.length ? (
+                    <ul>
+                        {contacts.map((contact) => (
+                            <li key={contact.id}>
+                                <Link to={`contacts/${contact.id}`}>
+                                    {contact.first || contact.last ? (
+                                        <>
+                                            {contact.first} {contact.last}
+                                        </>
+                                    ) : (
+                                        <i>No Name</i>
+                                    )}{" "}
+                                    {contact.favorite && <span>★</span>}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>
+                        <i>No contacts</i>
+                    </p>
+                )}
+            </nav>
+        </div>
+    );
+}, 
+// (prevProps, nextProps) => {
+//     console.log('prevProps', prevProps);
+//     console.log('nextProps', nextProps);
+//     console.log(Object.is(prevProps, nextProps));
+//     return true;
+// }
+);
+
 export default function Root() {
     const { contacts } = useLoaderData();
     return (
         <>
-            <div id="sidebar">
-                <h1>React Router Contacts</h1>
-                <div>
-                    <form id="search-form" role="search">
-                        <input
-                            id="q"
-                            aria-label="Search contacts"
-                            placeholder="Search"
-                            type="search"
-                            name="q"
-                        />
-                        <div
-                            id="search-spinner"
-                            aria-hidden
-                            hidden={true}
-                        />
-                        <div
-                            className="sr-only"
-                            aria-live="polite"
-                        ></div>
-                    </form>
-                    <Form method="post">
-                        <button type="submit">New</button>
-                    </Form>
-                </div>
-                <nav>
-                    {contacts.length ? (
-                        <ul>
-                            {contacts.map((contact) => (
-                                <li key={contact.id}>
-                                    <Link to={`contacts/${contact.id}`}>
-                                        {contact.first || contact.last ? (
-                                            <>
-                                                {contact.first} {contact.last}
-                                            </>
-                                        ) : (
-                                            <i>No Name</i>
-                                        )}{" "}
-                                        {contact.favorite && <span>★</span>}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>
-                            <i>No contacts</i>
-                        </p>
-                    )}
-                </nav>
-            </div>
+            <Sidebar contacts={contacts} />
             <div id="detail">
                 <Outlet />
             </div>
