@@ -10,10 +10,4 @@ export default defineConfig({
       plugins: [tailwindcss()],
     }
   },
-  server: {
-    strictPort: true,
-    fs: {
-      strict: true,
-    },
-  }
 })

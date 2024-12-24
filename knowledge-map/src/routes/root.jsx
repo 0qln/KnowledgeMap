@@ -1,33 +1,68 @@
-import { useEffect, useRef } from "react";
-import * as d3 from "d3";
+import { Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import * as d3 from "d3";
+import { useEffect, useRef, useState } from "react";
 
-// todo: 
-// this has route navigation logic and is only really used once,
-// inline this component in the root component.
-export default function Graph({ data, showGroups }) {
+export default function Root() {
+    return (
+        <>
+            <h1 className="text-center text-2xl">Knowledge Map</h1>
+            <div className="absolute right-0 left-0 top-0 bottom-0" id="graph">
+                <GraphLoader showGroups={[5, 4]} />                
+            </div>
+            <div className="flex justify-end m-5 " id="detail">
+                <div className="w-[30%] bg-slate-300 rounded-md">
+                    <Outlet />
+                </div>
+            </div>
+        </>
+    )
+}
+
+const GraphLoader = function({ showGroups }) {
+    const [nodes, setNodes] = useState(null);
+    const [links, setLinks] = useState(null);
+    
+    useEffect(() => {
+        async function fetchData() {
+            const { miserables } = await import("/public/miserables.json");
+
+            const l_nodes = miserables.nodes.filter(n => showGroups.includes(n.group));
+            const l_links = miserables.links.filter(l => 
+                showGroups.includes(miserables.nodes.find(n => n.id === l.source).group) &&
+                showGroups.includes(miserables.nodes.find(n => n.id === l.target).group)
+            );
+
+            setNodes(l_nodes);
+            setLinks(l_links);
+        }
+        
+        fetchData();
+    }, [ showGroups ]);
+    
+    if (!nodes || !links) {
+        return <div>Loading...</div>;
+    }
+
+    return <Graph nodes={ nodes } links={ links } />
+}
+
+export const Graph = function(params) {
     const ref = useRef();
     const navigate = useNavigate();
 
-    // The force simulation mutates links and nodes, so create a copy
-    // so that re-evaluating this cell produces the same result.
-    const nodes = data.nodes
-        .filter(d => showGroups.includes(d.group))
-        .map(d => ({ ...d }));
-
-    const links = data.links
-        .filter(d =>
-            showGroups.includes(data.nodes.find(n => n.id === d.source).group) &&
-            showGroups.includes(data.nodes.find(n => n.id === d.target).group))
-        .map(d => ({ ...d }));
-
-    // Specify the color scale.
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    const width = ref.current.clientWidth;
-    const height = ref.current.clientHeight;
-
     useEffect(() => {
+
+        // The force simulation mutates links and nodes, so create a copy
+        // so that re-evaluating this cell produces the same result.
+        const nodes = params.nodes.map(d => ({ ...d }));
+        const links = params.links.map(d => ({ ...d }));
+
+        // Specify the color scale.
+        const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+        const width = 800;
+        const height = 600;
 
         // Create a simulation with several forces.
         const simulation = d3.forceSimulation(nodes)
@@ -104,7 +139,7 @@ export default function Graph({ data, showGroups }) {
         }
 
         return () => d3.select(ref.current).selectAll("*").remove();
-    }, [data, width, height, showGroups])
+    }, [ params.nodes, params.links ]);
 
     return <svg ref={ref} />;
-}
+};
