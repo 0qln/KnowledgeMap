@@ -24,6 +24,10 @@ export default function Login({ status, canResetPassword }) {
     return (
         <GuestLayout>
             <Head title="Log in" />
+            
+            <a href="/auth/redirect" className="btn btn-primary">
+                Login with Microsoft
+            </a>
 
             {status && (
                 <div className="mb-4 text-sm font-medium text-green-600">
