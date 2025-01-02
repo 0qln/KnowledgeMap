@@ -1,0 +1,1842 @@
+[
+    {
+        "name": "XWiki Article",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Worksimple Employee",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Intern",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Order Processing",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Belegarten  Belege",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "RechnungenBelege im Ticketsystem (Zammad)",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Technik",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "M365",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL07-INTUNE",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Interne Infrastruktur",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Netzwerk",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Ansible",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Selbstorganisierte Workations",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WebPreferences",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Kunden",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10237 AGO Service und Vertriebs GmbH",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL02-SEC",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "MFA_Adminaccounts",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Software",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Lexware",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Test-Umgebungen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Individuelle Test-Umgebungen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Nils",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ISO Zertifizierungen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Klassifizierung von Werten [ISMS  ISO 27001]",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Meldekette Sicherheitsereignisse-Vorf\u00e4lle",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "On-Off-Boarding",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Buchungskonten  Kategorien ",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "PowerHaus",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Zammad",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Presales",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Referenzen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "MIRCO",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL0x-CITRIX",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Umgang mit Vorlagen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Dokumentenablage",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "SharePoint-Sites",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Vorlagen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "STG - Sozialwerk St. Georg K10271",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL0x-M365",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL0x-THINCLIENT",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "UMS Update",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Neuman & Esser GmbH & Co. KG K10337",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Leistungsbeschreibungen pro Service",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Proxmox VM Serial Number",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Immobililenverwaltung M\u00fcnchen K10267 und K10268",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "PDF24",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL0x-MONITORING",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Zabbix",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10181 CCNST",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Prozessbeschreibung Aktivierung des Fujitsu Support Pack f\u00fcr den Kunden",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Einkauf",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Hardwarebeschaffung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Lizenzbeschaffung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ALSO Cloud-Marketplace",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Azure Plan  Subscription erstellen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Troubleshooting",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Hornetsecurity",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Urlaubsplanung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "m365simple.de",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Themen Tags und Themenbereiche im Kontext m365simple.de",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Umgang mit PayFit",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Projektmanagement (in Arbeit)",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Projekt\u00fcbergabe (in Arbeit)",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Odoo",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Zertifikate erneuern",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Firewalls und VPN-Router",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Zertifikate",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Archiv",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Ersetzen einer bestehenden Windows App (Win32) ",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Infrafibre",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL0x-OnOff-Boarding",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10247 Baehr Immobilien",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Formulare",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL09-W365_AVD",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Offsites",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL04-SPO",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "AzureAD - SharePoint Integration",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Betriebshandbuch_Vorlage",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "St\u00f6rungsmanagement",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WYSE Kamera USB Umleitung konfigurieren",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL03-EXO",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Unvertr\u00e4glichkeiten & Allergien zur Planung aller Offsites",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Download Files von SharePoint Server 2010 mit Powershell",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Hochschule Hamm-Lippstadt K10369",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL11-LICENSING",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Vertrieb",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Anlegen eines SEPA Lastschriftmandats",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Teilen von Geheimnissen mit Externen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Kundendetails ",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Virtuelle Maschinen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Text-Vorlagen ",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "StarMoney",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL00-TENANT",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL01-AD",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "App Registration",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Abwesenheitsnotizen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Connectivity-Hub FFM",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL0x-NETWORK",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "[WIP] QM  ISO 9001",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Partnerschaften",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Foritnet ",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "CodeTwo How to Lizenzen buchen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Remmers Gruppe SE K10262",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Picanova GmbH K10244",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL06-TEAMS",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "T\u00e4gliches Meeting | Betreutes arbeiten",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Talha",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10226 Kamps GmbH",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "TP GmbH K10177",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "L2TPIPSEC VPN Server auf Mikrotik",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL13-WAN",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Server zu Citrix hinzuf\u00fcgen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Neustart von SQL Cluster",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Erstellung eines gruppenverwaltenden Dienstkontos im lokalen AD (gMSAsMSA)",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Rechnungen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Azure Subscription abrechnen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Belegerfassung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Belege  Buchungss\u00e4tze",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Acronis Cyber Protect Cloud",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Kapazit\u00e4tplanung_Maschinenraum",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10196 Staffa & Uhl Immobilien-neu",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Basti",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Neuen Kunden anlegen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10155 WOI Kellner",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Anleitung Kundenverwaltung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "CMD",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Server herunterfahren",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "DKIM Eintr\u00e4ge setzen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Planung neues Offsite",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Zeiterfassung (Kimai )",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Feedbackgspr\u00e4che",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Offsite Agenda - Themenvorschl\u00e4ge",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Umgang mit Dienstleistungsrechnungen in SEvDesk",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Anlage von Neukunden",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL09 - AVD & W365",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Zertifikatsverl\u00e4ngerung Session Border Controller ",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10212 Loeser Immobilienverwaltung-neu",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "\u00d6ffnen von Dateien in der Desktop App",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Mobilfunk",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "CheckMK Monitoring",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Umgang mit Rechnungskorrekturen  Gutschriften",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Azure AD",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "W365",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Reiseplanung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Infopage",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10220 YePo Hausverwaltung L. Mayer",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "SharePoint - Struktur",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10214 Rubix GmbH",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Changes",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "THBS",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Prozess von Angebotserstellung bis zur Bestellung aus dem Synaxson  EGIS Webportal",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Bonusvereinbarung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "\u00dcbersicht Doings",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Systeme",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "00_Neuen Kunden anlegen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10160 Schmidt & T\u00f6nnies",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10180 Eberhardt Bau-neu",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Backup",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Leerzeichen am Ende in Datei-Ordnernamen entfernen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Standard | AD & AAD Security Best Practises",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Apps nur f\u00fcr einen bestimmten Ger\u00e4te Hersteller ausrollen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WL08-M365APPS",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ITSM",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "vom Auftrag zum Projekteintrag in Kimai",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Kartenleser einrichten",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Session eines Benutzers spiegeln",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Daily-Struktur",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Anleitung Kundenverwaltung - Anlage eines Kunden und Kontakt",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Defender Ausschl\u00fcsse f\u00fcr FSLogix",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Umgang mit Rufbereitschaft",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Berufsf\u00f6rderungswerk Dortmund K10009",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "CMD Subst Befehl",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Projekt\u00fcbergabe CS -> Maschinenraum",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Update_Ring",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "XWIKI",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10157 Biege Raumdesign-neu",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "AOL App-Passwort",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Prozessbeschreibung Bestellung und Abwicklung einer Leasingbestellung von der Lumberg Connect GmbH ",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Compliance",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "EFECTE ITSM",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Umgang Tickets",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Ausschreibungsbearbeitung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10151 Proversa GmbH",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Syncronisation Sync Rule anlegen - Nutzungsstandort",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Calenberger Immobilien K10246",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Onboarding neue MItarbeitende",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Als Kunde zu Citrix verbinden",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Dienstleistungsrechnungen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Externe Dienstleister",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "K10154 Hausverwaltung Veigel",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Umgang mit Projekten",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Prozessbeschreibung Forderungsmanagement  ",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Leistungsbeschreibung ADDS",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "M365 Cloud Migration",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Migration \u00fcber das M365 Admin Center",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Shared Mailbox hinzuf\u00fcgen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Exchange Online RBAC",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "\u00dcbersicht Kundenvertr\u00e4ge",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Umgang mit Urlaub Team Maschinenraum",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "27001",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "9001",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Active Directory",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ADFS",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Administrator",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ALSO",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "anmelden",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Antivirus",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "API",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "App-Passwort",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Apps",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Auslastung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "AutoDNS",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Autopilot",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Azure",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Betriebshandbuch",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Bittitan",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "CIA",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Citrix",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Cloud",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Connect",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "CPU",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "CSR",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Daily",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "dms",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "dokumentenmanagement",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Domain Controller",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Drucker",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "efecte",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Eingabeaufforderung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Einrichtung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Endpoint",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ersetzen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Exchange",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ExchangeOnline",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Expressroute",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "faktura",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Feedback",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Feedbackgespr\u00e4che",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Fehlermeldung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Fernsteuerung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Festplatte",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "FireBird",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "forms",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "formular",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "fragebogen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "freizeit",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "FSLogix",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "getaktet",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Geteiltes Postfach",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Google",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "GPO",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Gruppen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Hardware",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Haufe",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "HBCI",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Herunterfahren",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "howTo",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "IGEL",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "IMAP",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Implementierung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Import",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Informationssicherheit",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Infrastruktur",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Installation",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "intern",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Intune",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "iOS",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ISMS",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ISO",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ISO 27001",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ISO 9001",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "ISO Zertifizierung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Kamera",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Kartenleser",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "KEY",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Kimai",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Klassifizierung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Kommandozeile",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "kopieren",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Kunde",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Leerzeichen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Lizenzen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Mac",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Mailbox",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "MAM",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Marketing",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Marketplace",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "MDM",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Migration",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Mikrotik",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Monitor",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Monitoring",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "MSDE",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Nachricht",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Netscaler",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Neustart",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Office",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Offsite",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Onboarding",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "OneDrive",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "oob-vpn",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Outlook",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Owner",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Passwort",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Patchstand",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "pate",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "patenschaft",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "patin",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "PDF",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Peripherie",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "PFX",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Plan",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Postfach",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Powerhaus",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "PowerShell",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Process",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Profil",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Proxmox",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Prozess",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "QM",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "QMS",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Qualit\u00e4tsmanagement",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "RAM",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "reissue",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Remote",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "renew",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Robocopy",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Schutzbedarf",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Schutzbedarfsstufen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "SEPA",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Server",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Shadow",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Shared Mailbox",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "SIP",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Smartcard",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Spiegeln",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "SPOC",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "SSH",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Starmoney",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Subscription",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Teams",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Telefonie",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Template",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Test Umgebung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Themenspeicher",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Time",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Timetracking",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "update",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Urlaub",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "VDA",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Verbinden",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "VM erstellen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "VMM",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Vorlage",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "vorlagen",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "VPN",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Wer hat welchen IGEL",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Wiki",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Windows",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WLAN",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Workflow",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "workspace.worksimple.de",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WSUS",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "WYSE",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Zeiterfassung",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Zertifikat",
+        "description": "",
+        "isDeleted": false
+    },
+    {
+        "name": "Zur\u00fccksetzten",
+        "description": "",
+        "isDeleted": false
+    }
+]
