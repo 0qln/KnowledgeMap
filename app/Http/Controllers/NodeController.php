@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Node;
 use App\Http\Requests\StoreNodeRequest;
 use App\Http\Requests\UpdateNodeRequest;
+use App\Models\Edge;
+use App\Models\Tag;
+use Inertia\Inertia;
 
 class NodeController extends Controller
 {
@@ -35,9 +38,23 @@ class NodeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Node $node)
+    public function show(Node $id)
     {
-        //
+        $nodes = Node::query()->get();
+        $nodeHasTag = $nodeHasTag = $nodes->mapWithKeys(function (Node $node) {
+            return [$node->id => $node->tags->pluck('id')->toArray()];
+        });
+
+        $edges = Edge::query()->get();
+
+        $tags = Tag::query()->get();
+        
+        $node = Node::find($id)->first();
+
+        return inertia(
+            'Node/Show',
+            compact('node', 'nodes', 'edges', 'tags', 'nodeHasTag'),
+        );
     }
 
     /**
