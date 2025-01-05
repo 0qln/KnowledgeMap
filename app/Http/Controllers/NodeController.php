@@ -7,6 +7,7 @@ use App\Http\Requests\StoreNodeRequest;
 use App\Http\Requests\UpdateNodeRequest;
 use App\Models\Edge;
 use App\Models\Tag;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class NodeController extends Controller
@@ -32,7 +33,10 @@ class NodeController extends Controller
      */
     public function store(StoreNodeRequest $request)
     {
-        //
+        $data = $request->validated();
+        $node = Node::create($data);
+        return to_route('dashboard.nodes.show', $node->id)
+            ->with('success', 'Node created successfully');
     }
 
     /**
@@ -60,17 +64,35 @@ class NodeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Node $node)
+    public function edit(Node $id)
     {
-        //
+        $nodes = Node::query()->get();
+        $nodeHasTag = $nodeHasTag = $nodes->mapWithKeys(function (Node $node) {
+            return [$node->id => $node->tags->pluck('id')->toArray()];
+        });
+
+        $edges = Edge::query()->get();
+
+        $tags = Tag::query()->get();
+        
+        $node = Node::find($id)->first();
+
+        return inertia(
+            'Node/Edit',
+            compact('node', 'nodes', 'edges', 'tags', 'nodeHasTag'),
+        );
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateNodeRequest $request, Node $node)
+    public function update(UpdateNodeRequest $request, Node $id)
     {
-        //
+        $node = Node::find($id)->first();
+        $node->update($request->validated());
+
+        return to_route('dashboard.nodes.show', $id)
+            ->with('success', 'Node updated successfully');
     }
 
     /**

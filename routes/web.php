@@ -20,9 +20,11 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::get('/dashboard/nodes/{id}', [NodeController::class, 'show'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard.nodes.show');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard/nodes/{id}', [NodeController::class, 'show'])->name('dashboard.nodes.show');
+    Route::get('/dashboard/nodes/{id}/edit', [NodeController::class, 'edit'])->name('dashboard.nodes.edit');
+    Route::patch('/dashboard/nodes/{id}/edit', [NodeController::class, 'update'])->name('dashboard.nodes.update');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
