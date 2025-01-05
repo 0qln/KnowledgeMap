@@ -148,20 +148,17 @@ export default function AppLayout({ links, nodes, tags, nodeHasTag, childrenRigh
     return (
         <AuthenticatedLayout header={
             <h2 className="
-                    text-xl font-semibold leading-tight 
-                    text-gray-800 dark:text-gray-300
-                ">
+                text-xl font-semibold leading-tight 
+                text-gray-800 dark:text-gray-300
+            ">
                 Knowledge Map
             </h2>
         }>
-            <div
-                className="grid auto-cols-fr">
-                <div
-                    ref={ref}
-                    className="
-                        row-start-1 col-start-1
-                        w-screen flex relative max-h-screen
-                        bg-gray-100 dark:bg-gray-900
+            <div className="grid auto-cols-fr">
+                <div ref={ref} className="
+                    row-start-1 col-start-1
+                    w-screen flex relative max-h-screen
+                    bg-gray-100 dark:bg-gray-900
                 ">
                     <Graph
                         pNodes={nodes}
@@ -178,7 +175,7 @@ export default function AppLayout({ links, nodes, tags, nodeHasTag, childrenRigh
                 <div
                     ref={refChildrenRight}
                     className="
-                        row-start-1 col-start-1 z-10 fixed
+                        row-start-1 col-start-1 z-10 fixed right-0
                     "
                     children={childrenRight}/>
             </div>

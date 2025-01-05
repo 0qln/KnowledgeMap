@@ -49,20 +49,8 @@ export function useGraphData(initNodes = null, initLinks = null) {
 export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId, dim, displayRules, filters }) {
     const ref = useRef();
 
-    console.log("render");
-
-    // const [ forceX, setForceX ] = useRef(displayRules.forceX);
-    // const [ forceY, setForceY ] = useRef(displayRules.forceY);
-    
     const simulation = useRef(null);
     const resetFn = useRef(null);
-    // console.log(resetFn);
-    // const fn = () => console.log("reset");
-    // console.log(fn);
-    // fn();
-    // setResetFn(() => fn);
-    // console.log(resetFn);
-    // resetFn();
 
     useEffect(() => {
         const nodes = pNodes.map(d => ({
@@ -81,19 +69,10 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
         simulation.current = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(links))
             .force("charge", d3.forceManyBody())
-            // .force("center", d3.forceCenter().strength(.1))
             .on("tick", ticked);
 
-        let link = svg.append("g")
-            // .attr("width", width)
-            // .attr("height", height)
-            .attr("stroke", "#999").attr("stroke-opacity", 0.6).selectAll();
-        let node = svg.append("g")
-            // .attr("width", width)
-            // .attr("height", height)
-            .attr("stroke", "#fff").attr("stroke-width", 1.5).selectAll();
-
-        // restart();
+        let link = svg.append("g").attr("stroke", "#999").attr("stroke-opacity", 0.6).selectAll();
+        let node = svg.append("g").attr("stroke", "#fff").attr("stroke-width", 1.5).selectAll();
 
         // todo can be hooks
         function removeLink(links, idSource, idTarget) {
