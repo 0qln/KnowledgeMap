@@ -9,26 +9,27 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import Layout from './Layout';
 
 
-function Node({
-    node,
+function Edge({
+    edge, from, to,
     nodes, edges, tags, nodeHasTag
 }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
-            title: node.title,
-            full_name: node.full_name,
-            description: node.description,
+            description: edge.description,
+            weight: edge.weight,
         });
+    
+        console.log(edge.weight);
 
     const submit = (e) => {
         e.preventDefault();
 
-        patch(route('dashboard.nodes.update', node.id));
+        patch(route('dashboard.edges.update', edge.id));
     }
 
     return (
         <Layout>
-            <Head title={`Edit: ${node.title}`} />
+            <Head title={`Edit: Edge ${edge.id}`} />
 
             <form onSubmit={submit} className="flex flex-row-reverse">
 
@@ -55,8 +56,7 @@ function Node({
                                 enter="transition ease-in-out"
                                 enterFrom="opacity-0"
                                 leave="transition ease-in-out"
-                                leaveTo="opacity-0"
-                            >
+                                leaveTo="opacity-0">
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
                                     Saved.
                                 </p>
@@ -67,38 +67,26 @@ function Node({
 
                 <div className="flex flex-col w-full">
                     <div className="w-full break-words dark:text-white text-xl">
-                        Edit Node {node.id}
+                        Edit Edge {edge.id}
                     </div>
                     <div className="flex flex-col w-full space-y-6 mt-5">
-                        <div>
-                            <InputLabel htmlFor="title" value="Title" />
-                            <TextInput
-                                id="title"
-                                className="block w-full font-bold"
-                                value={data.title}
-                                onChange={(e) => setData('title', e.target.value)}
-                                required
-                                isFocused
-                                autoComplete="off" />
-
-                            <InputError className="mt-2" message={errors.title} />
+                    <div className="flex flex-row space-x-2 flex-wrap">
+                        <div className="dark:text-gray-200 text-sm break-words">
+                            [{from.id}] {from.title}
                         </div>
                         <div>
-                            <InputLabel htmlFor="full_name" value="Full Name" />
-                            <TextInput
-                                id="full_name"
-                                className="block w-full"
-                                value={data.full_name}
-                                onChange={(e) => setData('full_name', e.target.value)}
-                                required
-                                autoComplete="off" />
-
-                            <InputError className="mt-2" message={errors.full_name} />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" className="stroke-white"/>
+                            </svg>
                         </div>
+                        <div className="dark:text-gray-200 text-sm break-words">
+                            [{to.id}] {to.title}
+                        </div>
+                    </div>
                         <div>
                             <InputLabel htmlFor="description" value="Description" />
                             <TextAreaInput
-                                rows={8}
+                                rows={4}
                                 id="description"
                                 className="block w-full"
                                 value={data.description}
@@ -108,6 +96,18 @@ function Node({
 
                             <InputError className="mt-2" message={errors.description} />
                         </div>
+                        <div>
+                            <InputLabel htmlFor="weight" value="Weight" />
+                            <TextInput
+                                id="weight"
+                                className="block w-full"
+                                value={data.weight}
+                                onChange={(e) => setData('weight', e.target.value)}
+                                required
+                                autoComplete="off" />
+
+                            <InputError className="mt-2" message={errors.weight} />
+                        </div>
                     </div>
                 </div>
             </form>
@@ -115,7 +115,7 @@ function Node({
     );
 }
 
-Node.layout = (page) => (
+Edge.layout = (page) => (
     <AppLayout
         nodes={page.props.nodes}
         links={page.props.edges}
@@ -124,4 +124,4 @@ Node.layout = (page) => (
         childrenRight={page} />
 );
 
-export default Node;
+export default Edge;

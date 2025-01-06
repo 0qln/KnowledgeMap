@@ -48,9 +48,7 @@ class NodeController extends Controller
         $nodeHasTag = $nodes->mapWithKeys(function (Node $n) {
             return [$n->id => $n->tags->pluck('id')->toArray()];
         });
-
         $edges = Edge::query()->get();
-
         $tags = Tag::query()->get();
 
         return inertia(
@@ -68,9 +66,7 @@ class NodeController extends Controller
         $nodeHasTag = $nodeHasTag = $nodes->mapWithKeys(function (Node $n) {
             return [$n->id => $n->tags->pluck('id')->toArray()];
         });
-
         $edges = Edge::query()->get();
-
         $tags = Tag::query()->get();
 
         return inertia(

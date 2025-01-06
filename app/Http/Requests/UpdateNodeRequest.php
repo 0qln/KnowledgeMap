@@ -22,24 +22,9 @@ class UpdateNodeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => [
-                'required',
-                'string',
-                'max:256',
-            ],
-            'full_name' => [
-                'required',
-                'string',
-                'max:1042',
-            ],
-            'description' => [
-                'nullable',
-                'string',
-            ],
-            'is_deleted' => [
-                'required',
-                'boolean',
-            ],
+            'title' => [ 'required', 'string', 'max:256', ],
+            'full_name' => [ 'required', 'string', 'max:1024', ],
+            'description' => [ 'nullable', 'string', ],
         ];
     }
 }
