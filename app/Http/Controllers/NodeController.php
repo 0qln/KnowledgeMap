@@ -42,18 +42,16 @@ class NodeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Node $id)
+    public function show(Node $node)
     {
         $nodes = Node::query()->get();
-        $nodeHasTag = $nodeHasTag = $nodes->mapWithKeys(function (Node $node) {
-            return [$node->id => $node->tags->pluck('id')->toArray()];
+        $nodeHasTag = $nodes->mapWithKeys(function (Node $n) {
+            return [$n->id => $n->tags->pluck('id')->toArray()];
         });
 
         $edges = Edge::query()->get();
 
         $tags = Tag::query()->get();
-        
-        $node = Node::find($id)->first();
 
         return inertia(
             'Node/Show',
@@ -64,18 +62,16 @@ class NodeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Node $id)
+    public function edit(Node $node)
     {
         $nodes = Node::query()->get();
-        $nodeHasTag = $nodeHasTag = $nodes->mapWithKeys(function (Node $node) {
-            return [$node->id => $node->tags->pluck('id')->toArray()];
+        $nodeHasTag = $nodeHasTag = $nodes->mapWithKeys(function (Node $n) {
+            return [$n->id => $n->tags->pluck('id')->toArray()];
         });
 
         $edges = Edge::query()->get();
 
         $tags = Tag::query()->get();
-        
-        $node = Node::find($id)->first();
 
         return inertia(
             'Node/Edit',
@@ -86,12 +82,11 @@ class NodeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateNodeRequest $request, Node $id)
+    public function update(UpdateNodeRequest $request, Node $node)
     {
-        $node = Node::find($id)->first();
         $node->update($request->validated());
 
-        return to_route('dashboard.nodes.show', $id)
+        return to_route('dashboard.nodes.show', $node->id)
             ->with('success', 'Node updated successfully');
     }
 
