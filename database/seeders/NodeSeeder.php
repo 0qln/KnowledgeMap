@@ -18,9 +18,9 @@ class NodeSeeder extends Seeder
         foreach ($nodes as $node) {
             DB::table('nodes')->insert([
                 'title' => $node['title'],
-                'fullName' => $node['fullName'],
+                'full_name' => $node['fullName'],
                 'description' => $node['description'],
-                'isDeleted' => $node['isDeleted'],
+                'is_deleted' => $node['isDeleted'],
             ]);
         }
     }

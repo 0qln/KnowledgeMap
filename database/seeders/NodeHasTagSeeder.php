@@ -16,9 +16,9 @@ class NodeHasTagSeeder extends Seeder
         $relationships = json_decode(file_get_contents(database_path('seeders/data/node_has_tag.json')), true);
 
         foreach ($relationships as $relationship) {
-            DB::table('node_has_tag')->insert([
-                'nodeIdNode' => $relationship['nodeIdNode'],
-                'tagIdTag' => $relationship['tagIdTag'],
+            DB::table('node_tag')->insert([
+                'node_id' => $relationship['nodeIdNode'],
+                'tag_id' => $relationship['tagIdTag'],
             ]);
         }
     }

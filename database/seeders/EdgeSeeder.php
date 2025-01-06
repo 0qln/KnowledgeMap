@@ -17,11 +17,11 @@ class EdgeSeeder extends Seeder
 
         foreach ($edges as $edge) {
             DB::table('edges')->insert([
-                'idOrigin' => $edge['idOrigin'],
-                'idTarget' => $edge['idTarget'],
+                'id_origin' => $edge['idOrigin'],
+                'id_target' => $edge['idTarget'],
                 'description' => $edge['description'],
                 'weight' => $edge['weight'],
-                'isDeleted' => $edge['isDeleted'],
+                'is_deleted' => $edge['isDeleted'],
             ]);
         }
     }

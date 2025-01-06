@@ -19,7 +19,7 @@ class TagSeeder extends Seeder
             DB::table('tags')->insert([
                 'name' => $tag['name'],
                 'description' => $tag['description'],
-                'isDeleted' => $tag['isDeleted'],
+                'is_deleted' => $tag['isDeleted'],
             ]);
         }
     }
