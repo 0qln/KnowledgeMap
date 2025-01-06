@@ -55,10 +55,12 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
     useEffect(() => {
         const nodes = pNodes.map(d => ({
             id: idToIndex(d.id),
+            index: idToIndex(d.id),
             title: d.title
         }));
         const links = pLinks.map(d => ({
             id: idToIndex(d.id),
+            index: idToIndex(d.id),
             source: idToIndex(d.id_origin),
             target: idToIndex(d.id_target),
             value: d.weight
@@ -104,7 +106,7 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
                     switch (event.button) {
                         case 0:
                             console.log("left");
-                            router.visit(route("dashboard.nodes.show", [d.id]));
+                            router.visit(route("dashboard.nodes.show", indexToId(d.id)));
                             break;
                         case 2:
                             console.log("right");
@@ -128,13 +130,31 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
             link = link.enter()
                 .append("line")
                 .attr("stroke-width", d => Math.sqrt(d.value))
-                .on("click", (event, d) => removeLink(links, d.source, d.target))
+                .on("click", (event, d) => {
+                    // todo: this doesnt prevent default
+                    event.preventDefault();
+                    switch (event.button) {
+                        case 0:
+                            console.log("left: " + indexToId(d.id));
+                            router.visit(route("dashboard.edges.show", indexToId(d.id)));
+                            break;
+                        case 2:
+                            console.log("right");
+                            removeNode(nodes, d.id);
+                            break;
+                    }
+                })
                 .merge(link);
+
+            link.append("title")
+                .text(d => indexToId(d.id));
 
             // Update and restart the simulation.
             simulation.current.nodes(nodes);
             simulation.current.force("link").links(links);
             simulation.current.alpha(1).restart();
+            
+            console.log(links);
         }
         resetFn.current = restart;
 

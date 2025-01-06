@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Edge;
 use App\Http\Requests\StoreEdgeRequest;
 use App\Http\Requests\UpdateEdgeRequest;
+use App\Models\Node;
+use App\Models\Tag;
 
 class EdgeController extends Controller
 {
@@ -37,7 +39,20 @@ class EdgeController extends Controller
      */
     public function show(Edge $edge)
     {
-        //
+        $edges = Edge::query()->get();
+        $tags = Tag::query()->get();
+        $nodes = Node::query()->get();
+        $nodeHasTag = $nodeHasTag = $nodes->mapWithKeys(function (Node $node) {
+            return [$node->id => $node->tags->pluck('id')->toArray()];
+        });
+
+        $from = $edge->origin;
+        $to = $edge->target;
+
+        return inertia(
+            'Edge/Show',
+            compact('edge', 'from', 'to', 'nodes', 'edges', 'tags', 'nodeHasTag'),
+        );
     }
 
     /**
@@ -45,7 +60,20 @@ class EdgeController extends Controller
      */
     public function edit(Edge $edge)
     {
-        //
+        $nodes = Node::query()->get();
+        $nodeHasTag = $nodeHasTag = $nodes->mapWithKeys(function (Node $n) {
+            return [$n->id => $n->tags->pluck('id')->toArray()];
+        });
+        $edges = Edge::query()->get();
+        $tags = Tag::query()->get();
+
+        $from = $edge->origin;
+        $to = $edge->target;
+
+        return inertia(
+            'Edge/Edit',
+            compact('edge', 'from', 'to', 'nodes', 'edges', 'tags', 'nodeHasTag'),
+        );
     }
 
     /**
@@ -53,7 +81,10 @@ class EdgeController extends Controller
      */
     public function update(UpdateEdgeRequest $request, Edge $edge)
     {
-        //
+        $edge->update($request->validated());
+
+        return to_route('dashboard.edges.show', $edge->id)
+            ->with('success', 'Edge updated successfully');
     }
 
     /**
