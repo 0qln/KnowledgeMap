@@ -1,16 +1,10 @@
 import { Head } from '@inertiajs/react';
-import Layout from '@/Layouts/Layout';
-import { GraphProvider } from '@/Context/GraphContext';
+import GraphLayout from '@/Layouts/GraphLayout';
 
 function Dashboard() {
-    return (
-        <>
-            <Head title="Dashboard" />
-        </>
-    );
+    return <Head title="Dashboard" />;
 }
 
-// Attach the persistent layout
-Dashboard.layout = (page) => ( <Layout> {page} </Layout>);
+Dashboard.layout = (page) => <GraphLayout children={page}/>;
 
 export default Dashboard;

@@ -1,13 +1,11 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import Layout from '@/Layouts/Layout';
+import GraphLayout from '@/Layouts/BaseLayout';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import TextAreaInput from '@/Components/TextAreaInput';
-import { Button, Transition } from '@headlessui/react';
-import PrimaryButton from '@/Components/PrimaryButton';
-import { useCallback } from 'react';
-
+import { Transition } from '@headlessui/react';
+import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 
 function Edge({ edge, from, to, }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } =
@@ -110,6 +108,12 @@ function Edge({ edge, from, to, }) {
     );
 }
 
-Edge.layout = (page) => <Layout children={page} />;
+Edge.layout = (page) => 
+    (<GraphLayout childrenRight={
+        <GraphDetailsLayout children={
+            page
+        }/>
+    }/>
+);
 
 export default Edge;

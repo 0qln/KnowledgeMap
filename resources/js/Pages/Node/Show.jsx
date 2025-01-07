@@ -1,7 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
-import Layout from '@/Layouts/Layout';
-import { GraphProvider } from '@/Context/GraphContext';
-
+import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
+import GraphLayout from '@/Layouts/GraphLayout';
 
 function Node({ node }) {
     return (
@@ -46,6 +45,12 @@ function Node({ node }) {
     );
 }
 
-Node.layout = (page) => <Layout children={page} />;
+Node.layout = (page) => 
+    (<GraphLayout childrenRight={
+        <GraphDetailsLayout children={
+            page
+        }/>
+    }/>
+);
 
 export default Node;

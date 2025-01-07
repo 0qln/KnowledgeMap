@@ -1,13 +1,11 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/Layouts/AppLayout';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import TextAreaInput from '@/Components/TextAreaInput';
-import { Button, Transition } from '@headlessui/react';
-import PrimaryButton from '@/Components/PrimaryButton';
-import Layout from '@/Layouts/Layout';
-
+import { Transition } from '@headlessui/react';
+import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
+import GraphLayout from '@/Layouts/GraphLayout';
 
 function Node({ node, }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } =
@@ -112,6 +110,12 @@ function Node({ node, }) {
     );
 }
 
-Node.layout = (page) => <Layout children={page} />
+Node.layout = (page) => 
+    (<GraphLayout childrenRight={
+        <GraphDetailsLayout children={
+            page
+        }/>
+    }/>
+);
 
 export default Node;

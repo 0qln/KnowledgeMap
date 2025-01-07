@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
-import Layout from '@/Layouts/Layout';
+import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
+import GraphLayout from '@/Layouts/GraphLayout';
 
 function Edge({ edge, from, to, }) {
     return (
@@ -56,6 +57,12 @@ function Edge({ edge, from, to, }) {
     );
 }
 
-Edge.layout = (page) => <Layout children={page} />;
+Edge.layout = (page) => 
+    (<GraphLayout childrenRight={
+        <GraphDetailsLayout children={
+            page
+        }/>
+    }/>
+);
 
 export default Edge;
