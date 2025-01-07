@@ -1,7 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import AppLayout from '@/Layouts/AppLayout';
-import Layout from './Layout';
-
+import Layout from '@/Layouts/Layout';
 
 function Edge({ edge, from, to, }) {
     return (

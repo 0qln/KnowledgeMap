@@ -1,23 +1,20 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/Layouts/AppLayout';
+import Layout from '@/Layouts/Layout';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import TextAreaInput from '@/Components/TextAreaInput';
 import { Button, Transition } from '@headlessui/react';
 import PrimaryButton from '@/Components/PrimaryButton';
-import Layout from './Layout';
 import { useCallback } from 'react';
 
 
 function Edge({ edge, from, to, }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
-            description: edge.description,
+            description: edge.description, 
             weight: edge.weight,
         });
-
-    console.log(edge.weight);
 
     const submit = (e) => {
         e.preventDefault();

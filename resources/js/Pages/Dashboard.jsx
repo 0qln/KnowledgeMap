@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import AppLayout from '@/Layouts/AppLayout';
+import Layout from '@/Layouts/Layout';
 import { GraphProvider } from '@/Context/GraphContext';
 
 function Dashboard() {
@@ -11,12 +11,6 @@ function Dashboard() {
 }
 
 // Attach the persistent layout
-Dashboard.layout = (page) => (
-    <GraphProvider>
-        <AppLayout>
-            {page}
-        </AppLayout>
-    </GraphProvider>
-);
+Dashboard.layout = (page) => ( <Layout> {page} </Layout>);
 
 export default Dashboard;

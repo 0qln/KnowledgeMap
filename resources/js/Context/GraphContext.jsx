@@ -10,6 +10,8 @@ export const GraphProvider = ({ children }) => {
     const [tags, setTags] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    console.log("graph provider loaded");
+
     const [filters, setFilters] = useState({
         blacklist: [],
         whitelist: [],
@@ -33,15 +35,12 @@ export const GraphProvider = ({ children }) => {
     const indexToId = useCallback((x) => x + 1, []);
 
     const colorMap = useMemo(() => {
-        console.log(tags);
         const tagColorMap = tags.map(_ =>
             d3.rgb(
                 Math.random() * 255,
                 Math.sqrt(Math.random()) * 255,
                 Math.random() * 255
             ));
-
-        console.log(tagColorMap);
 
         return (node) => {
             if (node.tags.length === 0) return d3.rgb(128, 128, 128);
@@ -90,6 +89,9 @@ export const GraphProvider = ({ children }) => {
     // https://github.com/inertiajs/inertia/discussions/568
     // We will have to use axios to fetch the data.
     useEffect(() => {
+        if (links.length !== 0 || nodes.length !== 0) return;
+
+        console.log("Fetching graph data...");
         const fetchData = async () => {
             try {
                 const [nodesRes, linksRes, tagsRes] = await Promise.all([

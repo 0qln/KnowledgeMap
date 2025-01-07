@@ -6,7 +6,7 @@ import InputError from '@/Components/InputError';
 import TextAreaInput from '@/Components/TextAreaInput';
 import { Button, Transition } from '@headlessui/react';
 import PrimaryButton from '@/Components/PrimaryButton';
-import Layout from './Layout';
+import Layout from '@/Layouts/Layout';
 
 
 function Node({ node, }) {

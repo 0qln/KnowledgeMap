@@ -5,12 +5,6 @@ import * as d3 from "d3";
 
 export const Graph = function ({ dim }) {
     const ref = useRef();
-    console.log(useGraph);
-    console.log(GraphContext);
-    console.log(useContext(GraphContext));
-    const x = useGraph();
-    console.log(x);
-    console.log(useGraph());
     const { 
         nodes,
         links,
@@ -26,9 +20,6 @@ export const Graph = function ({ dim }) {
 
     useEffect(() => {
         const svg = d3.select(ref.current);
-    
-        console.log(nodes);
-        console.log(links);
 
         simulation.current = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(links))
@@ -110,6 +101,9 @@ export const Graph = function ({ dim }) {
         }
 
         resetFn.current = restart;
+        resetFn.current();
+        
+        console.log('effect');
 
         function ticked() {
             link

@@ -1,6 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import AppLayout from '@/Layouts/AppLayout';
-import Layout from './Layout';
+import Layout from '@/Layouts/Layout';
 import { GraphProvider } from '@/Context/GraphContext';
 
 
