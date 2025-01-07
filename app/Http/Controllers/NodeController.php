@@ -17,7 +17,8 @@ class NodeController extends Controller
      */
     public function index()
     {
-        //
+        $nodes = Node::query()->with('tags')->get();
+        return response()->json($nodes);
     }
 
     /**
@@ -44,16 +45,9 @@ class NodeController extends Controller
      */
     public function show(Node $node)
     {
-        $nodes = Node::query()->get();
-        $nodeHasTag = $nodes->mapWithKeys(function (Node $n) {
-            return [$n->id => $n->tags->pluck('id')->toArray()];
-        });
-        $edges = Edge::query()->get();
-        $tags = Tag::query()->get();
-
         return inertia(
             'Node/Show',
-            compact('node', 'nodes', 'edges', 'tags', 'nodeHasTag'),
+            compact('node'),
         );
     }
 
@@ -62,16 +56,9 @@ class NodeController extends Controller
      */
     public function edit(Node $node)
     {
-        $nodes = Node::query()->get();
-        $nodeHasTag = $nodeHasTag = $nodes->mapWithKeys(function (Node $n) {
-            return [$n->id => $n->tags->pluck('id')->toArray()];
-        });
-        $edges = Edge::query()->get();
-        $tags = Tag::query()->get();
-
         return inertia(
             'Node/Edit',
-            compact('node', 'nodes', 'edges', 'tags', 'nodeHasTag'),
+            compact('node'),
         );
     }
 

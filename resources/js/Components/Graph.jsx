@@ -1,71 +1,24 @@
 import { router } from "@inertiajs/react";
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useContext } from "react";
+import { GraphContext, useGraph } from "@/Context/GraphContext";
 import * as d3 from "d3";
 
-export function useGraphFilters() {
-    const [filters, setFilters] = useState({
-        blacklist: [],
-        whitelist: [],
-        tagsAsNodes: false,
-        orphans: false,
-        whiteListEnabled: false,
-        blacklistEnabled: false,
-    });
-
-    const setFilter = (key, value) => {
-        setFilters((prev) => ({ ...prev, [key]: value }));
-    };
-
-    return {
-        filters,
-        setFilter
-    };
-}
-
-export function useGraphDisplayRules() {
-    const [displayRules, setDisplayRules] = useState({
-        forceX: .06,
-        forceY: .06,
-        centerOffsetX: 0,
-        centerOffsetY: 0,
-    });
-
-    const setDisplayRule = (key, value) => {
-        setDisplayRules((prev) => ({ ...prev, [key]: value }));
-    };
-
-    return {
-        displayRules,
-        setDisplayRule
-    }
-}
-
-export function useGraphData(initNodes = null, initLinks = null) {
-    const { nodes, setNodes } = useState(initNodes);
-    const { links, setLinks } = useState(initLinks);
-
-}
-
-export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId, dim, displayRules, filters }) {
+export const Graph = function ({ dim }) {
     const ref = useRef();
-
-    const simulation = useRef(null);
-    const resetFn = useRef(null);
+    const { 
+        nodes,
+        links,
+        filters,
+        displayRules,
+        simulation,
+        resetFn,
+        removeNode,
+        removeLink,
+        colorMap,
+        indexToId
+    } = useGraph();
 
     useEffect(() => {
-        const nodes = pNodes.map(d => ({
-            id: idToIndex(d.id),
-            index: idToIndex(d.id),
-            title: d.title
-        }));
-        const links = pLinks.map(d => ({
-            id: idToIndex(d.id),
-            index: idToIndex(d.id),
-            source: idToIndex(d.id_origin),
-            target: idToIndex(d.id_target),
-            value: d.weight
-        }));
-
         const svg = d3.select(ref.current);
 
         simulation.current = d3.forceSimulation(nodes)
@@ -77,40 +30,37 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
         let node = svg.append("g").attr("stroke", "#fff").attr("stroke-width", 1.5).selectAll();
 
         // todo can be hooks
-        function removeLink(links, idSource, idTarget) {
-            const index = links.findIndex(d =>
-                d.source === idSource && d.target === idTarget ||
-                d.source === idTarget && d.target === idSource);
-            links.splice(index, 1);
-            restart();
-        }
+        // function removeLink(links, idSource, idTarget) {
+        //     const index = links.findIndex(d =>
+        //         d.source === idSource && d.target === idTarget ||
+        //         d.source === idTarget && d.target === idSource);
+        //     links.splice(index, 1);
+        //     restart();
+        // }
 
-        function removeNode(nodes, id) {
-            const index = nodes.findIndex(d => d.id === id);
-            nodes.splice(index, 1);
-            restart();
-        }
+        // function removeNode(nodes, id) {
+        //     const index = nodes.findIndex(d => d.id === id);
+        //     nodes.splice(index, 1);
+        //     restart();
+        // }
 
         function restart() {
 
-            // Apply the general update pattern to the nodes.
             node = node.data(nodes);
             node.exit().remove();
             node = node.enter()
                 .append("circle")
-                .attr("fill", d => colorMap(indexToId(d.id)))
+                .attr("fill", d => colorMap(d))
                 .attr("r", 5)
-                .on("mousedown", (event, d) => {
+                .on("click", (event, d) => {
                     // todo: this doesnt prevent default
                     event.preventDefault();
                     switch (event.button) {
                         case 0:
-                            console.log("left");
                             router.visit(route("dashboard.nodes.show", indexToId(d.id)));
                             break;
                         case 2:
-                            console.log("right");
-                            removeNode(nodes, d.id);
+                            removeNode(d.id);
                             break;
                     }
                 })
@@ -124,7 +74,6 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
                 .on("drag", dragged)
                 .on("end", dragended));
 
-            // Apply the general update pattern to the links.
             link = link.data(links.filter(l => nodes.includes(l.source) && nodes.includes(l.target)));
             link.exit().remove();
             link = link.enter()
@@ -135,30 +84,27 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
                     event.preventDefault();
                     switch (event.button) {
                         case 0:
-                            console.log("left: " + indexToId(d.id));
                             router.visit(route("dashboard.edges.show", indexToId(d.id)));
                             break;
                         case 2:
-                            console.log("right");
-                            removeNode(nodes, d.id);
+                            removeLink(d.source, d.target);;
                             break;
                     }
                 })
                 .merge(link);
 
-            link.append("title")
-                .text(d => indexToId(d.id));
+            link.append("title").text(d => indexToId(d.id));
 
-            // Update and restart the simulation.
             simulation.current.nodes(nodes);
             simulation.current.force("link").links(links);
             simulation.current.alpha(1).restart();
-            
-            console.log(links);
         }
-        resetFn.current = restart;
 
-        // Set the position attributes of links and nodes each time the simulation ticks.
+        resetFn.current = restart;
+        resetFn.current();
+        
+        console.log('effect');
+
         function ticked() {
             link
                 .attr("x1", d => d.source.x)
@@ -198,11 +144,10 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
     useEffect(() => {
         if (ref.current) {
             const { width, height } = dim;
-            d3.select(ref.current)
-                .attr("viewBox", [-width / 2, -height / 2, width, height])
+            d3.select(ref.current).attr("viewBox", [-width / 2, -height / 2, width, height])
         }
     }, [dim]);
-    
+
     useEffect(() => {
         if (resetFn.current) {
             // vary the force based on the available width and height.
@@ -215,12 +160,9 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
             simulation.current.force("y", d3.forceY(y).strength(forceY))
             resetFn.current();
         }
-    }, [displayRules.forceX, displayRules.forceY, dim, resetFn]);
+    }, [displayRules, dim, resetFn]);
 
     return (
-        <>
-            <svg id="graph" ref={ref} />
-        </>
-
+        <svg id="graph" ref={ref} />
     );
 };

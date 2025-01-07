@@ -1,18 +1,13 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/Layouts/AppLayout';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import TextAreaInput from '@/Components/TextAreaInput';
-import { Button, Transition } from '@headlessui/react';
-import PrimaryButton from '@/Components/PrimaryButton';
-import Layout from './Layout';
+import { Transition } from '@headlessui/react';
+import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
+import GraphLayout from '@/Layouts/GraphLayout';
 
-
-function Node({
-    node,
-    nodes, edges, tags, nodeHasTag
-}) {
+function Node({ node, }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
             title: node.title,
@@ -27,7 +22,7 @@ function Node({
     }
 
     return (
-        <Layout>
+        <div>
             <Head title={`Edit: ${node.title}`} />
 
             <form onSubmit={submit} className="flex flex-row-reverse">
@@ -111,17 +106,16 @@ function Node({
                     </div>
                 </div>
             </form>
-        </Layout>
+        </div>
     );
 }
 
-Node.layout = (page) => (
-    <AppLayout
-        nodes={page.props.nodes}
-        links={page.props.edges}
-        tags={page.props.tags}
-        nodeHasTag={page.props.nodeHasTag}
-        childrenRight={page} />
+Node.layout = (page) => 
+    (<GraphLayout childrenRight={
+        <GraphDetailsLayout children={
+            page
+        }/>
+    }/>
 );
 
 export default Node;

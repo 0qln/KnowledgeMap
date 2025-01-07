@@ -1,18 +1,10 @@
 import { Head, Link } from '@inertiajs/react';
-import AppLayout from '@/Layouts/AppLayout';
-import Layout from './Layout';
+import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
+import GraphLayout from '@/Layouts/GraphLayout';
 
-
-function Edge({
-    edge, from, to,
-    nodes, edges, tags, nodeHasTag
-}) {
-    console.log(from);
-    console.log(to);
-    console.log(edge.id);
-    console.log(edge);
+function Edge({ edge, from, to, }) {
     return (
-        <Layout>
+        <div>
             <Head title={`Edge ${edge.id}`} />
 
             <div className="flex flex-row-reverse flex-between">
@@ -61,17 +53,16 @@ function Edge({
                 </div>
 
             </div>
-        </Layout>
+        </div>
     );
 }
 
-Edge.layout = (page) => (
-    <AppLayout
-        nodes={page.props.nodes}
-        links={page.props.edges}
-        tags={page.props.tags}
-        nodeHasTag={page.props.nodeHasTag}
-        childrenRight={page} />
+Edge.layout = (page) => 
+    (<GraphLayout childrenRight={
+        <GraphDetailsLayout children={
+            page
+        }/>
+    }/>
 );
 
 export default Edge;

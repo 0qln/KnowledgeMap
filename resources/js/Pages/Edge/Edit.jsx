@@ -1,25 +1,18 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/Layouts/AppLayout';
+import GraphLayout from '@/Layouts/BaseLayout';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import TextAreaInput from '@/Components/TextAreaInput';
-import { Button, Transition } from '@headlessui/react';
-import PrimaryButton from '@/Components/PrimaryButton';
-import Layout from './Layout';
+import { Transition } from '@headlessui/react';
+import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 
-
-function Edge({
-    edge, from, to,
-    nodes, edges, tags, nodeHasTag
-}) {
+function Edge({ edge, from, to, }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
-            description: edge.description,
+            description: edge.description, 
             weight: edge.weight,
         });
-    
-        console.log(edge.weight);
 
     const submit = (e) => {
         e.preventDefault();
@@ -28,7 +21,7 @@ function Edge({
     }
 
     return (
-        <Layout>
+        <div>
             <Head title={`Edit: Edge ${edge.id}`} />
 
             <form onSubmit={submit} className="flex flex-row-reverse">
@@ -70,19 +63,19 @@ function Edge({
                         Edit Edge {edge.id}
                     </div>
                     <div className="flex flex-col w-full space-y-6 mt-5">
-                    <div className="flex flex-row space-x-2 flex-wrap">
-                        <div className="dark:text-gray-200 text-sm break-words">
-                            [{from.id}] {from.title}
+                        <div className="flex flex-row space-x-2 flex-wrap">
+                            <div className="dark:text-gray-200 text-sm break-words">
+                                [{from.id}] {from.title}
+                            </div>
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" className="stroke-white" />
+                                </svg>
+                            </div>
+                            <div className="dark:text-gray-200 text-sm break-words">
+                                [{to.id}] {to.title}
+                            </div>
                         </div>
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" className="stroke-white"/>
-                            </svg>
-                        </div>
-                        <div className="dark:text-gray-200 text-sm break-words">
-                            [{to.id}] {to.title}
-                        </div>
-                    </div>
                         <div>
                             <InputLabel htmlFor="description" value="Description" />
                             <TextAreaInput
@@ -111,17 +104,16 @@ function Edge({
                     </div>
                 </div>
             </form>
-        </Layout>
+        </div>
     );
 }
 
-Edge.layout = (page) => (
-    <AppLayout
-        nodes={page.props.nodes}
-        links={page.props.edges}
-        tags={page.props.tags}
-        nodeHasTag={page.props.nodeHasTag}
-        childrenRight={page} />
+Edge.layout = (page) => 
+    (<GraphLayout childrenRight={
+        <GraphDetailsLayout children={
+            page
+        }/>
+    }/>
 );
 
 export default Edge;
