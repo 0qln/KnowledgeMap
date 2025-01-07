@@ -1,71 +1,20 @@
 import { router } from "@inertiajs/react";
 import { useRef, useEffect, useState, useCallback } from "react";
+import { useGraph } from "@/Context/GraphContext";
 import * as d3 from "d3";
 
-export function useGraphFilters() {
-    const [filters, setFilters] = useState({
-        blacklist: [],
-        whitelist: [],
-        tagsAsNodes: false,
-        orphans: false,
-        whiteListEnabled: false,
-        blacklistEnabled: false,
-    });
-
-    const setFilter = (key, value) => {
-        setFilters((prev) => ({ ...prev, [key]: value }));
-    };
-
-    return {
-        filters,
-        setFilter
-    };
-}
-
-export function useGraphDisplayRules() {
-    const [displayRules, setDisplayRules] = useState({
-        forceX: .06,
-        forceY: .06,
-        centerOffsetX: 0,
-        centerOffsetY: 0,
-    });
-
-    const setDisplayRule = (key, value) => {
-        setDisplayRules((prev) => ({ ...prev, [key]: value }));
-    };
-
-    return {
-        displayRules,
-        setDisplayRule
-    }
-}
-
-export function useGraphData(initNodes = null, initLinks = null) {
-    const { nodes, setNodes } = useState(initNodes);
-    const { links, setLinks } = useState(initLinks);
-
-}
-
-export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId, dim, displayRules, filters }) {
+export const Graph = function ({ colorMap, idToIndex, indexToId, dim }) {
     const ref = useRef();
-
-    const simulation = useRef(null);
-    const resetFn = useRef(null);
+    const {
+        nodes,
+        links,
+        filters,
+        displayRules,
+        simulation,
+        resetFn,
+    } = useGraph();
 
     useEffect(() => {
-        const nodes = pNodes.map(d => ({
-            id: idToIndex(d.id),
-            index: idToIndex(d.id),
-            title: d.title
-        }));
-        const links = pLinks.map(d => ({
-            id: idToIndex(d.id),
-            index: idToIndex(d.id),
-            source: idToIndex(d.id_origin),
-            target: idToIndex(d.id_target),
-            value: d.weight
-        }));
-
         const svg = d3.select(ref.current);
 
         simulation.current = d3.forceSimulation(nodes)
@@ -153,7 +102,7 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
             simulation.current.nodes(nodes);
             simulation.current.force("link").links(links);
             simulation.current.alpha(1).restart();
-            
+
             console.log(links);
         }
         resetFn.current = restart;
@@ -202,7 +151,7 @@ export const Graph = function ({ pNodes, pLinks, colorMap, idToIndex, indexToId,
                 .attr("viewBox", [-width / 2, -height / 2, width, height])
         }
     }, [dim]);
-    
+
     useEffect(() => {
         if (resetFn.current) {
             // vary the force based on the available width and height.
