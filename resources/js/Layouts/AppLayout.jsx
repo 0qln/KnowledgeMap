@@ -1,15 +1,8 @@
 import { Graph } from "@/Components/Graph";
 import AuthenticatedLayout from "./AuthenticatedLayout";
-import { useCallback } from "react";
 import { useContainerDimensions } from "../Hooks/useContainerDimensions";
-import { useGraph } from "@/Context/GraphContext";
 
 export default function AppLayout({ childrenRight }) {
-    const { nodes, links, colorMap, filters, displayRules, dynamics } = useGraph();
-
-    const idToIndex = useCallback((x) => x - 1, []);
-    const indexToId = useCallback((x) => x + 1, []);
-
     const [ref, dim] = useContainerDimensions();
     const [refChildrenRight, dimChildrenRight] = useContainerDimensions();
 
@@ -36,17 +29,7 @@ export default function AppLayout({ childrenRight }) {
                         bg-gray-100 dark:bg-gray-900
                     "
                 >
-                    <Graph
-                        pNodes={nodes}
-                        pLinks={links}
-                        colorMap={colorMap}
-                        idToIndex={idToIndex}
-                        indexToId={indexToId}
-                        dim={dim}
-                        displayRules={displayRules}
-                        filters={filters}
-                        dynamics={dynamics}
-                    />
+                    <Graph dim={dim}/>
                 </div>
 
                 {/* Right-side content */}

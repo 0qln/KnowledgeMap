@@ -10,10 +10,7 @@ import Layout from './Layout';
 import { useCallback } from 'react';
 
 
-function Edge({
-    edge, from, to,
-    nodes, edges, tags, nodeHasTag,
-}) {
+function Edge({ edge, from, to, }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
             description: edge.description,
@@ -29,7 +26,7 @@ function Edge({
     }
 
     return (
-        <Layout>
+        <div>
             <Head title={`Edit: Edge ${edge.id}`} />
 
             <form onSubmit={submit} className="flex flex-row-reverse">
@@ -112,19 +109,10 @@ function Edge({
                     </div>
                 </div>
             </form>
-        </Layout>
+        </div>
     );
 }
 
-Edge.layout = (page) => {
-    return (
-        <AppLayout
-            nodes={page.props.nodes}
-            links={page.props.edges}
-            tags={page.props.tags}
-            nodeHasTag={page.props.nodeHasTag}
-            childrenRight={page} />
-    );
-}
+Edge.layout = (page) => <Layout children={page} />;
 
 export default Edge;

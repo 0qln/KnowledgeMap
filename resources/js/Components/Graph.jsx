@@ -1,21 +1,34 @@
 import { router } from "@inertiajs/react";
-import { useRef, useEffect, useState, useCallback } from "react";
-import { useGraph } from "@/Context/GraphContext";
+import { useRef, useEffect, useContext } from "react";
+import { GraphContext, useGraph } from "@/Context/GraphContext";
 import * as d3 from "d3";
 
-export const Graph = function ({ colorMap, idToIndex, indexToId, dim }) {
+export const Graph = function ({ dim }) {
     const ref = useRef();
-    const {
+    console.log(useGraph);
+    console.log(GraphContext);
+    console.log(useContext(GraphContext));
+    const x = useGraph();
+    console.log(x);
+    console.log(useGraph());
+    const { 
         nodes,
         links,
         filters,
         displayRules,
         simulation,
         resetFn,
+        removeNode,
+        removeLink,
+        colorMap,
+        indexToId
     } = useGraph();
 
     useEffect(() => {
         const svg = d3.select(ref.current);
+    
+        console.log(nodes);
+        console.log(links);
 
         simulation.current = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(links))
@@ -26,40 +39,37 @@ export const Graph = function ({ colorMap, idToIndex, indexToId, dim }) {
         let node = svg.append("g").attr("stroke", "#fff").attr("stroke-width", 1.5).selectAll();
 
         // todo can be hooks
-        function removeLink(links, idSource, idTarget) {
-            const index = links.findIndex(d =>
-                d.source === idSource && d.target === idTarget ||
-                d.source === idTarget && d.target === idSource);
-            links.splice(index, 1);
-            restart();
-        }
+        // function removeLink(links, idSource, idTarget) {
+        //     const index = links.findIndex(d =>
+        //         d.source === idSource && d.target === idTarget ||
+        //         d.source === idTarget && d.target === idSource);
+        //     links.splice(index, 1);
+        //     restart();
+        // }
 
-        function removeNode(nodes, id) {
-            const index = nodes.findIndex(d => d.id === id);
-            nodes.splice(index, 1);
-            restart();
-        }
+        // function removeNode(nodes, id) {
+        //     const index = nodes.findIndex(d => d.id === id);
+        //     nodes.splice(index, 1);
+        //     restart();
+        // }
 
         function restart() {
 
-            // Apply the general update pattern to the nodes.
             node = node.data(nodes);
             node.exit().remove();
             node = node.enter()
                 .append("circle")
-                .attr("fill", d => colorMap(indexToId(d.id)))
+                .attr("fill", d => colorMap(d))
                 .attr("r", 5)
-                .on("mousedown", (event, d) => {
+                .on("click", (event, d) => {
                     // todo: this doesnt prevent default
                     event.preventDefault();
                     switch (event.button) {
                         case 0:
-                            console.log("left");
                             router.visit(route("dashboard.nodes.show", indexToId(d.id)));
                             break;
                         case 2:
-                            console.log("right");
-                            removeNode(nodes, d.id);
+                            removeNode(d.id);
                             break;
                     }
                 })
@@ -73,7 +83,6 @@ export const Graph = function ({ colorMap, idToIndex, indexToId, dim }) {
                 .on("drag", dragged)
                 .on("end", dragended));
 
-            // Apply the general update pattern to the links.
             link = link.data(links.filter(l => nodes.includes(l.source) && nodes.includes(l.target)));
             link.exit().remove();
             link = link.enter()
@@ -84,30 +93,24 @@ export const Graph = function ({ colorMap, idToIndex, indexToId, dim }) {
                     event.preventDefault();
                     switch (event.button) {
                         case 0:
-                            console.log("left: " + indexToId(d.id));
                             router.visit(route("dashboard.edges.show", indexToId(d.id)));
                             break;
                         case 2:
-                            console.log("right");
-                            removeNode(nodes, d.id);
+                            removeLink(d.source, d.target);;
                             break;
                     }
                 })
                 .merge(link);
 
-            link.append("title")
-                .text(d => indexToId(d.id));
+            link.append("title").text(d => indexToId(d.id));
 
-            // Update and restart the simulation.
             simulation.current.nodes(nodes);
             simulation.current.force("link").links(links);
             simulation.current.alpha(1).restart();
-
-            console.log(links);
         }
+
         resetFn.current = restart;
 
-        // Set the position attributes of links and nodes each time the simulation ticks.
         function ticked() {
             link
                 .attr("x1", d => d.source.x)
@@ -147,8 +150,7 @@ export const Graph = function ({ colorMap, idToIndex, indexToId, dim }) {
     useEffect(() => {
         if (ref.current) {
             const { width, height } = dim;
-            d3.select(ref.current)
-                .attr("viewBox", [-width / 2, -height / 2, width, height])
+            d3.select(ref.current).attr("viewBox", [-width / 2, -height / 2, width, height])
         }
     }, [dim]);
 
@@ -164,12 +166,9 @@ export const Graph = function ({ colorMap, idToIndex, indexToId, dim }) {
             simulation.current.force("y", d3.forceY(y).strength(forceY))
             resetFn.current();
         }
-    }, [displayRules.forceX, displayRules.forceY, dim, resetFn]);
+    }, [displayRules, dim, resetFn]);
 
     return (
-        <>
-            <svg id="graph" ref={ref} />
-        </>
-
+        <svg id="graph" ref={ref} />
     );
 };

@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EdgeController;
 use App\Http\Controllers\NodeController;
+use App\Http\Controllers\TagController;
 use Inertia\Inertia;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
@@ -22,13 +23,17 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard/nodes', [NodeController::class, 'index'])->name('dashboard.nodes');
     Route::get('/dashboard/nodes/{node}', [NodeController::class, 'show'])->name('dashboard.nodes.show');
     Route::get('/dashboard/nodes/{node}/edit', [NodeController::class, 'edit'])->name('dashboard.nodes.edit');
     Route::patch('/dashboard/nodes/{node}/edit', [NodeController::class, 'update'])->name('dashboard.nodes.update');
 
+    Route::get('/dashboard/edges', [EdgeController::class, 'index'])->name('dashboard.edges');
     Route::get('/dashboard/edges/{edge}', [EdgeController::class, 'show'])->name('dashboard.edges.show');
     Route::get('/dashboard/edges/{edge}/edit', [EdgeController::class, 'edit'])->name('dashboard.edges.edit');
     Route::patch('/dashboard/edges/{edge}/edit', [EdgeController::class, 'update'])->name('dashboard.edges.update');
+
+    Route::get('/dashboard/tags', [TagController::class, 'index'])->name('dashboard.tags');
 });
 
 Route::middleware('auth')->group(function () {

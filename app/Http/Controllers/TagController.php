@@ -13,7 +13,9 @@ class TagController extends Controller
      */
     public function index()
     {
-        //
+        $tags = Tag::query()->get();
+
+        return response()->json($tags);
     }
 
     /**

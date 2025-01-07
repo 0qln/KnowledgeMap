@@ -9,10 +9,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import Layout from './Layout';
 
 
-function Node({
-    node,
-    nodes, edges, tags, nodeHasTag
-}) {
+function Node({ node, }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
             title: node.title,
@@ -27,7 +24,7 @@ function Node({
     }
 
     return (
-        <Layout>
+        <div>
             <Head title={`Edit: ${node.title}`} />
 
             <form onSubmit={submit} className="flex flex-row-reverse">
@@ -111,17 +108,10 @@ function Node({
                     </div>
                 </div>
             </form>
-        </Layout>
+        </div>
     );
 }
 
-Node.layout = (page) => (
-    <AppLayout
-        nodes={page.props.nodes}
-        links={page.props.edges}
-        tags={page.props.tags}
-        nodeHasTag={page.props.nodeHasTag}
-        childrenRight={page} />
-);
+Node.layout = (page) => <Layout children={page} />
 
 export default Node;

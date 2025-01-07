@@ -2,7 +2,7 @@ import { Head } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { GraphProvider } from '@/Context/GraphContext';
 
-function Dashboard({ nodes, edges, tags, nodeHasTag }) {
+function Dashboard() {
     return (
         <>
             <Head title="Dashboard" />

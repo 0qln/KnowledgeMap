@@ -11,18 +11,13 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $nodes = Node::query()->get();
-        $nodeHasTag = $nodeHasTag = $nodes->mapWithKeys(function (Node $node) {
-            return [$node->id => $node->tags->pluck('id')->toArray()];
-        });
-
+        $nodes = Node::query()->with('tags')->get();
         $edges = Edge::query()->get();
-
         $tags = Tag::query()->get();
 
         return inertia(
             'Dashboard',
-            compact('nodes', 'edges', 'tags', 'nodeHasTag'),
+            compact('nodes', 'edges', 'tags'),
         );
     }
 }
