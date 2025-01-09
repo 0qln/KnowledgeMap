@@ -1,10 +1,30 @@
 import { Graph } from "@/Components/Graph";
 import AuthenticatedLayout from "./AuthenticatedLayout";
 import { useContainerDimensions } from "../Hooks/useContainerDimensions";
+import GraphFilterLayout from "./GraphFilterLayout";
+import TextInput from "@/Components/TextInput";
+import { useGraph } from "@/Context/GraphContext";
+import { router } from "@inertiajs/react";
 
 export default function AppLayout({ childrenRight }) {
     const [refGraphContainer, dimGraphContainer] = useContainerDimensions();
     const [refChildrenRight, dimChildrenRight] = useContainerDimensions();
+    const [refChildrenLeft, dimChildrenLeft] = useContainerDimensions();
+
+    const { updateFilter } = useGraph();
+
+    const searchFieldChanged = (name, value) => {
+        updateFilter(name, value);
+    };
+
+    const childrenLeft = (
+        <GraphFilterLayout>
+            <TextInput 
+                placeholder="Search" 
+                onChange={e => searchFieldChanged("query", e.target.value)} 
+            />
+        </GraphFilterLayout>
+    )
 
     return (
         <AuthenticatedLayout
@@ -29,7 +49,7 @@ export default function AppLayout({ childrenRight }) {
                         bg-gray-100 dark:bg-gray-900
                     "
                 >
-                    <Graph dim={dimGraphContainer}/>
+                    <Graph dim={dimGraphContainer} />
                 </div>
 
                 {/* Right-side content */}
@@ -39,6 +59,15 @@ export default function AppLayout({ childrenRight }) {
                         row-start-1 col-start-1 z-10 fixed right-0
                     "
                     children={childrenRight}
+                />
+
+                {/* Left-sdie content */}
+                <div
+                    ref={refChildrenLeft}
+                    className="
+                        row-start-1 col-start-1 z-20 fixed left-0
+                    "
+                    children={childrenLeft}
                 />
             </div>
         </AuthenticatedLayout>

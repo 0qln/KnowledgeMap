@@ -1,5 +1,5 @@
 import { router } from "@inertiajs/react";
-import { useRef, useEffect, useContext } from "react";
+import { useRef, useEffect, useContext, useMemo } from "react";
 import { GraphContext, useGraph } from "@/Context/GraphContext";
 import * as d3 from "d3";
 
@@ -18,6 +18,31 @@ export const Graph = function ({ dim }) {
         indexToId
     } = useGraph();
 
+
+    const filteredNodes = useMemo(() => {
+        function outgoing(node) {
+            return links.filter(l => l.source === node);
+        }
+
+        function incoming(node) {
+            return links.filter(l => l.target === node);
+        }
+
+        const query = filters.queryIsCaseSensitive ? filters.query : filters.query.toLowerCase();
+        function queryMatches(node) {
+            const title = filters.queryIsCaseSensitive ? node.title : node.title.toLowerCase();
+            return title.includes(query);
+        }
+
+        function matches(node, depth) {
+            return queryMatches(node) || depth > 0 && (
+                (filters.allowedSeparation.outgoing && outgoing(node).some(l => matches(l.target, depth - 1))) ||
+                (filters.allowedSeparation.incoming && incoming(node).some(l => matches(l.source, depth - 1)))
+            );
+        }
+        return nodes.filter(n => matches(n, filters.allowedDegreesOfSeparation));
+    }, [filters, nodes, links]);
+
     function forceStrength(dim) {
         // vary the force based on the available width and height, 
         // such that the graph stretches into the available space
@@ -30,7 +55,7 @@ export const Graph = function ({ dim }) {
         const forceY = displayRules.forceY * scaleY;
         return { forceX, forceY }
     }
-    
+
     function forceOffset(dim) {
         // todo: shift center point with respect to the available space.
         const centerOffsetX = 0;
@@ -43,7 +68,7 @@ export const Graph = function ({ dim }) {
 
         const { forceX, forceY } = forceStrength(dim);
         const { centerOffsetX, centerOffsetY } = forceOffset(dim);
-        simulation.current = d3.forceSimulation(nodes)
+        simulation.current = d3.forceSimulation(filteredNodes)
             .force("link", d3.forceLink(links))
             .force("charge", d3.forceManyBody())
             .force("x", d3.forceX(centerOffsetX).strength(forceX))
@@ -55,7 +80,7 @@ export const Graph = function ({ dim }) {
 
         function restart() {
 
-            node = node.data(nodes);
+            node = node.data(filteredNodes);
             node.exit().remove();
             node = node.enter()
                 .append("circle")
@@ -77,7 +102,7 @@ export const Graph = function ({ dim }) {
                 .on("drag", dragged)
                 .on("end", dragended));
 
-            link = link.data(links.filter(l => nodes.includes(l.source) && nodes.includes(l.target)));
+            link = link.data(links.filter(l => filteredNodes.includes(l.source) && filteredNodes.includes(l.target)));
             link.exit().remove();
             link = link.enter()
                 .append("line")
@@ -92,7 +117,7 @@ export const Graph = function ({ dim }) {
                 .merge(link);
             link.append("title").text(d => indexToId(d.id));
 
-            simulation.current.nodes(nodes);
+            simulation.current.nodes(filteredNodes);
             simulation.current.force("link").links(links);
             simulation.current.alpha(1).restart();
         }
@@ -133,7 +158,7 @@ export const Graph = function ({ dim }) {
             simulation.current.stop();
             d3.select(ref.current).selectAll("*").remove();
         };
-    }, [colorMap, filters, nodes, links]);
+    }, [colorMap, filters, filteredNodes, links]);
 
     useEffect(() => {
         if (ref.current) {
