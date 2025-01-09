@@ -3,7 +3,7 @@ import AuthenticatedLayout from "./AuthenticatedLayout";
 import { useContainerDimensions } from "../Hooks/useContainerDimensions";
 
 export default function AppLayout({ childrenRight }) {
-    const [ref, dim] = useContainerDimensions();
+    const [refGraphContainer, dimGraphContainer] = useContainerDimensions();
     const [refChildrenRight, dimChildrenRight] = useContainerDimensions();
 
     return (
@@ -22,14 +22,14 @@ export default function AppLayout({ childrenRight }) {
             <div className="grid auto-cols-fr">
                 {/* Graph container */}
                 <div
-                    ref={ref}
+                    ref={refGraphContainer}
                     className="
                         row-start-1 col-start-1
                         w-screen flex relative max-h-screen
                         bg-gray-100 dark:bg-gray-900
                     "
                 >
-                    <Graph dim={dim}/>
+                    <Graph dim={dimGraphContainer}/>
                 </div>
 
                 {/* Right-side content */}
