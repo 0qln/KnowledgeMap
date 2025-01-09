@@ -13,7 +13,7 @@ export default function AppLayout({ childrenRight }) {
     const [refChildrenRight, dimChildrenRight] = useContainerDimensions();
     const [refChildrenLeft, dimChildrenLeft] = useContainerDimensions();
 
-    const { updateFilter } = useGraph();
+    const { filters, updateFilter } = useGraph();
 
     const searchFieldChanged = (name, value) => {
         updateFilter(name, value);
@@ -21,27 +21,49 @@ export default function AppLayout({ childrenRight }) {
 
     const childrenLeft = (
         <GraphFilterLayout>
-            <div className="flex flex-col space-y-2">
-                <TextInput 
-                    placeholder="Search" 
-                    onChange={e => searchFieldChanged("query", e.target.value)} 
-                />
-                <div className="text-white">
-                    Allowed degrees of separation
-                    <div className="ml-4">
-                        <TextInput 
-                            placeholder="Allowed degrees of seperation" 
-                            onChange={e => searchFieldChanged("allowedDegreesOfSeparation", e.target.value)} 
-                            type="number"
+            <div className="flex flex-col space-y-6">
+                <div className="text-white flex flex-col space-y-2">
+                    <div>
+                        Search
+                    </div>
+                    <div className="ml-4 space-y-1">
+                        <div className="flex flex-row space-x-4 items-center">
+                            <InputLabel value="Case Sensitive" />
+                            <Checkbox 
+                                checked={filters.queryIsCaseSensitive}
+                                onChange={e => searchFieldChanged("queryIsCaseSensitive", e.target.checked)} />
+                        </div>
+                        <TextInput
+                            placeholder=""
+                            onChange={e => searchFieldChanged("query", e.target.value)}
                         />
-                        <div className="flex flex-row space-x-2 items-center">
-                            <InputLabel value="Incoming" />
-                            <Checkbox onChange={e => searchFieldChanged("allowedSeparationIncoming", e.target.checked)} />
+                    </div>
+                </div>
+                <div className="text-white flex flex-col space-y-2">
+                    <div>
+                        Allowed degrees of separation
+                    </div>
+                    <div className="ml-4 space-y-1">
+                        <div className="flex flex-row space-x-4 items-center">
+                            <div className="flex flex-row space-x-2 items-center">
+                                <InputLabel value="Incoming" />
+                                <Checkbox
+                                    checked={filters.allowedSeparationIncoming}
+                                    onChange={e => searchFieldChanged("allowedSeparationIncoming", e.target.checked)} />
+                            </div>
+                            <div className="flex flex-row space-x-2 items-center">
+                                <InputLabel value="Outgoing" />
+                                <Checkbox
+                                    checked={filters.allowedSeparationOutgoing}
+                                    onChange={e => searchFieldChanged("allowedSeparationOutgoing", e.target.checked)} />
+                            </div>
                         </div>
-                        <div className="flex flex-row space-x-2 items-center">
-                            <InputLabel value="Outgoing" />
-                            <Checkbox onChange={e => searchFieldChanged("allowedSeparationOutgoing", e.target.checked)} />
-                        </div>
+                        <TextInput
+                            placeholder="Allowed degrees of seperation"
+                            onChange={e => searchFieldChanged("allowedDegreesOfSeparation", e.target.value)}
+                            type="number"
+                            defaultValue={filters.allowedDegreesOfSeparation}
+                        />
                     </div>
                 </div>
             </div>
