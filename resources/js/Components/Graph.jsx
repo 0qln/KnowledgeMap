@@ -36,8 +36,8 @@ export const Graph = function ({ dim }) {
 
         function matches(node, depth) {
             return queryMatches(node) || depth > 0 && (
-                (filters.allowedSeparation.outgoing && outgoing(node).some(l => matches(l.target, depth - 1))) ||
-                (filters.allowedSeparation.incoming && incoming(node).some(l => matches(l.source, depth - 1)))
+                (filters.allowedSeparationOutgoing && outgoing(node).some(l => matches(l.target, depth - 1))) ||
+                (filters.allowedSeparationIncoming && incoming(node).some(l => matches(l.source, depth - 1)))
             );
         }
         return nodes.filter(n => matches(n, filters.allowedDegreesOfSeparation));

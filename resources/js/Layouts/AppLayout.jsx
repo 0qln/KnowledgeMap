@@ -5,6 +5,8 @@ import GraphFilterLayout from "./GraphFilterLayout";
 import TextInput from "@/Components/TextInput";
 import { useGraph } from "@/Context/GraphContext";
 import { router } from "@inertiajs/react";
+import Checkbox from "@/Components/Checkbox";
+import InputLabel from "@/Components/InputLabel";
 
 export default function AppLayout({ childrenRight }) {
     const [refGraphContainer, dimGraphContainer] = useContainerDimensions();
@@ -19,10 +21,30 @@ export default function AppLayout({ childrenRight }) {
 
     const childrenLeft = (
         <GraphFilterLayout>
-            <TextInput 
-                placeholder="Search" 
-                onChange={e => searchFieldChanged("query", e.target.value)} 
-            />
+            <div className="flex flex-col space-y-2">
+                <TextInput 
+                    placeholder="Search" 
+                    onChange={e => searchFieldChanged("query", e.target.value)} 
+                />
+                <div className="text-white">
+                    Allowed degrees of separation
+                    <div className="ml-4">
+                        <TextInput 
+                            placeholder="Allowed degrees of seperation" 
+                            onChange={e => searchFieldChanged("allowedDegreesOfSeparation", e.target.value)} 
+                            type="number"
+                        />
+                        <div className="flex flex-row space-x-2 items-center">
+                            <InputLabel value="Incoming" />
+                            <Checkbox onChange={e => searchFieldChanged("allowedSeparationIncoming", e.target.checked)} />
+                        </div>
+                        <div className="flex flex-row space-x-2 items-center">
+                            <InputLabel value="Outgoing" />
+                            <Checkbox onChange={e => searchFieldChanged("allowedSeparationOutgoing", e.target.checked)} />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </GraphFilterLayout>
     )
 

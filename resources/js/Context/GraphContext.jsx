@@ -13,17 +13,15 @@ export const GraphProvider = ({ children }) => {
     console.log("graph provider loaded");
 
     const [filters, setFilters] = useState({
-        whitelist: [],
+        tagWhitelist: [],
+        tagWhiteListEnabled: false,
         tagsAsNodes: false,
         orphans: false,
-        whiteListEnabled: false,
         query: "",
         queryIsCaseSensitive: false,
         allowedDegreesOfSeparation: 2,
-        allowedSeparation: {
-            incoming: true,
-            outgoing: true,
-        },
+        allowedSeparationIncoming: true,
+        allowedSeparationOutgoing: true,
     });
 
     const [displayRules, setDisplayRules] = useState({
