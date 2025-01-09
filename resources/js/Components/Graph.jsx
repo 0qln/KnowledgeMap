@@ -5,7 +5,7 @@ import * as d3 from "d3";
 
 export const Graph = function ({ dim }) {
     const ref = useRef();
-    const { 
+    const {
         nodes,
         links,
         filters,
@@ -22,27 +22,14 @@ export const Graph = function ({ dim }) {
         const svg = d3.select(ref.current);
 
         simulation.current = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(links)) 
+            .force("link", d3.forceLink(links))
             .force("charge", d3.forceManyBody())
+            .force("x", d3.forceX(0).strength(0.1))
+            .force("y", d3.forceY(0).strength(0.1))
             .on("tick", ticked);
 
         let link = svg.append("g").attr("stroke", "#999").attr("stroke-opacity", 0.6).selectAll();
         let node = svg.append("g").attr("stroke", "#fff").attr("stroke-width", 1.5).selectAll();
-
-        // todo can be hooks
-        // function removeLink(links, idSource, idTarget) {
-        //     const index = links.findIndex(d =>
-        //         d.source === idSource && d.target === idTarget ||
-        //         d.source === idTarget && d.target === idSource);
-        //     links.splice(index, 1);
-        //     restart();
-        // }
-
-        // function removeNode(nodes, id) {
-        //     const index = nodes.findIndex(d => d.id === id);
-        //     nodes.splice(index, 1);
-        //     restart();
-        // }
 
         function restart() {
 
@@ -52,22 +39,16 @@ export const Graph = function ({ dim }) {
                 .append("circle")
                 .attr("fill", d => colorMap(d))
                 .attr("r", 5)
-                .on("click", (event, d) => {
-                    // todo: this doesnt prevent default
-                    event.preventDefault();
-                    switch (event.button) {
-                        case 0:
-                            router.visit(route("dashboard.nodes.show", indexToId(d.id)));
-                            break;
-                        case 2:
-                            removeNode(d.id);
-                            break;
-                    }
+                .on("contextmenu", (e, d) => {
+                    removeNode(d.id);
+                    e.preventDefault();
+                }, { passive: false /* otherwise preventDefault() doesnt work */ })
+                .on("click", (e, d) => {
+                    router.visit(route("dashboard.nodes.show", indexToId(d.id)));
                 })
                 .merge(node);
 
-            node.append("title")
-                .text(d => d.title);
+            node.append("title").text(d => d.title);
 
             node.call(d3.drag()
                 .on("start", dragstarted)
@@ -79,35 +60,23 @@ export const Graph = function ({ dim }) {
             link = link.enter()
                 .append("line")
                 .attr("stroke-width", d => Math.sqrt(d.value))
-                .on("click", (event, d) => {
-                    // todo: this doesnt prevent default
-                    event.preventDefault();
-                    switch (event.button) {
-                        case 0:
-                            router.visit(route("dashboard.edges.show", indexToId(d.id)));
-                            break;
-                        case 2:
-                            removeLink(d.source, d.target);;
-                            break;
-                    }
+                .on("contextmenu", (e, d) => {
+                    removeLink(d.source, d.target);
+                    e.preventDefault();
+                }, { passive: false /* otherwise preventDefault() doesnt work */ })
+                .on("click", (e, d) => {
+                    router.visit(route("dashboard.edges.show", indexToId(d.id)));
                 })
                 .merge(link);
-
             link.append("title").text(d => indexToId(d.id));
-
-            console.log('restart');
 
             simulation.current.nodes(nodes);
             simulation.current.force("link").links(links);
-            simulation.current.force("x", d3.forceX(0).strength(0.1))
-            simulation.current.force("y", d3.forceY(0).strength(0.1))
             simulation.current.alpha(1).restart();
         }
 
         resetFn.current = restart;
         resetFn.current();
-        
-        console.log('effect');
 
         function ticked() {
             link
@@ -121,55 +90,55 @@ export const Graph = function ({ dim }) {
                 .attr("cy", d => d.y);
         }
 
-        // Reheat the simulation when drag starts, and fix the subject position.
         function dragstarted(event) {
-            if (!event.active) simulation.current.alphaTarget(0.3).restart();
+            if (!event.active) simulation.current.alphaTarget(0.4).restart();
             event.subject.fx = event.subject.x;
             event.subject.fy = event.subject.y;
         }
 
-        // Update the subject (dragged node) position during drag.
         function dragged(event) {
             event.subject.fx = event.x;
             event.subject.fy = event.y;
         }
 
-        // Restore the target alpha so the simulation cools after dragging ends.
-        // Unfix the subject position now that it’s no longer being dragged.
         function dragended(event) {
             if (!event.active) simulation.current.alphaTarget(0);
             event.subject.fx = null;
             event.subject.fy = null;
         }
 
-        return () => d3.select(ref.current).selectAll("*").remove();
-    }, [colorMap, filters, displayRules, nodes, links]);
+        return () => {
+            simulation.current.stop();
+            d3.select(ref.current).selectAll("*").remove();
+        };
+    }, [colorMap, filters, nodes, links]);
 
     useEffect(() => {
         if (ref.current) {
             const { width, height } = dim;
             d3.select(ref.current).attr("viewBox", [-width / 2, -height / 2, width, height])
         }
-    }, [dim]);
+    }, [dim, ref]);
 
-    // useEffect(() => {
-    //     if (resetFn.current) {
-    //         // vary the force based on the available width and height.
-    //         const forceX = (displayRules.forceX * 0.0011 * dim.height);
-    //         const forceY = (displayRules.forceY * 0.0011 * dim.width);
-    //         // todo: shift center point with respect to the available space.
-    //         const x = displayRules.centerOffsetX;
-    //         const y = displayRules.centerOffsetY;
-    //         simulation.current.force("x", d3.forceX(x).strength(forceX))
-    //         simulation.current.force("y", d3.forceY(y).strength(forceY))
-    //         console.log('center forces ')
-    //         console.log(forceX);
-    //         console.log(forceY);
-    //         console.log(x);
-    //         console.log(y); 
-    //         resetFn.current();
-    //     }
-    // }, [displayRules, dim, resetFn]);
+    useEffect(() => {
+        if (resetFn.current) {
+            // vary the force based on the available width and height, 
+            // such that the graph stretches into the available space
+            // and does not remain square-ish.
+            const widthScaled = dim.width / 1000;
+            const heightScaled = dim.height / 1000;
+            const scaleX = displayRules.forceX * (1 / widthScaled);
+            const scaleY = displayRules.forceY * (1 / heightScaled);
+            const forceX = (displayRules.forceX * scaleX);
+            const forceY = (displayRules.forceY * scaleY);
+            // todo: shift center point with respect to the available space.
+            const x = displayRules.centerOffsetX;
+            const y = displayRules.centerOffsetY;
+            simulation.current.force("x", d3.forceX(x).strength(forceX))
+            simulation.current.force("y", d3.forceY(y).strength(forceY))
+            resetFn.current();
+        }
+    }, [displayRules, dim, resetFn]);
 
     return (
         <svg id="graph" ref={ref} />

@@ -22,8 +22,8 @@ export const GraphProvider = ({ children }) => {
     });
 
     const [displayRules, setDisplayRules] = useState({
-        forceX: 0.06,
-        forceY: 0.06,
+        forceX: 0.3,
+        forceY: 0.3,
         centerOffsetX: 0,
         centerOffsetY: 0,
     });
