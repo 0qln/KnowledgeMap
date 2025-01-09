@@ -22,7 +22,7 @@ export const Graph = function ({ dim }) {
         const svg = d3.select(ref.current);
 
         simulation.current = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(links))
+            .force("link", d3.forceLink(links)) 
             .force("charge", d3.forceManyBody())
             .on("tick", ticked);
 
@@ -95,8 +95,12 @@ export const Graph = function ({ dim }) {
 
             link.append("title").text(d => indexToId(d.id));
 
+            console.log('restart');
+
             simulation.current.nodes(nodes);
             simulation.current.force("link").links(links);
+            simulation.current.force("x", d3.forceX(0).strength(0.1))
+            simulation.current.force("y", d3.forceY(0).strength(0.1))
             simulation.current.alpha(1).restart();
         }
 
@@ -139,7 +143,7 @@ export const Graph = function ({ dim }) {
         }
 
         return () => d3.select(ref.current).selectAll("*").remove();
-    }, [colorMap, filters, displayRules]);
+    }, [colorMap, filters, displayRules, nodes, links]);
 
     useEffect(() => {
         if (ref.current) {
@@ -148,19 +152,24 @@ export const Graph = function ({ dim }) {
         }
     }, [dim]);
 
-    useEffect(() => {
-        if (resetFn.current) {
-            // vary the force based on the available width and height.
-            const forceX = (displayRules.forceX * 0.0011 * dim.height);
-            const forceY = (displayRules.forceY * 0.0011 * dim.width);
-            // todo: shift center point with respect to the available space.
-            const x = displayRules.centerOffsetX;
-            const y = displayRules.centerOffsetY;
-            simulation.current.force("x", d3.forceX(x).strength(forceX))
-            simulation.current.force("y", d3.forceY(y).strength(forceY))
-            resetFn.current();
-        }
-    }, [displayRules, dim, resetFn]);
+    // useEffect(() => {
+    //     if (resetFn.current) {
+    //         // vary the force based on the available width and height.
+    //         const forceX = (displayRules.forceX * 0.0011 * dim.height);
+    //         const forceY = (displayRules.forceY * 0.0011 * dim.width);
+    //         // todo: shift center point with respect to the available space.
+    //         const x = displayRules.centerOffsetX;
+    //         const y = displayRules.centerOffsetY;
+    //         simulation.current.force("x", d3.forceX(x).strength(forceX))
+    //         simulation.current.force("y", d3.forceY(y).strength(forceY))
+    //         console.log('center forces ')
+    //         console.log(forceX);
+    //         console.log(forceY);
+    //         console.log(x);
+    //         console.log(y); 
+    //         resetFn.current();
+    //     }
+    // }, [displayRules, dim, resetFn]);
 
     return (
         <svg id="graph" ref={ref} />

@@ -89,7 +89,10 @@ export const GraphProvider = ({ children }) => {
     // https://github.com/inertiajs/inertia/discussions/568
     // We will have to use axios to fetch the data.
     useEffect(() => {
-        if (links.length !== 0 || nodes.length !== 0) return;
+        if (loading || (
+                links.length !== 0 && 
+                nodes.length !== 0 && 
+                tags.length !== 0)) return;
 
         console.log("Fetching graph data...");
         const fetchData = async () => {
