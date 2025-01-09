@@ -22,8 +22,8 @@ export const GraphProvider = ({ children }) => {
     });
 
     const [displayRules, setDisplayRules] = useState({
-        forceX: 0.3,
-        forceY: 0.3,
+        forceX: .08,
+        forceY: .08,
         centerOffsetX: 0,
         centerOffsetY: 0,
     });
@@ -67,17 +67,17 @@ export const GraphProvider = ({ children }) => {
     const updateDisplayRule = (key, value) => setDisplayRules((prev) => ({ ...prev, [key]: value }));
 
     // todo: state update needed?
-    const removeNode = (id) => {
-        setNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
-        setLinks((prevLinks) => prevLinks.filter((link) => link.source !== id && link.target !== id));
+    const removeNode = (node) => {
+        setNodes(prevNodes => prevNodes.filter(n => n !== node));
+        setLinks(prevLinks => prevLinks.filter(l => l.source !== node && l.target !== node));
     };
 
-    const removeLink = (idSource, idTarget) => {
+    const removeLink = (source, target) => {
         setLinks((prevLinks) =>
             prevLinks.filter(
-                (link) =>
-                    !(link.source === idSource && link.target === idTarget) &&
-                    !(link.source === idTarget && link.target === idSource)
+                link =>
+                    !(link.source === source && link.target === target) &&
+                    !(link.source === target && link.target === source)
             )
         );
     };

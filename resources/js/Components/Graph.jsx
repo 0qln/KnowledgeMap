@@ -18,14 +18,36 @@ export const Graph = function ({ dim }) {
         indexToId
     } = useGraph();
 
+    function forceStrength(dim) {
+        // vary the force based on the available width and height, 
+        // such that the graph stretches into the available space
+        // and does not remain square-ish.
+        const widthScaled = dim.width / 1000;
+        const heightScaled = dim.height / 1000;
+        const scaleX = 1 / widthScaled;
+        const scaleY = 1 / heightScaled;
+        const forceX = displayRules.forceX * scaleX;
+        const forceY = displayRules.forceY * scaleY;
+        return { forceX, forceY }
+    }
+    
+    function forceOffset(dim) {
+        // todo: shift center point with respect to the available space.
+        const centerOffsetX = 0;
+        const centerOffsetY = 0;
+        return { centerOffsetX, centerOffsetY }
+    }
+
     useEffect(() => {
         const svg = d3.select(ref.current);
 
+        const { forceX, forceY } = forceStrength(dim);
+        const { centerOffsetX, centerOffsetY } = forceOffset(dim);
         simulation.current = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(links))
             .force("charge", d3.forceManyBody())
-            .force("x", d3.forceX(0).strength(0.1))
-            .force("y", d3.forceY(0).strength(0.1))
+            .force("x", d3.forceX(centerOffsetX).strength(forceX))
+            .force("y", d3.forceY(centerOffsetY).strength(forceY))
             .on("tick", ticked);
 
         let link = svg.append("g").attr("stroke", "#999").attr("stroke-opacity", 0.6).selectAll();
@@ -40,7 +62,7 @@ export const Graph = function ({ dim }) {
                 .attr("fill", d => colorMap(d))
                 .attr("r", 5)
                 .on("contextmenu", (e, d) => {
-                    removeNode(d.id);
+                    removeNode(d);
                     e.preventDefault();
                 }, { passive: false /* otherwise preventDefault() doesnt work */ })
                 .on("click", (e, d) => {
@@ -122,20 +144,10 @@ export const Graph = function ({ dim }) {
 
     useEffect(() => {
         if (resetFn.current) {
-            // vary the force based on the available width and height, 
-            // such that the graph stretches into the available space
-            // and does not remain square-ish.
-            const widthScaled = dim.width / 1000;
-            const heightScaled = dim.height / 1000;
-            const scaleX = displayRules.forceX * (1 / widthScaled);
-            const scaleY = displayRules.forceY * (1 / heightScaled);
-            const forceX = (displayRules.forceX * scaleX);
-            const forceY = (displayRules.forceY * scaleY);
-            // todo: shift center point with respect to the available space.
-            const x = displayRules.centerOffsetX;
-            const y = displayRules.centerOffsetY;
-            simulation.current.force("x", d3.forceX(x).strength(forceX))
-            simulation.current.force("y", d3.forceY(y).strength(forceY))
+            const { forceX, forceY } = forceStrength(dim);
+            const { centerOffsetX, centerOffsetY } = forceOffset(dim);
+            simulation.current.force("x", d3.forceX(centerOffsetX).strength(forceX))
+            simulation.current.force("y", d3.forceY(centerOffsetY).strength(forceY))
             resetFn.current();
         }
     }, [displayRules, dim, resetFn]);
