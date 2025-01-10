@@ -28,21 +28,25 @@ function Edge({ edge, from, to, }) {
                             </Link>
                         </div>
                         <div className="dark:text-white text-xl inline break-words">
-                            Edge {edge.id}
+                            Edge #{edge.id}
                         </div>
                     </div>
                     <div className="flex flex-row space-x-2 flex-wrap">
-                        <div className="dark:text-gray-400 italic text-sm break-words">
-                            [{from.id}] {from.title}
-                        </div>
+                        <Link 
+                            href={route('dashboard.nodes.show', from.id)}
+                            className="dark:text-gray-400 italic text-sm break-words hover:underline">
+                            [#{from.id}] {from.title}
+                        </Link>
                         <div>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" className="stroke-gray-400"/>
                             </svg>
                         </div>
-                        <div className="dark:text-gray-400 italic text-sm break-words">
-                            [{to.id}] {to.title}
-                        </div>
+                        <Link 
+                            href={route('dashboard.nodes.show', to.id)}
+                            className="dark:text-gray-400 italic text-sm break-words hover:underline">
+                            [#{to.id}] {to.title}
+                        </Link>
                     </div>
                     <div className="dark:text-gray-400 italic text-sm break-words w-full">
                         Weight: {edge.weight}
