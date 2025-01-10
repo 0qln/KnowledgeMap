@@ -106,16 +106,13 @@ export const GraphProvider = ({ children }) => {
                     axios.get(route("dashboard.tags")),
                 ]);
                 setNodes(nodesRes.data.map(d => ({
-                    id: idToIndex(d.id),
-                    index: indexToId(d.id),
+                    id: d.id,
                     title: d.title,
                     tags: d.tags,
                 })));
                 setLinks(linksRes.data.map(d => ({
-                    id: idToIndex(d.id),
-                    index: indexToId(d.id),
-                    source: idToIndex(d.id_origin),
-                    target: idToIndex(d.id_target),
+                    source: d.id_origin,
+                    target: d.id_target,
                     value: d.weight
                 })));
                 setTags(tagsRes.data);

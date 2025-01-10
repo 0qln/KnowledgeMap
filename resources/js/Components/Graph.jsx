@@ -3,6 +3,13 @@ import { useRef, useEffect, useContext, useMemo } from "react";
 import { GraphContext, useGraph } from "@/Context/GraphContext";
 import * as d3 from "d3";
 
+export default function nodeEq(aNode, bNodeOrId) {
+    return (
+        aNode.id === bNodeOrId.id || 
+        aNode.id === bNodeOrId
+    );
+}
+
 export const Graph = function ({ dim }) {
     const ref = useRef();
     const {
@@ -18,14 +25,13 @@ export const Graph = function ({ dim }) {
         indexToId
     } = useGraph();
 
-
-    const filteredNodes = useMemo(() => {
+    const { filteredNodes, filteredLinks } = useMemo(() => {
         function outgoing(node) {
-            return links.filter(l => l.source === node);
+            return links.filter(l => nodeEq(node, l.source));
         }
 
         function incoming(node) {
-            return links.filter(l => l.target === node);
+            return links.filter(l => nodeEq(node, l.target));
         }
 
         const query = filters.queryIsCaseSensitive ? filters.query : filters.query.toLowerCase();
@@ -40,7 +46,23 @@ export const Graph = function ({ dim }) {
                 (filters.allowedSeparationIncoming && incoming(node).some(l => matches(l.source, depth - 1)))
             );
         }
-        return nodes.filter(n => matches(n, filters.allowedDegreesOfSeparation));
+        
+        function orphan(node) {
+            return links
+                .filter(l => nodeEq(node, l.source) || nodeEq(node, l.target))
+                .length == 0;
+        }
+        
+        const filteredNodes = nodes.filter(n => (
+            true
+            && (filters.orphans || !orphan(n))
+            && matches(n, filters.allowedDegreesOfSeparation)
+        ));
+        const filteredLinks = links.filter(l => (
+            filteredNodes.some(n => nodeEq(n, l.source)) && 
+            filteredNodes.some(n => nodeEq(n, l.target))
+        )); 
+        return { filteredNodes, filteredLinks };
     }, [filters, nodes, links]);
 
     function forceStrength(dim) {
@@ -68,13 +90,13 @@ export const Graph = function ({ dim }) {
 
         const { forceX, forceY } = forceStrength(dim);
         const { centerOffsetX, centerOffsetY } = forceOffset(dim);
-        simulation.current = d3.forceSimulation(filteredNodes)
-            .force("link", d3.forceLink(links))
+        simulation.current = d3.forceSimulation(filteredNodes, filteredLinks)
+            .force("link", d3.forceLink(filteredLinks).id(d => d.id))
             .force("charge", d3.forceManyBody())
             .force("x", d3.forceX(centerOffsetX).strength(forceX))
             .force("y", d3.forceY(centerOffsetY).strength(forceY))
             .on("tick", ticked);
-
+        
         let link = svg.append("g").attr("stroke", "#999").attr("stroke-opacity", 0.6).selectAll();
         let node = svg.append("g").attr("stroke", "#fff").attr("stroke-width", 1.5).selectAll();
 
@@ -102,7 +124,7 @@ export const Graph = function ({ dim }) {
                 .on("drag", dragged)
                 .on("end", dragended));
 
-            link = link.data(links.filter(l => filteredNodes.includes(l.source) && filteredNodes.includes(l.target)));
+            link = link.data(filteredLinks.filter(l => filteredNodes.includes(l.source) && filteredNodes.includes(l.target)));
             link.exit().remove();
             link = link.enter()
                 .append("line")
@@ -118,7 +140,7 @@ export const Graph = function ({ dim }) {
             link.append("title").text(d => indexToId(d.id));
 
             simulation.current.nodes(filteredNodes);
-            simulation.current.force("link").links(links);
+            simulation.current.force("link").links(filteredLinks);
             simulation.current.alpha(1).restart();
         }
 
@@ -158,7 +180,7 @@ export const Graph = function ({ dim }) {
             simulation.current.stop();
             d3.select(ref.current).selectAll("*").remove();
         };
-    }, [colorMap, filters, filteredNodes, links]);
+    }, [colorMap, filters, filteredNodes, filteredLinks]);
 
     useEffect(() => {
         if (ref.current) {
