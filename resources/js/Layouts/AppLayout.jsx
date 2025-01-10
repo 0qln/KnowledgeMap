@@ -13,17 +13,71 @@ import { Button } from "@headlessui/react";
 import SecondaryButton from "@/Components/SecondaryButton";
 import PrimaryButton from "@/Components/PrimaryButton";
 
-export default function AppLayout({ childrenRight }) {
-    const [refGraphContainer, dimGraphContainer] = useContainerDimensions();
-    const [refChildrenRight, dimChildrenRight] = useContainerDimensions();
-    const [refChildrenLeft, dimChildrenLeft] = useContainerDimensions();
+function SearchNodeTitles({ filters, searchFieldChanged }) {
+    return (
+        <div className="text-white flex flex-col space-y-2">
+            <div>Search Node Titles</div>
+            <div className="ml-4 space-y-1">
+                <div className="flex flex-row space-x-4 items-center">
+                    <InputLabel value="Case Sensitive" />
+                    <Checkbox
+                        checked={filters.queryIsCaseSensitive}
+                        onChange={e => searchFieldChanged("queryIsCaseSensitive", e.target.checked)} />
+                </div>
+                <TextInput
+                    placeholder=""
+                    onChange={e => searchFieldChanged("query", e.target.value)} />
+            </div>
+        </div>
+    );
+}
 
-    const { filters, updateFilter, tags } = useGraph();
+function DegreesOfSeparation({ filters, searchFieldChanged }) {
+    return (
+        <div className="text-white flex flex-col space-y-2">
+            <div>Allowed degrees of separation</div>
+            <div className="ml-4 space-y-1">
+                <div className="flex flex-row space-x-4 items-center">
+                    <div className="flex flex-row space-x-2 items-center">
+                        <InputLabel value="Incoming" />
+                        <Checkbox
+                            checked={filters.allowedSeparationIncoming}
+                            onChange={e => searchFieldChanged("allowedSeparationIncoming", e.target.checked)} />
+                    </div>
+                    <div className="flex flex-row space-x-2 items-center">
+                        <InputLabel value="Outgoing" />
+                        <Checkbox
+                            checked={filters.allowedSeparationOutgoing}
+                            onChange={e => searchFieldChanged("allowedSeparationOutgoing", e.target.checked)} />
+                    </div>
+                </div>
+                <TextInput
+                    placeholder="Allowed degrees of separation"
+                    onChange={e => searchFieldChanged("allowedDegreesOfSeparation", e.target.value)}
+                    type="number"
+                    defaultValue={filters.allowedDegreesOfSeparation} />
+            </div>
+        </div>
+    );
+}
 
-    const searchFieldChanged = (name, value) => {
-        updateFilter(name, value);
-    };
+function Orphans({ filters, searchFieldChanged }) {
+    return (
+        <div className="text-white flex flex-col space-y-2">
+            <div>Orphans</div>
+            <div className="ml-4 space-y-1">
+                <div className="flex flex-row space-x-4 items-center">
+                    <InputLabel value="Show orphans" />
+                    <Checkbox
+                        checked={filters.orphans}
+                        onChange={e => searchFieldChanged("orphans", e.target.checked)} />
+                </div>
+            </div>
+        </div>
+    );
+}
 
+function BlacklistTags({ filters, updateFilter, tags }) {
     const [tagQueryLimit, setTagQueryLimit] = useState(10);
     const [tagsQuery, setTagsQuery] = useState("");
     const sortedTags = useMemo(() => {
@@ -33,117 +87,70 @@ export default function AppLayout({ childrenRight }) {
         }).map(r => r.obj);
     }, [tagsQuery, tags, tagQueryLimit]);
 
-    const childrenLeft = (
-        <GraphFilterLayout>
-            <div className="flex flex-col space-y-6">
-                <div className="text-white flex flex-col space-y-2">
-                    <div>
-                        Search Node Titles
-                    </div>
-                    <div className="ml-4 space-y-1">
-                        <div className="flex flex-row space-x-4 items-center">
-                            <InputLabel value="Case Sensitive" />
+    return (
+        <div className="text-white flex flex-col space-y-2">
+            <div>Blacklist Tags</div>
+            <div className="ml-4 space-y-2 flex flex-col">
+                <div className="flex flex-row space-x-4">
+                    <Button
+                        className="text-white bg-gray-700 p-1 rounded-md transition duration-150 ease-in-out hover:bg-gray-600"
+                        onClick={() => updateFilter("tagBlacklist", [])}
+                    >
+                        Remove all
+                    </Button>
+                    <Button
+                        className="text-white bg-gray-700 p-1 rounded-md transition duration-150 ease-in-out hover:bg-gray-600"
+                        onClick={() => updateFilter("tagBlacklist", tags)}
+                    >
+                        Add all
+                    </Button>
+                </div>
+                <TextInput
+                    placeholder="search for tags"
+                    onChange={e => setTagsQuery(e.target.value)} />
+                <div className="space-y-1">
+                    {sortedTags && sortedTags.map(tag => (
+                        <div className="flex flex-row space-x-2 items-center" key={tag.name}>
                             <Checkbox
-                                checked={filters.queryIsCaseSensitive}
-                                onChange={e => searchFieldChanged("queryIsCaseSensitive", e.target.checked)} />
+                                checked={filters.tagBlacklist.includes(tag)}
+                                onChange={e => {
+                                    if (e.target.checked) {
+                                        updateFilter("tagBlacklist", [...filters.tagBlacklist, tag]);
+                                    } else {
+                                        updateFilter("tagBlacklist", filters.tagBlacklist.filter(t => t !== tag));
+                                    }
+                                }} />
+                            <InputLabel value={tag.name} />
                         </div>
-                        <TextInput
-                            placeholder=""
-                            onChange={e => searchFieldChanged("query", e.target.value)} />
-                    </div>
-                </div>
-                <div className="text-white flex flex-col space-y-2">
-                    <div>
-                        Allowed degrees of separation
-                    </div>
-                    <div className="ml-4 space-y-1">
-                        <div className="flex flex-row space-x-4 items-center">
-                            <div className="flex flex-row space-x-2 items-center">
-                                <InputLabel value="Incoming" />
-                                <Checkbox
-                                    checked={filters.allowedSeparationIncoming}
-                                    onChange={e => searchFieldChanged("allowedSeparationIncoming", e.target.checked)} />
-                            </div>
-                            <div className="flex flex-row space-x-2 items-center">
-                                <InputLabel value="Outgoing" />
-                                <Checkbox
-                                    checked={filters.allowedSeparationOutgoing}
-                                    onChange={e => searchFieldChanged("allowedSeparationOutgoing", e.target.checked)} />
-                            </div>
-                        </div>
-                        <TextInput
-                            placeholder="Allowed degrees of seperation"
-                            onChange={e => searchFieldChanged("allowedDegreesOfSeparation", e.target.value)}
-                            type="number"
-                            defaultValue={filters.allowedDegreesOfSeparation} />
-                    </div>
-                </div>
-                <div className="flex flex-col space-y-6">
-                    <div className="text-white flex flex-col space-y-2">
-                        <div>
-                            Orphans
-                        </div>
-                        <div className="ml-4 space-y-1">
-                            <div className="flex flex-row space-x-4 items-center">
-                                <InputLabel value="Show orphans" />
-                                <Checkbox
-                                    checked={filters.orphans}
-                                    onChange={e => searchFieldChanged("orphans", e.target.checked)} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-col space-y-6">
-                    <div className="text-white flex flex-col space-y-2">
-                        <div>
-                            Blacklist Tags
-                        </div>
-                        <div className="ml-4 space-y-2 flex flex-col">
-                            <div className="flex flex-col space-y-2">
-                                <div className="flex flex-row space-x-4">
-                                    <div className="flex flex-row space-x-2 items-center">
-                                        <Button
-                                            className="text-white bg-gray-700 p-1 rounded-md transition duration-150 ease-in-out hover:bg-gray-600"
-                                            onClick={_ => updateFilter("tagBlacklist", [])}
-                                        >
-                                            Remove all
-                                        </Button>
-                                    </div>
-                                    <div className="flex flex-row space-x-2 items-center">
-                                        <Button
-                                            className="text-white bg-gray-700 p-1 rounded-md transition duration-150 ease-in-out hover:bg-gray-600"
-                                            onClick={_ => updateFilter("tagBlacklist", tags)}
-                                        >
-                                            Add all
-                                        </Button>
-                                    </div>
-                                </div>
-                                <TextInput
-                                    placeholder="search for tags"
-                                    onChange={e => setTagsQuery(e.target.value)} />
-                            </div>
-                            <div className="space-y-1">
-                                {sortedTags && sortedTags.map(tag => (
-                                    <div className="flex flex-row space-x-2 items-center">
-                                        <Checkbox
-                                            checked={filters.tagBlacklist.includes(tag)}
-                                            onChange={e => {
-                                                if (e.target.checked) {
-                                                    updateFilter("tagBlacklist", [...filters.tagBlacklist, tag]);
-                                                } else {
-                                                    updateFilter("tagBlacklist", filters.tagBlacklist.filter(t => t !== tag));
-                                                }
-                                            }} />
-                                        <InputLabel value={tag.name} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
-        </GraphFilterLayout >
-    )
+        </div>
+    );
+}
+
+function GraphFilters({ filters, updateFilter, tags }) {
+    const searchFieldChanged = (name, value) => {
+        updateFilter(name, value);
+    };
+
+    return (
+        <GraphFilterLayout>
+            <div className="flex flex-col space-y-6">
+                <SearchNodeTitles filters={filters} searchFieldChanged={searchFieldChanged} />
+                <DegreesOfSeparation filters={filters} searchFieldChanged={searchFieldChanged} />
+                <Orphans filters={filters} searchFieldChanged={searchFieldChanged} />
+                <BlacklistTags filters={filters} updateFilter={updateFilter} tags={tags} />
+            </div>
+        </GraphFilterLayout>
+    );
+}
+
+export default function AppLayout({ childrenRight }) {
+    const [refGraphContainer, dimGraphContainer] = useContainerDimensions();
+    const [refChildrenRight, dimChildrenRight] = useContainerDimensions();
+    const [refChildrenLeft, dimChildrenLeft] = useContainerDimensions();
+    const { filters, updateFilter, tags } = useGraph();
 
     return (
         <AuthenticatedLayout
@@ -180,14 +187,15 @@ export default function AppLayout({ childrenRight }) {
                     children={childrenRight}
                 />
 
-                {/* Left-sdie content */}
+                {/* Left-side content */}
                 <div
                     ref={refChildrenLeft}
                     className="
                         row-start-1 col-start-1 z-20 fixed left-0
                     "
-                    children={childrenLeft}
-                />
+                >
+                    <GraphFilters filters={filters} updateFilter={updateFilter} tags={tags} />
+                </div>
             </div>
         </AuthenticatedLayout>
     );
