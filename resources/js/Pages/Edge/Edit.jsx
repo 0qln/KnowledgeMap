@@ -1,11 +1,11 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import GraphLayout from '@/Layouts/BaseLayout';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import TextAreaInput from '@/Components/TextAreaInput';
 import { Transition } from '@headlessui/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
+import GraphLayout from '@/Layouts/GraphLayout';
 
 function Edge({ edge, from, to, }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } =
@@ -16,7 +16,6 @@ function Edge({ edge, from, to, }) {
 
     const submit = (e) => {
         e.preventDefault();
-
         patch(route('dashboard.edges.update', edge.id));
     }
 
@@ -60,21 +59,22 @@ function Edge({ edge, from, to, }) {
 
                 <div className="flex flex-col w-full">
                     <div className="w-full break-words dark:text-white text-xl">
-                        Edit Edge {edge.id}
+                        Edit Edge #{edge.id}
                     </div>
                     <div className="flex flex-col w-full space-y-6 mt-5">
-                        <div className="flex flex-row space-x-2 flex-wrap">
-                            <div className="dark:text-gray-200 text-sm break-words">
-                                [{from.id}] {from.title}
-                            </div>
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" className="stroke-white" />
-                                </svg>
-                            </div>
-                            <div className="dark:text-gray-200 text-sm break-words">
-                                [{to.id}] {to.title}
-                            </div>
+                        <div>
+                            <InputLabel value="Source" />
+                            <TextInput
+                                className="block w-full !text-gray-400"
+                                value={`[#${from.id}] ${from.title}`}
+                                required disabled/>
+                        </div>
+                        <div>
+                            <InputLabel value="Target" />
+                            <TextInput
+                                className="block w-full !text-gray-400"
+                                value={`[#${to.id}] ${to.title}`}
+                                required disabled/>
                         </div>
                         <div>
                             <InputLabel htmlFor="description" value="Description" />
