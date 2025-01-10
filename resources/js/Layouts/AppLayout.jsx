@@ -114,11 +114,9 @@ function BlacklistTags({ filters, updateFilter, tags }) {
                             <Checkbox
                                 checked={filters.tagBlacklist.includes(tag)}
                                 onChange={e => {
-                                    if (e.target.checked) {
-                                        updateFilter("tagBlacklist", [...filters.tagBlacklist, tag]);
-                                    } else {
-                                        updateFilter("tagBlacklist", filters.tagBlacklist.filter(t => t !== tag));
-                                    }
+                                    updateFilter("tagBlacklist", e.target.checked 
+                                        ? [...filters.tagBlacklist, tag] 
+                                        : filters.tagBlacklist.filter(t => t !== tag));
                                 }} />
                             <InputLabel value={tag.name} />
                         </div>
