@@ -1,16 +1,13 @@
-import { Head, Link } from '@inertiajs/react';
-import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
-import GraphLayout from '@/Layouts/GraphLayout';
-import { Button } from '@headlessui/react';
-import TextInput from '@/Components/TextInput';
-import { useMemo, useState } from 'react';
-import { useGraph } from '@/Context/GraphContext';
-import fuzzysort from 'fuzzysort';
+import GraphDetailsLayout from "@/Layouts/GraphDetailsLayout";
+import GraphLayout from "@/Layouts/GraphLayout";
+import { Head, Link } from "@inertiajs/react";
 
-function Node({ node }) {
+
+const Tag = ({ tag }) => {
+    console.log(tag)
     return (
         <div>
-            <Head title={`${node.title}`} />
+            <Head title={`${tag.title}`} />
 
             <div className="flex flex-row-reverse flex-between">
 
@@ -25,7 +22,7 @@ function Node({ node }) {
                                 </svg>
                             </Link>
                             <Link
-                                href={route('dashboard.nodes.edit', node.id)}
+                                href={route('dashboard.tags.edit', tag.id)}
                                 className="rounded-md bg-slate-600 w-6 h-6 mr-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="-4 -4 29 29" strokeWidth={1.5} stroke="currentColor" className="size-6 p-0.5">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" className="stroke-white" />
@@ -33,42 +30,41 @@ function Node({ node }) {
                             </Link>
                         </div>
                         <div className="dark:text-white text-xl inline break-words">
-                            {node.title}
+                            {tag.name}
                         </div>
                     </div>
                     <div className="dark:text-gray-400 text-sm italic w-full">
-                        [#{node.id}] {node.full_name}
+                        [#{tag.id}] {tag.name}
                     </div>
                     <br />
                     <div className="dark:text-gray-200 text-sm break-words w-full">
-                        {node.description}
+                        {tag.description}
                     </div>
                     <br />
                     <div className="flex flex-row dark:text-gray-200 items-center">
                         <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
-                        <div>Tags</div>
+                        <div>Nodes</div>
                         <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
                     </div>
-                    {node.tags && (
+                    {tag.nodes && (
                         <div className="flex flex-wrap text-sm break-words">
-                            {node.tags.map(tag => (
+                            {tag.nodes.map(node => (
                                 <Link
-                                    href={route('dashboard.tags.show', tag.id)}
-                                    key={tag.id}
+                                    href={route('dashboard.nodes.show', node.id)}
+                                    key={node.id}
                                     className="items-center m-1 text-white bg-gray-700 py-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
-                                    {tag.name}
+                                    {node.title}
                                 </Link>
                             ))}
                         </div>
                     )}
                 </div>
-
             </div>
         </div>
     );
 }
 
-Node.layout = (page) =>
+Tag.layout = (page) =>
 (<GraphLayout childrenRight={
     <GraphDetailsLayout children={
         page
@@ -76,4 +72,4 @@ Node.layout = (page) =>
 } />
 );
 
-export default Node;
+export default Tag;
