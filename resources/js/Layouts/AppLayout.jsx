@@ -9,6 +9,9 @@ import Checkbox from "@/Components/Checkbox";
 import InputLabel from "@/Components/InputLabel";
 import { useMemo, useState } from "react";
 import fuzzysort from "fuzzysort";
+import { Button } from "@headlessui/react";
+import SecondaryButton from "@/Components/SecondaryButton";
+import PrimaryButton from "@/Components/PrimaryButton";
 
 export default function AppLayout({ childrenRight }) {
     const [refGraphContainer, dimGraphContainer] = useContainerDimensions();
@@ -20,11 +23,11 @@ export default function AppLayout({ childrenRight }) {
     const searchFieldChanged = (name, value) => {
         updateFilter(name, value);
     };
-    
+
     const [tagQueryLimit, setTagQueryLimit] = useState(10);
     const [tagsQuery, setTagsQuery] = useState("");
     const sortedTags = useMemo(() => {
-        return fuzzysort.go(tagsQuery, tags, { 
+        return fuzzysort.go(tagsQuery, tags, {
             limit: tagQueryLimit,
             key: 'name'
         }).map(r => r.obj);
@@ -95,15 +98,35 @@ export default function AppLayout({ childrenRight }) {
                         <div>
                             Blacklist Tags
                         </div>
-                        <div className="ml-4 space-y-2">
-                            <TextInput
-                                placeholder="search for tags"
-                                onChange={e => setTagsQuery(e.target.value)} />
+                        <div className="ml-4 space-y-2 flex flex-col">
+                            <div className="flex flex-col space-y-2">
+                                <div className="flex flex-row space-x-4">
+                                    <div className="flex flex-row space-x-2 items-center">
+                                        <Button
+                                            className="text-white bg-gray-700 p-1 rounded-md transition duration-150 ease-in-out hover:bg-gray-600"
+                                            onClick={_ => updateFilter("tagBlacklist", [])}
+                                        >
+                                            Remove all
+                                        </Button>
+                                    </div>
+                                    <div className="flex flex-row space-x-2 items-center">
+                                        <Button
+                                            className="text-white bg-gray-700 p-1 rounded-md transition duration-150 ease-in-out hover:bg-gray-600"
+                                            onClick={_ => updateFilter("tagBlacklist", tags)}
+                                        >
+                                            Add all
+                                        </Button>
+                                    </div>
+                                </div>
+                                <TextInput
+                                    placeholder="search for tags"
+                                    onChange={e => setTagsQuery(e.target.value)} />
+                            </div>
                             <div className="space-y-1">
                                 {sortedTags && sortedTags.map(tag => (
                                     <div className="flex flex-row space-x-2 items-center">
                                         <Checkbox
-                                            checked={filters.tagBlacklist.includes(tag)}
+                                            checked={filters.tagBlacklist.some(tag)}
                                             onChange={e => {
                                                 if (e.target.checked) {
                                                     updateFilter("tagBlacklist", [...filters.tagBlacklist, tag]);
@@ -119,7 +142,7 @@ export default function AppLayout({ childrenRight }) {
                     </div>
                 </div>
             </div>
-        </GraphFilterLayout>
+        </GraphFilterLayout >
     )
 
     return (
