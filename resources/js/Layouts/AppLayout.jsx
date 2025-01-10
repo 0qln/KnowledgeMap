@@ -126,7 +126,7 @@ export default function AppLayout({ childrenRight }) {
                                 {sortedTags && sortedTags.map(tag => (
                                     <div className="flex flex-row space-x-2 items-center">
                                         <Checkbox
-                                            checked={filters.tagBlacklist.some(tag)}
+                                            checked={filters.tagBlacklist.includes(tag)}
                                             onChange={e => {
                                                 if (e.target.checked) {
                                                     updateFilter("tagBlacklist", [...filters.tagBlacklist, tag]);
