@@ -11,13 +11,6 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $nodes = Node::query()->with('tags')->get();
-        $edges = Edge::query()->get();
-        $tags = Tag::query()->get();
-
-        return inertia(
-            'Dashboard',
-            compact('nodes', 'edges', 'tags'),
-        );
+        return inertia('Dashboard');
     }
 }

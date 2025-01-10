@@ -13,12 +13,14 @@ export const GraphProvider = ({ children }) => {
     console.log("graph provider loaded");
 
     const [filters, setFilters] = useState({
-        blacklist: [],
-        whitelist: [],
+        tagBlacklist: [],
         tagsAsNodes: false,
         orphans: false,
-        whiteListEnabled: false,
-        blacklistEnabled: false,
+        query: "",
+        queryIsCaseSensitive: false,
+        allowedDegreesOfSeparation: 2,
+        allowedSeparationIncoming: true,
+        allowedSeparationOutgoing: true,
     });
 
     const [displayRules, setDisplayRules] = useState({
@@ -103,16 +105,13 @@ export const GraphProvider = ({ children }) => {
                     axios.get(route("dashboard.tags")),
                 ]);
                 setNodes(nodesRes.data.map(d => ({
-                    id: idToIndex(d.id),
-                    index: indexToId(d.id),
+                    id: d.id,
                     title: d.title,
                     tags: d.tags,
                 })));
                 setLinks(linksRes.data.map(d => ({
-                    id: idToIndex(d.id),
-                    index: indexToId(d.id),
-                    source: idToIndex(d.id_origin),
-                    target: idToIndex(d.id_target),
+                    source: d.id_origin,
+                    target: d.id_target,
                     value: d.weight
                 })));
                 setTags(tagsRes.data);
