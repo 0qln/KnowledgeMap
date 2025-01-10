@@ -7,29 +7,40 @@ import { useGraph } from "@/Context/GraphContext";
 import { router } from "@inertiajs/react";
 import Checkbox from "@/Components/Checkbox";
 import InputLabel from "@/Components/InputLabel";
+import { useMemo, useState } from "react";
+import fuzzysort from "fuzzysort";
 
 export default function AppLayout({ childrenRight }) {
     const [refGraphContainer, dimGraphContainer] = useContainerDimensions();
     const [refChildrenRight, dimChildrenRight] = useContainerDimensions();
     const [refChildrenLeft, dimChildrenLeft] = useContainerDimensions();
 
-    const { filters, updateFilter } = useGraph();
+    const { filters, updateFilter, tags } = useGraph();
 
     const searchFieldChanged = (name, value) => {
         updateFilter(name, value);
     };
+    
+    const [tagQueryLimit, setTagQueryLimit] = useState(10);
+    const [tagsQuery, setTagsQuery] = useState("");
+    const sortedTags = useMemo(() => {
+        return fuzzysort.go(tagsQuery, tags, { 
+            limit: tagQueryLimit,
+            key: 'name'
+        }).map(r => r.obj);
+    }, [tagsQuery, tags, tagQueryLimit]);
 
     const childrenLeft = (
         <GraphFilterLayout>
             <div className="flex flex-col space-y-6">
                 <div className="text-white flex flex-col space-y-2">
                     <div>
-                        Search
+                        Search Node Titles
                     </div>
                     <div className="ml-4 space-y-1">
                         <div className="flex flex-row space-x-4 items-center">
                             <InputLabel value="Case Sensitive" />
-                            <Checkbox 
+                            <Checkbox
                                 checked={filters.queryIsCaseSensitive}
                                 onChange={e => searchFieldChanged("queryIsCaseSensitive", e.target.checked)} />
                         </div>
@@ -75,6 +86,34 @@ export default function AppLayout({ childrenRight }) {
                                 <Checkbox
                                     checked={filters.orphans}
                                     onChange={e => searchFieldChanged("orphans", e.target.checked)} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex flex-col space-y-6">
+                    <div className="text-white flex flex-col space-y-2">
+                        <div>
+                            Blacklist Tags
+                        </div>
+                        <div className="ml-4 space-y-2">
+                            <TextInput
+                                placeholder="search for tags"
+                                onChange={e => setTagsQuery(e.target.value)} />
+                            <div className="space-y-1">
+                                {sortedTags && sortedTags.map(tag => (
+                                    <div className="flex flex-row space-x-2 items-center">
+                                        <Checkbox
+                                            checked={filters.tagBlacklist.includes(tag)}
+                                            onChange={e => {
+                                                if (e.target.checked) {
+                                                    updateFilter("tagBlacklist", [...filters.tagBlacklist, tag]);
+                                                } else {
+                                                    updateFilter("tagBlacklist", filters.tagBlacklist.filter(t => t !== tag));
+                                                }
+                                            }} />
+                                        <InputLabel value={tag.name} />
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>

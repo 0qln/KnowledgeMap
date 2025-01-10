@@ -13,8 +13,7 @@ export const GraphProvider = ({ children }) => {
     console.log("graph provider loaded");
 
     const [filters, setFilters] = useState({
-        tagWhitelist: [],
-        tagWhiteListEnabled: false,
+        tagBlacklist: [],
         tagsAsNodes: false,
         orphans: false,
         query: "",

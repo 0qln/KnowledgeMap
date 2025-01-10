@@ -53,9 +53,15 @@ export const Graph = function ({ dim }) {
                 .length == 0;
         }
         
+        const blacklistedTagIds = filters.tagBlacklist.map(t => t.id);
+        function blacklisted(node) {
+            return node.tags.some(t => blacklistedTagIds.includes(t.id));
+        }
+        
         const filteredNodes = nodes.filter(n => (
             true
             && (filters.orphans || !orphan(n))
+            && !blacklisted(n)
             && matches(n, filters.allowedDegreesOfSeparation)
         ));
         const filteredLinks = links.filter(l => (
