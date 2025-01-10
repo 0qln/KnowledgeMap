@@ -114,6 +114,7 @@ function Node({ node, }) {
                             <TagList
                                 node={node}
                                 allTags={tags}
+                                data={data}
                                 setData={setData}
                                 setNodes={setNodes} />
                         )}
@@ -124,15 +125,15 @@ function Node({ node, }) {
     );
 }
 
-function TagList({ node, allTags, setData, setNodes }) {
+function TagList({ node, allTags, data, setData, setNodes }) {
     const [nodeTags, setNodeTags] = useState(node.tags);
-    const [addTagExpanded, setAddTagExpanded] = useState(false);
+    const [addTagExpanded, setAddTagExpanded] = useState(true);
     const [tagQueryLimit, setTagQueryLimit] = useState(10);
     const [tagsQuery, setTagsQuery] = useState("");
 
     const availableTags = useMemo(() =>
-        allTags.filter(tag => !nodeTags.some(t => t.id === tag.id))
-    , [nodeTags]);
+        allTags.filter(tag => !nodeTags.some(t => t.id === tag.id)),
+        [nodeTags]);
 
     const sortedTags = useMemo(() => (fuzzysort
         .go(tagsQuery, availableTags, {
@@ -144,7 +145,7 @@ function TagList({ node, allTags, setData, setNodes }) {
 
     const addTag = (tag) => {
         setNodeTags(prev => [...prev, tag]);
-        setData("tags", data => [...data.tags, tag.id]);
+        setData("tags", [...data['tags'], tag.id]);
         setNodes(prevNodes =>
             prevNodes.map(n =>
                 n.id === node.id
@@ -156,7 +157,7 @@ function TagList({ node, allTags, setData, setNodes }) {
 
     const removeTag = (tag) => {
         setNodeTags(prev => prev.filter(t => t.id !== tag.id));
-        setData("tags", data => data.tags.filter((id) => id !== tag.id));
+        setData("tags", data['tags'].filter((id) => id !== tag.id));
         setNodes(prevNodes =>
             prevNodes.map(n =>
                 n.id === node.id
@@ -189,21 +190,15 @@ function TagList({ node, allTags, setData, setNodes }) {
                         </Button>
                     </div>
                 ))}
-                <div className="w-full" />
                 <Button
-                    onFocus={() => setAddTagExpanded(true)}
-                    onBlur={() => setAddTagExpanded(false)}
-                    onMouseEnter={() => setAddTagExpanded(true)}
                     onClick={() => addFirstTag(sortedTags)}
                     className="items-center m-1 text-white bg-gray-700 p-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
-                    {addTagExpanded && (
-                        <TextInput
-                            placeholder="add a tag"
-                            onKeyDown={e => e.key === 'Enter' && addFirstTag(sortedTags)}
-                            onChange={e => setTagsQuery(e.target.value)}
-                            size="10"
-                            className="py-0 flex flex-shrink" />
-                    )}
+                    <TextInput
+                        placeholder="add a tag"
+                        onKeyDown={e => e.key === 'Enter' && addFirstTag(sortedTags)}
+                        onChange={e => setTagsQuery(e.target.value)}
+                        size="10"
+                        className="py-0 flex flex-shrink" />
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" className="stroke=white" />
                     </svg>
