@@ -119,7 +119,7 @@ export const Graph = function ({ dim }) {
                     e.preventDefault();
                 }, { passive: false /* otherwise preventDefault() doesnt work */ })
                 .on("click", (e, d) => {
-                    router.visit(route("dashboard.nodes.show", indexToId(d.id)));
+                    router.visit(route("dashboard.nodes.show", d.id));
                 })
                 .merge(node);
 
@@ -140,7 +140,7 @@ export const Graph = function ({ dim }) {
                     e.preventDefault();
                 }, { passive: false /* otherwise preventDefault() doesnt work */ })
                 .on("click", (e, d) => {
-                    router.visit(route("dashboard.edges.show", indexToId(d.id)));
+                    router.visit(route("dashboard.edges.show", d.id));
                 })
                 .merge(link);
             link.append("title").text(d => indexToId(d.id));

@@ -45,6 +45,7 @@ class NodeController extends Controller
      */
     public function show(Node $node)
     {
+        $node['tags'] = $node->tags;
         return inertia(
             'Node/Show',
             compact('node'),
@@ -56,6 +57,7 @@ class NodeController extends Controller
      */
     public function edit(Node $node)
     {
+        $node['tags'] = $node->tags;
         return inertia(
             'Node/Edit',
             compact('node'),
@@ -68,6 +70,9 @@ class NodeController extends Controller
     public function update(UpdateNodeRequest $request, Node $node)
     {
         $node->update($request->validated());
+        if ($request->has('tags')) {
+            $node->tags()->sync($request->input('tags'));
+        }
 
         return to_route('dashboard.nodes.show', $node->id)
             ->with('success', 'Node updated successfully');

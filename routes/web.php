@@ -27,13 +27,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/nodes/{node}', [NodeController::class, 'show'])->name('dashboard.nodes.show');
     Route::get('/dashboard/nodes/{node}/edit', [NodeController::class, 'edit'])->name('dashboard.nodes.edit');
     Route::patch('/dashboard/nodes/{node}/edit', [NodeController::class, 'update'])->name('dashboard.nodes.update');
+    Route::delete('/dashboard/nodes/{node}/destroy', [NodeController::class, 'destroy'])->name('dashboard.nodes.destory');
 
     Route::get('/dashboard/edges', [EdgeController::class, 'index'])->name('dashboard.edges');
     Route::get('/dashboard/edges/{edge}', [EdgeController::class, 'show'])->name('dashboard.edges.show');
     Route::get('/dashboard/edges/{edge}/edit', [EdgeController::class, 'edit'])->name('dashboard.edges.edit');
     Route::patch('/dashboard/edges/{edge}/edit', [EdgeController::class, 'update'])->name('dashboard.edges.update');
+    Route::delete('/dashboard/edges/{edge}/destroy', [EdgeController::class, 'destroy'])->name('dashboard.edges.destory');
 
     Route::get('/dashboard/tags', [TagController::class, 'index'])->name('dashboard.tags');
+    Route::get('/dashboard/tags/{tag}', [TagController::class, 'show'])->name('dashboard.tags.show');
+    Route::get('/dashboard/tags/{tag}/edit', [TagController::class, 'edit'])->name('dashboard.tags.edit');
+    Route::patch('/dashboard/tags/{tag}/edit', [TagController::class, 'update'])->name('dashboard.tags.update');
+    Route::delete('/dashboard/tags/{tag}/destroy', [TagController::class, 'destroy'])->name('dashboard.tags.destroy');
 });
 
 Route::middleware('auth')->group(function () {
