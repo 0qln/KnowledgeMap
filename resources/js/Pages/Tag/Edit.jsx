@@ -6,24 +6,36 @@ import TextAreaInput from '@/Components/TextAreaInput';
 import { Transition } from '@headlessui/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
+import { useGraph } from '@/Context/GraphContext';
 
-function Edge({ edge, from, to, }) {
-    const { data, setData, patch, errors, processing, recentlySuccessful } =
-        useForm({
-            description: edge.description, 
-            weight: edge.weight,
-        });
+function Tag({ tag, }) {
+    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
+        name: tag.name,
+        description: tag.description,
+    });
+    
+    const { setTags } = useGraph();
 
     const submit = (e) => {
         e.preventDefault();
-        patch(route('dashboard.edges.update', edge.id));
+        setTags(prevTags =>
+            prevTags.map(t => t.id === tag.id ? { ...t, ...data } : t)
+        );
+        patch(route('dashboard.tags.update', tag.id));
     }
+
+    const preventSubmitOnEnter = (e) => {
+        if (e.key === 'Enter') e.preventDefault();
+    };
 
     return (
         <div>
-            <Head title={`Edit: Edge ${edge.id}`} />
+            <Head title={`Edit: ${tag.name}`} />
 
-            <form onSubmit={submit} className="flex flex-row-reverse">
+            <form
+                onSubmit={submit}
+                className="flex flex-row-reverse"
+                onKeyDownCapture={preventSubmitOnEnter}>
 
                 <div className="flex flex-col ml-2 justify-between">
                     <div className="flex flex-col">
@@ -48,7 +60,8 @@ function Edge({ edge, from, to, }) {
                                 enter="transition ease-in-out"
                                 enterFrom="opacity-0"
                                 leave="transition ease-in-out"
-                                leaveTo="opacity-0">
+                                leaveTo="opacity-0"
+                            >
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
                                     Saved.
                                 </p>
@@ -59,47 +72,31 @@ function Edge({ edge, from, to, }) {
 
                 <div className="flex flex-col w-full">
                     <div className="w-full break-words dark:text-white text-xl">
-                        Edit Edge #{edge.id}
+                        Edit Tag {tag.id}
                     </div>
                     <div className="flex flex-col w-full space-y-6 mt-5">
                         <div>
-                            <InputLabel value="Source" />
+                            <InputLabel htmlFor="name" value="Name" />
                             <TextInput
-                                className="block w-full !text-gray-400"
-                                value={`[#${from.id}] ${from.title}`}
-                                required disabled/>
-                        </div>
-                        <div>
-                            <InputLabel value="Target" />
-                            <TextInput
-                                className="block w-full !text-gray-400"
-                                value={`[#${to.id}] ${to.title}`}
-                                required disabled/>
+                                id="name"
+                                className="block w-full font-bold"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
+                                required
+                                isFocused
+                                autoComplete="off" />
+                            <InputError className="mt-2" message={errors.name} />
                         </div>
                         <div>
                             <InputLabel htmlFor="description" value="Description" />
                             <TextAreaInput
-                                rows={4}
+                                rows={8}
                                 id="description"
                                 className="block w-full"
                                 value={data.description}
                                 onChange={(e) => setData('description', e.target.value)}
-                                required
                                 autoComplete="off" />
-
                             <InputError className="mt-2" message={errors.description} />
-                        </div>
-                        <div>
-                            <InputLabel htmlFor="weight" value="Weight" />
-                            <TextInput
-                                id="weight"
-                                className="block w-full"
-                                value={data.weight}
-                                onChange={(e) => setData('weight', e.target.value)}
-                                required
-                                autoComplete="off" />
-
-                            <InputError className="mt-2" message={errors.weight} />
                         </div>
                     </div>
                 </div>
@@ -108,12 +105,12 @@ function Edge({ edge, from, to, }) {
     );
 }
 
-Edge.layout = (page) => 
-    (<GraphLayout childrenRight={
-        <GraphDetailsLayout children={
-            page
-        }/>
-    }/>
+Tag.layout = (page) =>
+(<GraphLayout childrenRight={
+    <GraphDetailsLayout children={
+        page
+    } />
+} />
 );
 
-export default Edge;
+export default Tag;

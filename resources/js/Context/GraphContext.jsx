@@ -110,6 +110,7 @@ export const GraphProvider = ({ children }) => {
                     tags: d.tags,
                 })));
                 setLinks(linksRes.data.map(d => ({
+                    id: d.id,
                     source: d.id_origin,
                     target: d.id_target,
                     value: d.weight

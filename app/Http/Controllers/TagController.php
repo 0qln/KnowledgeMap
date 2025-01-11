@@ -39,7 +39,11 @@ class TagController extends Controller
      */
     public function show(Tag $tag)
     {
-        //
+        $tag['nodes'] = $tag->nodes;
+        return inertia(
+            'Tag/Show',
+            compact('tag'),
+        );
     }
 
     /**
@@ -47,7 +51,10 @@ class TagController extends Controller
      */
     public function edit(Tag $tag)
     {
-        //
+        return inertia(
+            'Tag/Edit',
+            compact('tag'),
+        );
     }
 
     /**
@@ -55,7 +62,10 @@ class TagController extends Controller
      */
     public function update(UpdateTagRequest $request, Tag $tag)
     {
-        //
+        $tag->update($request->validated());
+
+        return to_route('dashboard.tags.show', $tag->id)
+            ->with('success', 'Tag updated successfully');
     }
 
     /**

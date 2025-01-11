@@ -110,7 +110,7 @@ function BlacklistTags({ filters, updateFilter, tags }) {
                     onChange={e => setTagsQuery(e.target.value)} />
                 <div className="space-y-1">
                     {sortedTags && sortedTags.map(tag => (
-                        <div className="flex flex-row space-x-2 items-center" key={tag.name}>
+                        <div className="flex flex-row space-x-2 items-center" key={tag.id}>
                             <Checkbox
                                 checked={filters.tagBlacklist.includes(tag)}
                                 onChange={e => {
