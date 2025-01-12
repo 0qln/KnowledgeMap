@@ -14,6 +14,7 @@ function Node({ node }) {
             <div className="flex flex-row-reverse flex-between">
 
                 <div className="flex flex-col w-full space-y-3">
+                <div className="flex flex-col w-full space-y-3">
                     <div className="">
                         <div className="float-right flex flex-row-reverse">
                             <Link
@@ -37,11 +38,30 @@ function Node({ node }) {
                     </div>
                     <div className="dark:text-gray-400 text-sm italic w-full">
                         [#{node.id}] {node.full_name}
+                        [#{node.id}] {node.full_name}
                     </div>
                     <br />
                     <div className="dark:text-gray-200 text-sm break-words w-full">
                         {node.description}
                     </div>
+                    <br />
+                    <div className="flex flex-row dark:text-gray-200 items-center">
+                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                        <div>Tags</div>
+                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                    </div>
+                    {node.tags && (
+                        <div className="flex flex-wrap text-sm break-words">
+                            {node.tags.map(tag => (
+                                <Link
+                                    href={route('dashboard.tags.show', tag.id)}
+                                    key={tag.id}
+                                    className="items-center m-1 text-white bg-gray-700 py-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
+                                    {tag.name}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                     <br />
                     <div className="flex flex-row dark:text-gray-200 items-center">
                         <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
@@ -67,6 +87,12 @@ function Node({ node }) {
     );
 }
 
+Node.layout = (page) =>
+(<GraphLayout childrenRight={
+    <GraphDetailsLayout children={
+        page
+    } />
+} />
 Node.layout = (page) =>
 (<GraphLayout childrenRight={
     <GraphDetailsLayout children={

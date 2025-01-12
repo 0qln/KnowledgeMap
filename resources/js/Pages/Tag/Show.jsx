@@ -4,7 +4,6 @@ import { Head, Link } from "@inertiajs/react";
 
 
 const Tag = ({ tag }) => {
-    console.log(tag)
     return (
         <div>
             <Head title={`${tag.title}`} />
@@ -33,33 +32,31 @@ const Tag = ({ tag }) => {
                             {tag.name}
                         </div>
                     </div>
-                    <div className="">
-                        <div className="dark:text-gray-400 text-sm italic w-full">
-                            [#{tag.id}] {tag.name}
-                        </div>
-                        <br />
-                        <div className="dark:text-gray-200 text-sm break-words w-full">
-                            {tag.description}
-                        </div>
-                        <br />
-                        <div className="flex flex-row dark:text-gray-200 items-center">
-                            <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
-                            <div>Nodes</div>
-                            <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
-                        </div>
-                        {tag.nodes && (
-                            <div className="flex flex-wrap text-sm break-words">
-                                {tag.nodes.map(node => (
-                                    <Link
-                                        href={route('dashboard.nodes.show', node.id)}
-                                        key={node.id}
-                                        className="items-center m-1 text-white bg-gray-700 py-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
-                                        {node.title}
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
+                    <div className="dark:text-gray-400 text-sm italic w-full">
+                        [#{tag.id}] {tag.name}
                     </div>
+                    <br />
+                    <div className="dark:text-gray-200 text-sm break-words w-full">
+                        {tag.description}
+                    </div>
+                    <br />
+                    <div className="flex flex-row dark:text-gray-200 items-center">
+                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                        <div>Nodes</div>
+                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                    </div>
+                    {tag.nodes && (
+                        <div className="flex flex-wrap text-sm break-words">
+                            {tag.nodes.map(node => (
+                                <Link
+                                    href={route('dashboard.nodes.show', node.id)}
+                                    key={node.id}
+                                    className="items-center m-1 text-white bg-gray-700 py-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
+                                    {node.title}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
