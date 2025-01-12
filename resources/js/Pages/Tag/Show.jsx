@@ -4,7 +4,6 @@ import { Head, Link } from "@inertiajs/react";
 
 
 const Tag = ({ tag }) => {
-    console.log(tag)
     return (
         <div>
             <Head title={`${tag.title}`} />

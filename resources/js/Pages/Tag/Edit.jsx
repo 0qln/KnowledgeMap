@@ -6,7 +6,7 @@ import TextAreaInput from '@/Components/TextAreaInput';
 import { Transition } from '@headlessui/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
-import { useGraph } from '@/Context/GraphContext';
+import { useGraph } from "@/Hooks/useGraph";
 
 function Tag({ tag, }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useRef, useMemo, useCallback, useEffect } from "react";
+import React, { createContext, useState, useRef, useMemo, useCallback, useEffect } from "react";
 import * as d3 from "d3";
 import axios from "axios";
 
@@ -24,10 +24,11 @@ export const GraphProvider = ({ children }) => {
     });
 
     const [displayRules, setDisplayRules] = useState({
-        forceX: .08,
-        forceY: .08,
+        forceX: .2,
+        forceY: .2,
         centerOffsetX: 0,
         centerOffsetY: 0,
+        avoidRects: [],
     });
 
     const simulation = useRef(null);
@@ -154,5 +155,3 @@ export const GraphProvider = ({ children }) => {
         </GraphContext.Provider>
     );
 };
-
-export const useGraph = () => useContext(GraphContext);
