@@ -1,16 +1,19 @@
 import { router } from "@inertiajs/react";
-import { useRef, useEffect, useContext, useMemo, useCallback } from "react";
-import { GraphContext } from "@/Context/GraphContext";
+import { useRef, useEffect, useMemo, useCallback } from "react";
 import { useGraph } from "@/Hooks/useGraph";
 import * as d3 from "d3";
 import "lodash.product";
-import { range, product, filter } from "lodash";
+import { range, product } from "lodash";
 
-export function nodeEq(aNode, bNodeOrId) {
+function nodeEq(aNode, bNodeOrId) {
     return (
         aNode.id === bNodeOrId.id ||
         aNode.id === bNodeOrId
     );
+}
+
+function lerp(a, b, t) {
+    return a + (b - a) * t;
 }
 
 export const Graph = function ({ dim }) {
@@ -21,7 +24,6 @@ export const Graph = function ({ dim }) {
         filters,
         displayRules,
         simulation,
-        resetFn,
         removeNode,
         removeLink,
         colorMap,
@@ -76,35 +78,34 @@ export const Graph = function ({ dim }) {
         return { filteredNodes, filteredLinks };
     }, [filters, nodes, links]);
 
-    function lerp(a, b, t) {
-        return a + (b - a) * t;
-    }
-
     const aversion = 22;
 
-    const aversionNodes = useMemo(() => {
-        const toSimulationX = x => x - dim.width / 2;
-        const toSimulationY = y => y - dim.height / 2;
-        return displayRules.avoidRects.map((r, i) => {
+    const aversionNodes = useMemo(() =>
+        displayRules.avoidRects.map((r, i) => {
             const maxX = Math.round(r.width / aversion);
             const maxY = Math.round(r.height / aversion);
-            const ret = product(
+            return product(
                 range(maxX + 1),
                 range(maxY + 1)
             ).map(([x, y]) => ({
+                id: -(i * 1e8 + x * 1e4 + y) - 1,
                 isAverionNode: true,
-                fx: toSimulationX(r.x + lerp(0, r.width, x / maxX)),
-                fy: toSimulationY(r.y + lerp(0, r.height, y / maxY))
+                fx: r.x + lerp(0, r.width, x / maxX),
+                fy: r.y + lerp(0, r.height, y / maxY)
             }));
-            return ret;
-        }).flat(2);
-    }, [displayRules.avoidRects, dim]);
-    
-    console.log(aversionNodes);
+        }).flat(2),
+        [displayRules.avoidRects]);
 
     const simulationNodes = useMemo(() => {
         return filteredNodes.concat(aversionNodes);
     }, [filteredNodes, aversionNodes]);
+
+    const simulationLinks = useMemo(() => {
+        return filteredLinks.filter(l =>
+            simulationNodes.some(n => nodeEq(n, l.source)) &&
+            simulationNodes.some(n => nodeEq(n, l.target))
+        );
+    }, [filteredLinks]);
 
     // vary the force based on the available width and height, 
     // such that the graph stretches into the available space
@@ -123,137 +124,154 @@ export const Graph = function ({ dim }) {
     }, [displayRules.forceY, dim]);
 
     const centerX = useMemo(() =>
-        displayRules.centerOffsetX
-        , [displayRules.centerOffsetX]);
+        displayRules.centerOffsetX + dim.width / 2,
+        [displayRules.centerOffsetX, dim]);
 
     const centerY = useMemo(() =>
-        displayRules.centerOffsetY,
-        [displayRules.centerOffsetY]);
+        displayRules.centerOffsetY + dim.height / 2,
+        [displayRules.centerOffsetY, dim]);
 
-    const forceManyBody = useCallback((node) => {
-        return ((node) => node.isAverionNode)(node) ? -aversion : -dim.width * dim.height / 20000;
-    }, [dim, aversion]);
+    // scale the force such that the graph expands when it has 
+    // enough space to do so
+    const forceManyBody = useCallback(n =>
+        n.isAverionNode
+            ? -aversion
+            : -55 + -5 * dim.width * dim.height / displayRules.avoidRects.reduce(
+                (acc, r) => acc + (r.width * r.height), 0
+            ),
+        [dim, aversion, displayRules.avoidRects]);
+
+    const linkRef = useRef(null);
+    const nodeRef = useRef(null);
 
     useEffect(() => {
         const svg = d3.select(ref.current);
+        linkRef.current = svg.append("g").attr("stroke", "#888").attr("stroke-opacity", 0.6).selectAll();
+        nodeRef.current = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1.5).selectAll();
 
-        console.log("effect");
+        return d3.select(ref.current).selectAll("*").remove;
+    }, []);
 
-        simulation.current = d3.forceSimulation(simulationNodes)
-            .force("x", d3.forceX(centerX).strength(forceX))
-            .force("y", d3.forceY(centerY).strength(forceY))
-            .force("charge", d3.forceManyBody().strength(forceManyBody))
+    function updateNodeRef(nodes) {
+        nodeRef.current = nodeRef.current.data(nodes, d => d.id);
+        nodeRef.current.exit().remove();
+        nodeRef.current = nodeRef.current
+            .enter()
+            .append("circle")
+            .attr("fill", d => d.isAverionNode ? "#fff" : colorMap(d))
+            .attr("r", d => d.isAverionNode ? 0 : 5)
+            .on("contextmenu", (e, d) => {
+                removeNode(d);
+                e.preventDefault();
+            }, { passive: false /* otherwise preventDefault() doesnt work */ })
+            .on("click", (e, d) => {
+                router.visit(route("dashboard.nodes.show", d.id));
+            })
+            .merge(nodeRef.current);
+
+        nodeRef.current
+            .append("title")
+            .text(d => d.title);
+
+        nodeRef.current.call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+    }
+
+    function updateLinkRef(links) {
+        linkRef.current = linkRef.current.data(links, d => d.id);
+        linkRef.current.exit().remove();
+        linkRef.current = linkRef.current.enter()
+            .append("line")
+            .attr("stroke-width", d => Math.sqrt(d.value))
+            .on("contextmenu", (e, d) => {
+                removeLink(d.source, d.target);
+                e.preventDefault();
+            }, { passive: false /* otherwise preventDefault() doesnt work */ })
+            .on("click", (e, d) => {
+                router.visit(route("dashboard.edges.show", d.id));
+            })
+            .merge(linkRef.current);
+
+        linkRef.current
+            .append("title")
+            .text(d => indexToId(d.id));
+    }
+
+    useEffect(() => {
+        simulation.current = d3
+            .forceSimulation()
             .on("tick", ticked);
-        
-            console.log(filteredLinks)
 
-        let link = svg.append("g").attr("stroke", "#888").attr("stroke-opacity", 0.6).selectAll();
-        let node = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1.5).selectAll();
+        return simulation.current.stop;
+    }, []);
 
-        function restart() {
+    function ticked() {
+        linkRef.current
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
 
-            node = node.data(simulationNodes);
-            node.exit().remove();
-            node = node.enter()
-                .append("circle")
-                .attr("fill", d => ((node) => node.isAverionNode)(d) ? "#fff" : colorMap(d))
-                .attr("r", d => ((node) => node.isAverionNode)(d) ? 0 : 5)
-                .on("contextmenu", (e, d) => {
-                    removeNode(d);
-                    e.preventDefault();
-                }, { passive: false /* otherwise preventDefault() doesnt work */ })
-                .on("click", (e, d) => {
-                    router.visit(route("dashboard.nodes.show", d.id));
-                })
-                .merge(node);
+        nodeRef.current
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y);
+    }
 
-            node.append("title").text(d => d.title);
+    function dragstarted(event) {
+        if (!event.active) simulation.current.alphaTarget(0.4).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+    }
 
-            node.call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
+    function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+    }
 
-            link = link.data(filteredLinks.filter(l => simulationNodes.includes(l.source) && simulationNodes.includes(l.target)));
-            link.exit().remove();
-            link = link.enter()
-                .append("line")
-                .attr("stroke-width", d => Math.sqrt(d.value))
-                .on("contextmenu", (e, d) => {
-                    removeLink(d.source, d.target);
-                    e.preventDefault();
-                }, { passive: false /* otherwise preventDefault() doesnt work */ })
-                .on("click", (e, d) => {
-                    router.visit(route("dashboard.edges.show", d.id));
-                })
-                .merge(link);
-            link.append("title").text(d => indexToId(d.id));
-
-            const count = (node) => {
-                return filteredLinks.filter(l => l.source === node || l.target === node).length;
-            }
-            simulation.current.nodes(simulationNodes);
-            simulation.current.force("link", d3.forceLink(filteredLinks).id(d => d.id).strength(d => {
-                const x = Math.min(1.5, (Math.sqrt(Math.sqrt(d.value))))
-                return x / Math.min(count(d.source), count(d.target));
-            }));
-            simulation.current.alpha(1).restart();
-        }
-
-        resetFn.current = restart;
-        resetFn.current();
-
-        function ticked() {
-            link
-                .attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
-
-            node
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y);
-        }
-
-        function dragstarted(event) {
-            if (!event.active) simulation.current.alphaTarget(0.4).restart();
-            event.subject.fx = event.subject.x;
-            event.subject.fy = event.subject.y;
-        }
-
-        function dragged(event) {
-            event.subject.fx = event.x;
-            event.subject.fy = event.y;
-        }
-
-        function dragended(event) {
-            if (!event.active) simulation.current.alphaTarget(0);
-            event.subject.fx = null;
-            event.subject.fy = null;
-        }
-
-        return () => {
-            simulation.current.stop();
-            d3.select(ref.current).selectAll("*").remove();
-        };
-    }, [simulationNodes, filteredLinks]);
+    function dragended(event) {
+        if (!event.active) simulation.current.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+    }
 
     useEffect(() => {
         if (ref.current) {
-            const { width: w, height: h } = dim;
-            d3.select(ref.current).attr("viewBox", [-w / 2, -h / 2, w, h])
+            d3.select(ref.current).attr("viewBox", [0, 0, dim.width, dim.height])
         }
     }, [dim, ref]);
 
     useEffect(() => {
-        simulation.current.force("x", d3.forceX(centerX).strength(forceX))
-        simulation.current.force("y", d3.forceY(centerY).strength(forceY))
         simulation.current.force("charge", d3.forceManyBody().strength(forceManyBody));
-    }, [centerX, centerY, forceX, forceY, forceManyBody]);
+        simulation.current.alpha(.4).restart();
+    }, [forceManyBody]);
 
     useEffect(() => {
-        if (resetFn.current) resetFn.current();
-    }, [resetFn, simulationNodes, filteredLinks]);
+        simulation.current.force("x", d3.forceX(centerX).strength(forceX));
+        simulation.current.alpha(.4).restart();
+    }, [forceX, centerX]);
+
+    useEffect(() => {
+        simulation.current.force("y", d3.forceY(centerY).strength(forceY));
+        simulation.current.alpha(.4).restart();
+    }, [forceY, centerY]);
+
+    useEffect(() => {
+        updateNodeRef(simulationNodes);
+        simulation.current.nodes(simulationNodes);
+        simulation.current.alpha(.4).restart();
+    }, [simulationNodes]);
+
+    useEffect(() => {
+        updateLinkRef(simulationLinks);
+        simulation.current.force("link", d3.forceLink(simulationLinks).id(d => d.id).strength(d => {
+            const f = n => simulationLinks.filter(l => nodeEq(n, l.source) || nodeEq(n, l.target)).length;
+            const x = Math.min(2, (Math.sqrt(Math.sqrt(d.value))))
+            return x / Math.min(f(d.source), f(d.target));
+        }));
+        simulation.current.alpha(.4).restart();
+    }, [simulationLinks]);
 
     return (
         <svg id="graph" ref={ref} />
