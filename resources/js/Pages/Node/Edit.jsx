@@ -18,14 +18,6 @@ function Node({ node, }) {
         description: node.description,
         tags: node.tags.map(t => t.id),
     });
-    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
-        title: node.title,
-        full_name: node.full_name,
-        description: node.description,
-        tags: node.tags.map(t => t.id),
-    });
-
-    const { tags, setNodes } = useGraph();
 
     const { tags, setNodes } = useGraph();
 
@@ -33,10 +25,6 @@ function Node({ node, }) {
         e.preventDefault();
         patch(route('dashboard.nodes.update', node.id));
     }
-
-    const preventSubmitOnEnter = (e) => {
-        if (e.key === 'Enter') e.preventDefault();
-    };
 
     const preventSubmitOnEnter = (e) => {
         if (e.key === 'Enter') e.preventDefault();
@@ -374,12 +362,6 @@ function TagList({ node, allTags, data, setData, setNodes }) {
     );
 }
 
-Node.layout = (page) =>
-(<GraphLayout childrenRight={
-    <GraphDetailsLayout children={
-        page
-    } />
-} />
 Node.layout = (page) =>
 (<GraphLayout childrenRight={
     <GraphDetailsLayout children={
