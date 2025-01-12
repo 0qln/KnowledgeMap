@@ -1,10 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
-import { Button } from '@headlessui/react';
-import TextInput from '@/Components/TextInput';
-import { useMemo, useState } from 'react';
-import fuzzysort from 'fuzzysort';
 
 function Node({ node }) {
     return (
@@ -13,7 +9,6 @@ function Node({ node }) {
 
             <div className="flex flex-row-reverse flex-between">
 
-                <div className="flex flex-col w-full space-y-3">
                 <div className="flex flex-col w-full space-y-3">
                     <div className="">
                         <div className="float-right flex flex-row-reverse">
@@ -87,12 +82,6 @@ function Node({ node }) {
     );
 }
 
-Node.layout = (page) =>
-(<GraphLayout childrenRight={
-    <GraphDetailsLayout children={
-        page
-    } />
-} />
 Node.layout = (page) =>
 (<GraphLayout childrenRight={
     <GraphDetailsLayout children={
