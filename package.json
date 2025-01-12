@@ -22,6 +22,8 @@
     },
     "dependencies": {
         "d3": "^7.9.0",
-        "fuzzysort": "^3.1.0"
+        "fuzzysort": "^3.1.0",
+        "lodash": "^4.17.21",
+        "lodash.product": "^18.10.0"
     }
 }

@@ -7,7 +7,7 @@ import { Button, Transition } from '@headlessui/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
 import { useMemo, useState } from 'react';
-import { useGraph } from '@/Context/GraphContext';
+import { useGraph } from "@/Hooks/useGraph";
 import fuzzysort from 'fuzzysort';
 
 function Node({ node, }) {

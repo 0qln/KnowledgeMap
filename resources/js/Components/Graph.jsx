@@ -1,11 +1,14 @@
 import { router } from "@inertiajs/react";
-import { useRef, useEffect, useContext, useMemo } from "react";
-import { GraphContext, useGraph } from "@/Context/GraphContext";
+import { useRef, useEffect, useContext, useMemo, useCallback } from "react";
+import { GraphContext } from "@/Context/GraphContext";
+import { useGraph } from "@/Hooks/useGraph";
 import * as d3 from "d3";
+import "lodash.product";
+import { range, product, filter } from "lodash";
 
-export default function nodeEq(aNode, bNodeOrId) {
+export function nodeEq(aNode, bNodeOrId) {
     return (
-        aNode.id === bNodeOrId.id || 
+        aNode.id === bNodeOrId.id ||
         aNode.id === bNodeOrId
     );
 }
@@ -40,24 +43,26 @@ export const Graph = function ({ dim }) {
             return title.includes(query);
         }
 
+        const matchOutgoing = filters.allowedSeparationOutgoing;
+        const matchIncoming = filters.allowedSeparationIncoming;
         function matches(node, depth) {
             return queryMatches(node) || depth > 0 && (
-                (filters.allowedSeparationOutgoing && outgoing(node).some(l => matches(l.target, depth - 1))) ||
-                (filters.allowedSeparationIncoming && incoming(node).some(l => matches(l.source, depth - 1)))
+                (matchIncoming && outgoing(node).some(l => matches(l.target, depth - 1))) ||
+                (matchOutgoing && incoming(node).some(l => matches(l.source, depth - 1)))
             );
         }
-        
+
         function orphan(node) {
             return links
                 .filter(l => nodeEq(node, l.source) || nodeEq(node, l.target))
                 .length == 0;
         }
-        
+
         const blacklistedTagIds = filters.tagBlacklist.map(t => t.id);
         function blacklisted(node) {
             return node.tags.some(t => blacklistedTagIds.includes(t.id));
         }
-        
+
         const filteredNodes = nodes.filter(n => (
             true
             && (filters.orphans || !orphan(n))
@@ -65,55 +70,94 @@ export const Graph = function ({ dim }) {
             && matches(n, filters.allowedDegreesOfSeparation)
         ));
         const filteredLinks = links.filter(l => (
-            filteredNodes.some(n => nodeEq(n, l.source)) && 
+            filteredNodes.some(n => nodeEq(n, l.source)) &&
             filteredNodes.some(n => nodeEq(n, l.target))
-        )); 
+        ));
         return { filteredNodes, filteredLinks };
     }, [filters, nodes, links]);
 
-    function forceStrength(dim) {
-        // vary the force based on the available width and height, 
-        // such that the graph stretches into the available space
-        // and does not remain square-ish.
-        const widthScaled = dim.width / 1000;
-        const heightScaled = dim.height / 1000;
-        const scaleX = 1 / widthScaled;
-        const scaleY = 1 / heightScaled;
-        const forceX = displayRules.forceX * scaleX;
-        const forceY = displayRules.forceY * scaleY;
-        return { forceX, forceY }
+    function lerp(a, b, t) {
+        return a + (b - a) * t;
     }
 
-    function forceOffset(dim) {
-        // todo: shift center point with respect to the available space.
-        const centerOffsetX = 0;
-        const centerOffsetY = 0;
-        return { centerOffsetX, centerOffsetY }
-    }
+    const aversion = 22;
+
+    const aversionNodes = useMemo(() => {
+        const toSimulationX = x => x - dim.width / 2;
+        const toSimulationY = y => y - dim.height / 2;
+        return displayRules.avoidRects.map((r, i) => {
+            const maxX = Math.round(r.width / aversion);
+            const maxY = Math.round(r.height / aversion);
+            const ret = product(
+                range(maxX + 1),
+                range(maxY + 1)
+            ).map(([x, y]) => ({
+                isAverionNode: true,
+                fx: toSimulationX(r.x + lerp(0, r.width, x / maxX)),
+                fy: toSimulationY(r.y + lerp(0, r.height, y / maxY))
+            }));
+            return ret;
+        }).flat(2);
+    }, [displayRules.avoidRects, dim]);
+    
+    console.log(aversionNodes);
+
+    const simulationNodes = useMemo(() => {
+        return filteredNodes.concat(aversionNodes);
+    }, [filteredNodes, aversionNodes]);
+
+    // vary the force based on the available width and height, 
+    // such that the graph stretches into the available space
+    // and does not remain square-ish.
+    //
+    const forceX = useMemo(() => {
+        const w = dim.width / 1000;
+        const scale = 1 / w;
+        return displayRules.forceX * scale;
+    }, [displayRules.forceX, dim]);
+    //
+    const forceY = useMemo(() => {
+        const h = dim.height / 1000;
+        const scale = 1 / h;
+        return displayRules.forceY * scale;
+    }, [displayRules.forceY, dim]);
+
+    const centerX = useMemo(() =>
+        displayRules.centerOffsetX
+        , [displayRules.centerOffsetX]);
+
+    const centerY = useMemo(() =>
+        displayRules.centerOffsetY,
+        [displayRules.centerOffsetY]);
+
+    const forceManyBody = useCallback((node) => {
+        return ((node) => node.isAverionNode)(node) ? -aversion : -dim.width * dim.height / 20000;
+    }, [dim, aversion]);
 
     useEffect(() => {
         const svg = d3.select(ref.current);
 
-        const { forceX, forceY } = forceStrength(dim);
-        const { centerOffsetX, centerOffsetY } = forceOffset(dim);
-        simulation.current = d3.forceSimulation(filteredNodes, filteredLinks)
-            .force("link", d3.forceLink(filteredLinks).id(d => d.id))
-            .force("charge", d3.forceManyBody())
-            .force("x", d3.forceX(centerOffsetX).strength(forceX))
-            .force("y", d3.forceY(centerOffsetY).strength(forceY))
+        console.log("effect");
+
+        simulation.current = d3.forceSimulation(simulationNodes)
+            .force("x", d3.forceX(centerX).strength(forceX))
+            .force("y", d3.forceY(centerY).strength(forceY))
+            .force("charge", d3.forceManyBody().strength(forceManyBody))
             .on("tick", ticked);
         
-        let link = svg.append("g").attr("stroke", "#999").attr("stroke-opacity", 0.6).selectAll();
-        let node = svg.append("g").attr("stroke", "#fff").attr("stroke-width", 1.5).selectAll();
+            console.log(filteredLinks)
+
+        let link = svg.append("g").attr("stroke", "#888").attr("stroke-opacity", 0.6).selectAll();
+        let node = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1.5).selectAll();
 
         function restart() {
 
-            node = node.data(filteredNodes);
+            node = node.data(simulationNodes);
             node.exit().remove();
             node = node.enter()
                 .append("circle")
-                .attr("fill", d => colorMap(d))
-                .attr("r", 5)
+                .attr("fill", d => ((node) => node.isAverionNode)(d) ? "#fff" : colorMap(d))
+                .attr("r", d => ((node) => node.isAverionNode)(d) ? 0 : 5)
                 .on("contextmenu", (e, d) => {
                     removeNode(d);
                     e.preventDefault();
@@ -130,7 +174,7 @@ export const Graph = function ({ dim }) {
                 .on("drag", dragged)
                 .on("end", dragended));
 
-            link = link.data(filteredLinks.filter(l => filteredNodes.includes(l.source) && filteredNodes.includes(l.target)));
+            link = link.data(filteredLinks.filter(l => simulationNodes.includes(l.source) && simulationNodes.includes(l.target)));
             link.exit().remove();
             link = link.enter()
                 .append("line")
@@ -145,8 +189,14 @@ export const Graph = function ({ dim }) {
                 .merge(link);
             link.append("title").text(d => indexToId(d.id));
 
-            simulation.current.nodes(filteredNodes);
-            simulation.current.force("link").links(filteredLinks);
+            const count = (node) => {
+                return filteredLinks.filter(l => l.source === node || l.target === node).length;
+            }
+            simulation.current.nodes(simulationNodes);
+            simulation.current.force("link", d3.forceLink(filteredLinks).id(d => d.id).strength(d => {
+                const x = Math.min(1.5, (Math.sqrt(Math.sqrt(d.value))))
+                return x / Math.min(count(d.source), count(d.target));
+            }));
             simulation.current.alpha(1).restart();
         }
 
@@ -186,24 +236,24 @@ export const Graph = function ({ dim }) {
             simulation.current.stop();
             d3.select(ref.current).selectAll("*").remove();
         };
-    }, [colorMap, filters, filteredNodes, filteredLinks]);
+    }, [simulationNodes, filteredLinks]);
 
     useEffect(() => {
         if (ref.current) {
-            const { width, height } = dim;
-            d3.select(ref.current).attr("viewBox", [-width / 2, -height / 2, width, height])
+            const { width: w, height: h } = dim;
+            d3.select(ref.current).attr("viewBox", [-w / 2, -h / 2, w, h])
         }
     }, [dim, ref]);
 
     useEffect(() => {
-        if (resetFn.current) {
-            const { forceX, forceY } = forceStrength(dim);
-            const { centerOffsetX, centerOffsetY } = forceOffset(dim);
-            simulation.current.force("x", d3.forceX(centerOffsetX).strength(forceX))
-            simulation.current.force("y", d3.forceY(centerOffsetY).strength(forceY))
-            resetFn.current();
-        }
-    }, [displayRules, dim, resetFn]);
+        simulation.current.force("x", d3.forceX(centerX).strength(forceX))
+        simulation.current.force("y", d3.forceY(centerY).strength(forceY))
+        simulation.current.force("charge", d3.forceManyBody().strength(forceManyBody));
+    }, [centerX, centerY, forceX, forceY, forceManyBody]);
+
+    useEffect(() => {
+        if (resetFn.current) resetFn.current();
+    }, [resetFn, simulationNodes, filteredLinks]);
 
     return (
         <svg id="graph" ref={ref} />

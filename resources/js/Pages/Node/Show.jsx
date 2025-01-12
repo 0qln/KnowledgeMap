@@ -4,7 +4,6 @@ import GraphLayout from '@/Layouts/GraphLayout';
 import { Button } from '@headlessui/react';
 import TextInput from '@/Components/TextInput';
 import { useMemo, useState } from 'react';
-import { useGraph } from '@/Context/GraphContext';
 import fuzzysort from 'fuzzysort';
 
 function Node({ node }) {
