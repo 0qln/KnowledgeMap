@@ -29,7 +29,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/nodes/{node}', [NodeController::class, 'show'])->name('dashboard.nodes.show');
     Route::get('/dashboard/nodes/{node}/edit', [NodeController::class, 'edit'])->name('dashboard.nodes.edit');
     Route::patch('/dashboard/nodes/{node}/edit', [NodeController::class, 'update'])->name('dashboard.nodes.update');
-    Route::delete('/dashboard/nodes/{node}/destroy', [NodeController::class, 'destroy'])->name('dashboard.nodes.destory');
+    Route::delete('/dashboard/nodes/{node}/destroy', [NodeController::class, 'destroy'])->name('dashboard.nodes.destroy');
+    Route::patch('/dashboard/nodes/{node}/restore', [NodeController::class, 'restore'])->name('dashboard.nodes.restore');
 
     Route::get('/dashboard/edges', [EdgeController::class, 'index'])->name('dashboard.edges');
     Route::get('/dashboard/edges/{edge}', [EdgeController::class, 'show'])->name('dashboard.edges.show');

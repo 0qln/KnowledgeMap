@@ -107,6 +107,7 @@ export const GraphProvider = ({ children }) => {
                 ]);
                 setNodes(nodesRes.data.map(d => ({
                     id: d.id,
+                    deleted: d.is_deleted,
                     title: d.title,
                     tags: d.tags,
                 })));

@@ -30,17 +30,18 @@ function Node({ node, }) {
     };
 
     return (
-        <div>
+        <div className="block h-full">
             <Head title={`Edit: ${node.title}`} />
 
             <form
                 onSubmit={submit}
-                className="flex flex-row-reverse"
+                className="flex flex-row-reverse max-h-full"
                 onKeyDownCapture={preventSubmitOnEnter}>
 
-                <div className="flex flex-col ml-2 justify-between">
+                <div className="flex flex-col ml-2 justify-between max-h-full">
                     <div className="flex flex-col">
                         <Link
+                            title="Exit and discard changes"
                             href={route('dashboard')}
                             className="rounded-md w-6 h-6 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -71,7 +72,7 @@ function Node({ node, }) {
                     </div>
                 </div>
 
-                <div className="flex flex-col w-full">
+                <div className="flex flex-shrink flex-col w-full max-h-full overflow-auto">
                     <div className="w-full break-words dark:text-white text-xl">
                         Edit Node {node.id}
                     </div>
