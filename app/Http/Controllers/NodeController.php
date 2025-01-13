@@ -26,7 +26,9 @@ class NodeController extends Controller
      */
     public function create()
     {
-        //
+        return inertia(
+            'Node/Create',
+        );
     }
 
     /**
@@ -36,6 +38,9 @@ class NodeController extends Controller
     {
         $data = $request->validated();
         $node = Node::create($data);
+        if ($request->has('tags')) {
+            $node->tags()->sync($request->input('tags'));
+        }
         return to_route('dashboard.nodes.show', $node->id)
             ->with('success', 'Node created successfully');
     }
