@@ -2,15 +2,18 @@ import { Head, Link } from '@inertiajs/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
 import { useGraph } from '@/Hooks/useGraph';
+import { nodeEq } from '@/Components/Graph';
 
 function Node({ node }) {
-    const { setNodes } = useGraph();
+    const { setNodes, resetLinksForNode } = useGraph();
     const onDelete = () => {
-        setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: true } : n));
+        setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: true, index: undefined, x: undefined, y: undefined } : n));
+        resetLinksForNode(node);
     };
     const onRestore = () => {
         setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: false } : n));
-    }
+        resetLinksForNode(node);
+    };
 
     return (
         <div>
