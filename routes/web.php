@@ -24,6 +24,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/nodes', [NodeController::class, 'index'])->name('dashboard.nodes');
+    Route::get('/dashboard/nodes/create', [NodeController::class, 'create'])->name('dashboard.nodes.create');
+    Route::post('/dashboard/nodes/store', [NodeController::class, 'store'])->name('dashboard.nodes.store');
     Route::get('/dashboard/nodes/{node}', [NodeController::class, 'show'])->name('dashboard.nodes.show');
     Route::get('/dashboard/nodes/{node}/edit', [NodeController::class, 'edit'])->name('dashboard.nodes.edit');
     Route::patch('/dashboard/nodes/{node}/edit', [NodeController::class, 'update'])->name('dashboard.nodes.update');

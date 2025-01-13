@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
 import GraphLayout from '@/Layouts/GraphLayout';
 
-function Dashboard() {
+function Dashboard({}) {
     return <Head title="Dashboard" />;
 }
 

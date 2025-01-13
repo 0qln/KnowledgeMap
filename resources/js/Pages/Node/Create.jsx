@@ -10,19 +10,18 @@ import { useMemo, useState } from 'react';
 import { useGraph } from "@/Hooks/useGraph";
 import fuzzysort from 'fuzzysort';
 
-function Node({ node, }) {
-    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
-        title: node.title,
-        full_name: node.full_name,
-        description: node.description,
-        tags: node.tags.map(t => t.id),
+function Node({ }) {
+    const { tags } = useGraph();
+    const { data, setData, post, errors, processing, recentlySuccessful } = useForm({
+        title: "",
+        full_name: "",
+        description: "",
+        tags: [],
     });
-
-    const { tags, setNodes } = useGraph();
 
     const submit = (e) => {
         e.preventDefault();
-        patch(route('dashboard.nodes.update', node.id));
+        post(route('dashboard.nodes.store'));
     }
 
     const preventSubmitOnEnter = (e) => {
@@ -31,7 +30,7 @@ function Node({ node, }) {
 
     return (
         <div>
-            <Head title={`Edit: ${node.title}`} />
+            <Head title="Create Node" />
 
             <form
                 onSubmit={submit}
@@ -73,7 +72,7 @@ function Node({ node, }) {
 
                 <div className="flex flex-col w-full">
                     <div className="w-full break-words dark:text-white text-xl">
-                        Edit Node {node.id}
+                        Create New Node
                     </div>
                     <div className="flex flex-col w-full space-y-6 mt-5">
                         <div>
@@ -110,14 +109,10 @@ function Node({ node, }) {
                                 autoComplete="off" />
                             <InputError className="mt-2" message={errors.description} />
                         </div>
-                        {node.tags && (
-                            <TagList
-                                node={node}
-                                allTags={tags}
-                                data={data}
-                                setData={setData}
-                                setNodes={setNodes} />
-                        )}
+                        <TagList
+                            allTags={tags}
+                            data={data}
+                            setData={setData} />
                     </div>
                 </div>
             </form>
@@ -125,15 +120,16 @@ function Node({ node, }) {
     );
 }
 
-function TagList({ node, allTags, data, setData, setNodes }) {
-    const [nodeTags, setNodeTags] = useState(node.tags);
-    const [addTagExpanded, setAddTagExpanded] = useState(true);
+function TagList({ allTags, data, setData }) {
+    const [nodeTags, setNodeTags] = useState([]);
     const [tagQueryLimit, setTagQueryLimit] = useState(10);
     const [tagsQuery, setTagsQuery] = useState("");
 
     const availableTags = useMemo(() =>
         allTags.filter(tag => !nodeTags.some(t => t.id === tag.id)),
         [nodeTags]);
+    
+    console.log(tagsQuery);
 
     const sortedTags = useMemo(() => (fuzzysort
         .go(tagsQuery, availableTags, {
@@ -142,29 +138,17 @@ function TagList({ node, allTags, data, setData, setNodes }) {
         })
         .map(r => r.obj)
     ), [tagsQuery, availableTags, tagQueryLimit]);
+    
+    console.log(sortedTags)
 
     const addTag = (tag) => {
         setNodeTags(prev => [...prev, tag]);
         setData("tags", [...data['tags'], tag.id]);
-        setNodes(prevNodes =>
-            prevNodes.map(n =>
-                n.id === node.id
-                    ? { ...n, tags: [...n.tags, tag] }
-                    : n
-            )
-        );
     };
 
     const removeTag = (tag) => {
         setNodeTags(prev => prev.filter(t => t.id !== tag.id));
         setData("tags", data['tags'].filter((id) => id !== tag.id));
-        setNodes(prevNodes =>
-            prevNodes.map(n =>
-                n.id === node.id
-                    ? { ...n, tags: n.tags.filter((t) => t.id !== tag.id) }
-                    : n
-            )
-        );
     };
 
     const addFirstTag = (tags) => {
@@ -203,35 +187,31 @@ function TagList({ node, allTags, data, setData, setNodes }) {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" className="stroke=white" />
                     </svg>
                 </Button>
-                {addTagExpanded && (
-                    <>
-                        <div className="w-full" />
-                        <div className="m-2">
-                            Available tags:
+                <div className="w-full" />
+                <div className="m-2">
+                    Available tags:
+                </div>
+                <div className="flex flex-row flex-wrap items-center">
+                    {sortedTags
+                        .slice(0, tagQueryLimit)
+                        .map(tag => (
+                            <Button
+                                onClick={() => addTag(tag)}
+                                className="items-center m-1 text-white bg-gray-700 p-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1"
+                                key={tag.id}>
+                                {tag.name}
+                            </Button>
+                        ))}
+                    {sortedTags.length > tagQueryLimit && (
+                        <div className="m-1 items-center flex flex-row">
+                            <svg viewBox="0 0 32 24" xmlns="http://www.w3.org/2000/svg" className="size-6 fill-gray-500">
+                                <circle r="4" cx="4" cy="12" />
+                                <circle r="4" cx="16" cy="12" />
+                                <circle r="4" cx="28" cy="12" />
+                            </svg>
                         </div>
-                        <div className="flex flex-row flex-wrap items-center">
-                            {sortedTags
-                                .slice(0, tagQueryLimit)
-                                .map(tag => (
-                                    <Button
-                                        onClick={() => addTag(tag)}
-                                        className="items-center m-1 text-white bg-gray-700 p-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1"
-                                        key={tag.id}>
-                                        {tag.name}
-                                    </Button>
-                                ))}
-                            {sortedTags.length > tagQueryLimit && (
-                                <div className="m-1 items-center flex flex-row">
-                                    <svg viewBox="0 0 32 24" xmlns="http://www.w3.org/2000/svg" className="size-6 fill-gray-500">
-                                        <circle r="4" cx="4" cy="12" />
-                                        <circle r="4" cx="16" cy="12" />
-                                        <circle r="4" cx="28" cy="12" />
-                                    </svg>
-                                </div>
-                            )}
-                        </div>
-                    </>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );
