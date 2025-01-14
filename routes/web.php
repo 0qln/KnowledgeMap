@@ -33,6 +33,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/dashboard/nodes/{node}/restore', [NodeController::class, 'restore'])->name('dashboard.nodes.restore');
 
     Route::get('/dashboard/edges', [EdgeController::class, 'index'])->name('dashboard.edges');
+    Route::get('/dashboard/edges/create', [EdgeController::class, 'create'])->name('dashboard.edges.create');
+    Route::post('/dashboard/edges/store', [EdgeController::class, 'store'])->name('dashboard.edges.store');
     Route::get('/dashboard/edges/{edge}', [EdgeController::class, 'show'])->name('dashboard.edges.show');
     Route::get('/dashboard/edges/{edge}/edit', [EdgeController::class, 'edit'])->name('dashboard.edges.edit');
     Route::patch('/dashboard/edges/{edge}/edit', [EdgeController::class, 'update'])->name('dashboard.edges.update');

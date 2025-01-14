@@ -62,6 +62,14 @@ export default function AppLayout({ childrenRight }) {
                                     </svg>
                                     Node
                                 </Link>
+                                <Link
+                                    href={route('dashboard.edges.create')}
+                                    className="text-white rounded-md p-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2 flex flex-row w-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" className="stroke=white" />
+                                    </svg>
+                                    Edge
+                                </Link>
                             </div>
                         </GraphDetailsLayout>
                     )}

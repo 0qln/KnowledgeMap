@@ -11,7 +11,7 @@ class StoreEdgeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class StoreEdgeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'description' => [ 'nullable', 'string', 'max:1024' ],
+            'weight' => [ 'required', 'integer' ],
+            'id_target' => [ 'required', 'integer', 'exists:nodes,id' ],
+            'id_origin' => [ 'required', 'integer', 'exists:nodes,id' ],
         ];
     }
 }
