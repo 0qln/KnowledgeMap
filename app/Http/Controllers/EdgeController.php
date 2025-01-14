@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Edge;
 use App\Http\Requests\StoreEdgeRequest;
 use App\Http\Requests\UpdateEdgeRequest;
-use App\Models\Node;
-use App\Models\Tag;
 
 class EdgeController extends Controller
 {
@@ -85,6 +83,22 @@ class EdgeController extends Controller
      */
     public function destroy(Edge $edge)
     {
-        //
+        $edge->is_deleted = true;
+        $edge->save();
+        
+        return to_route('dashboard')
+            ->with('success', 'Edge deleted successfully');
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore(Edge $edge)
+    {
+        $edge->is_deleted = false;
+        $edge->save();
+        
+        return to_route('dashboard.edge.show', $edge->id)
+            ->with('success', 'Edge restored successfully');
     }
 }
