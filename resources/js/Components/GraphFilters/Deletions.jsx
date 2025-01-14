@@ -12,6 +12,12 @@ export function Deletions({ filters, searchFieldChanged }) {
                         checked={filters.showDeletedNodes}
                         onChange={e => searchFieldChanged("showDeletedNodes", e.target.checked)} />
                 </div>
+                <div className="flex flex-row space-x-4 items-center">
+                    <InputLabel value="Show deleted edges" />
+                    <Checkbox
+                        checked={filters.showDeletedEdges}
+                        onChange={e => searchFieldChanged("showDeletedEdges", e.target.checked)} />
+                </div>
             </div>
         </div>
     );

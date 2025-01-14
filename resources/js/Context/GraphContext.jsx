@@ -1,7 +1,7 @@
 import React, { createContext, useState, useRef, useMemo, useCallback, useEffect } from "react";
 import * as d3 from "d3";
 import axios from "axios";
-import { nodeEq } from "@/Components/Graph";
+import { nodeEq, nodeId } from "@/Components/Graph";
 
 export const GraphContext = createContext();
 
@@ -18,6 +18,7 @@ export const GraphProvider = ({ children }) => {
         tagsAsNodes: false,
         orphans: true,
         showDeletedNodes: true,
+        showDeletedEdges: false,
         query: "",
         queryIsCaseSensitive: false,
         allowedDegreesOfSeparation: 2,
@@ -90,7 +91,7 @@ export const GraphProvider = ({ children }) => {
 
     const resetLinksForNode = (node) => {
         setLinks(prevLinks => prevLinks.map(l => nodeEq(node, l.source) || nodeEq(node, l.target)
-            ? { ...l, source: l.source.id, target: l.target.id }
+            ? { ...l, source: nodeId(l.source), target: nodeId(l.target) }
             : l));
     }
 
@@ -122,6 +123,7 @@ export const GraphProvider = ({ children }) => {
                 })));
                 setLinks(linksRes.data.map(d => ({
                     id: d.id,
+                    deleted: d.is_deleted,
                     source: d.id_origin,
                     target: d.id_target,
                     value: d.weight
