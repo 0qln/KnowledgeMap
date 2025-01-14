@@ -23,59 +23,53 @@ function incoming(node, links) {
     return links.filter(l => nodeEq(node, l.target));
 }
 
-function isDangling(node, links, cache) {
+// expects the links source and target to be references!!
+function isDangling(node, links, cache = {}, nodeStates = new Map()) {
     const states = {
-        UNVISITED: 0,  // Node has not been processed yet
-        PROCESSING: 1, // Node is currently being processed
-        PROCESSED: 2   // Node's dangling status is confirmed
+        UNVISITED: 0,
+        WAITING: 1,
+        PROCESSED: 2,
+        PROCESSING: 3
     };
-    
-    const nodeState = {};
-    const stack = [{ id: node.id, state: states.UNVISITED }];
+
+    const stack = [node];
+    nodeStates.set(node.id, states.UNVISITED);
 
     while (stack.length) {
-        const { id, state } = stack.pop();
-
-        if (cache[id] !== undefined) continue;
-
-        switch (state) {
+        const node = stack.pop();
+        switch (nodeStates.get(node.id)) {
+            default: 
             case states.UNVISITED:
                 if (node.deleted) {
-                    cache[id] = true;
-                    nodeState[id] = states.PROCESSED;
-                    continue;
+                    cache[node.id] = true;
+                    nodeStates.set(node.id, states.PROCESSED);
+                    break;
                 }
 
-                if (nodeState[id] === states.PROCESSING) {
-                    // cycle detected !
-                    cache[id] = false;
-                    continue;
-                }
+                stack.push(node);
+                nodeStates.set(node.id, states.WAITING);
 
-                nodeState[id] = states.PROCESSING;
+                incoming(node, links).forEach(l => stack.push(l.source));
+                outgoing(node, links).forEach(l => stack.push(l.target));
 
-                stack.push({ id, state: states.PROCESSED });
+                nodeStates.set(node.id, states.PROCESSING);
+                break;
 
-                incoming(node, links)
-                    .forEach(l => {
-                        if (nodeState[l.source.id] !== states.PROCESSED) {
-                            stack.push({ id: l.source.id, state: states.UNVISITED });
-                        }
-                    });
+            case states.WAITING:
+                // cycle detected !
+                cache[node.id] = false;
+                nodeStates.set(node.id, states.PROCESSED);
+                break;
 
-                outgoing(node, links)
-                    .forEach(l => {
-                        if (nodeState[l.target.id] !== states.PROCESSED) {
-                            stack.push({ node: l.target.id, state: states.UNVISITED });
-                        }
-                    });
+            case states.PROCESSING:
+                const allIncomingDangling = () => incoming(node, links).every(l => cache[l.source.id] === true);
+                const allOutgoingDangling = () => outgoing(node, links).every(l => cache[l.target.id] === true);
+                cache[node.id] = allIncomingDangling() && allOutgoingDangling();
+                nodeStates.set(node.id, states.PROCESSED);
                 break;
 
             case states.PROCESSED:
-                const allIncomingDangling = incoming(id, links).every(l => cache[l.source.id] === true);
-                const allOutgoingDangling = outgoing(id, links).every(l => cache[l.target.id] === true);
-                cache[id] = allIncomingDangling && allOutgoingDangling;
-                nodeState[id] = states.PROCESSED;
+                // done
                 break;
         }
     }
@@ -100,13 +94,13 @@ function dragged(event) {
     event.subject.fy = event.y;
 }
 
-function dragended(simulation, event) {
+function dragended(event, simulation) {
     if (!event.active) simulation.current.alphaTarget(0);
     event.subject.fx = null;
     event.subject.fy = null;
 }
 
-function updateNodeRef(nodeRef, nodes, danglings, colorMap) {
+function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation) {
     console.log("update node ref")
     nodeRef.current = nodeRef.current.data(nodes, d => d.id);
     nodeRef.current.exit().remove();
@@ -160,17 +154,55 @@ function updateLinkRef(linkRef, links, danglings) {
 
 export const Graph = function ({ dim }) {
     const ref = useRef();
+    const linkRef = useRef(null);
+    const nodeRef = useRef(null);
     const {
         nodes,
         links,
         filters,
         displayRules,
         simulation,
-        removeNode,
-        removeLink,
         colorMap,
-        indexToId
     } = useGraph();
+
+    useEffect(() => {
+        const svg = d3.select(ref.current);
+        linkRef.current = svg.append("g").attr("stroke", "#888").selectAll();
+        nodeRef.current = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1).selectAll();
+
+        return d3.select(ref.current).selectAll("*").remove;
+    }, []);
+
+    simulation.current = useMemo(() => {
+        return d3
+            .forceSimulation()
+            .on("tick", ticked)
+            .stop();
+    }, []);
+
+    // vary the force based on the available width and height, 
+    // such that the graph stretches into the available space
+    // and does not remain square-ish.
+    //
+    const forceX = useMemo(() => {
+        const w = dim.width / 1000;
+        const scale = 1 / w;
+        return displayRules.forceX * scale;
+    }, [displayRules.forceX, dim]);
+    //
+    const forceY = useMemo(() => {
+        const h = dim.height / 1000;
+        const scale = 1 / h;
+        return displayRules.forceY * scale;
+    }, [displayRules.forceY, dim]);
+
+    const centerX = useMemo(() =>
+        displayRules.centerOffsetX + dim.width / 2,
+        [displayRules.centerOffsetX, dim]);
+
+    const centerY = useMemo(() =>
+        displayRules.centerOffsetY + dim.height / 2,
+        [displayRules.centerOffsetY, dim]);
 
     const { filteredNodes, filteredLinks } = useMemo(() => {
         const query = filters.queryIsCaseSensitive ? filters.query : filters.query.toLowerCase();
@@ -230,35 +262,14 @@ export const Graph = function ({ dim }) {
     }, [filteredNodes, aversionNodes]);
 
     const simulationLinks = useMemo(() => {
-        return filteredLinks.filter(l =>
-            simulationNodes.some(n => nodeEq(n, l.source)) &&
-            simulationNodes.some(n => nodeEq(n, l.target))
-        );
-    }, [filteredLinks]);
-
-    // vary the force based on the available width and height, 
-    // such that the graph stretches into the available space
-    // and does not remain square-ish.
-    //
-    const forceX = useMemo(() => {
-        const w = dim.width / 1000;
-        const scale = 1 / w;
-        return displayRules.forceX * scale;
-    }, [displayRules.forceX, dim]);
-    //
-    const forceY = useMemo(() => {
-        const h = dim.height / 1000;
-        const scale = 1 / h;
-        return displayRules.forceY * scale;
-    }, [displayRules.forceY, dim]);
-
-    const centerX = useMemo(() =>
-        displayRules.centerOffsetX + dim.width / 2,
-        [displayRules.centerOffsetX, dim]);
-
-    const centerY = useMemo(() =>
-        displayRules.centerOffsetY + dim.height / 2,
-        [displayRules.centerOffsetY, dim]);
+        simulation.current.nodes(simulationNodes);
+        simulation.current.force("link", d3.forceLink(filteredLinks).id(d => d.id).strength(d => {
+            const f = n => filteredLinks.filter(l => nodeEq(n, l.source) || nodeEq(n, l.target)).length;
+            const x = Math.min(2, (Math.sqrt(Math.sqrt(d.value))))
+            return x / Math.min(f(d.source), f(d.target));
+        }));
+        return filteredLinks;
+    }, [filteredLinks, simulationNodes, simulation.current]);
 
     // scale the force such that the graph expands when it has 
     // enough space to do so
@@ -269,40 +280,22 @@ export const Graph = function ({ dim }) {
                 (acc, r) => acc + (r.width * r.height), 0
             ),
         [dim, aversion, displayRules.avoidRects]);
-
-    const linkRef = useRef(null);
-    const nodeRef = useRef(null);
-
+    
     useEffect(() => {
-        const svg = d3.select(ref.current);
-        linkRef.current = svg.append("g").attr("stroke", "#888").selectAll();
-        nodeRef.current = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1).selectAll();
-
-        return d3.select(ref.current).selectAll("*").remove;
-    }, []);
+    }, [simulationNodes, simulation.current]);
 
     // dangling nodes are nodes that are either deleted themselfes,
     // or have only incoming and outgoing links that are dangling.
     // for large graphs, we will likely reach a stack overflow,
     // which is why we need to settle for an iterative approach instead
     // of a recursive one.
-    // const danglings = useMemo(() => {
-    //     console.log("Computing dangling nodes...");
-    //     const ret = filteredNodes.reduce((acc, n) => {
-    //         isDangling(n, filteredLinks, acc);
-    //         return acc;
-    //     }, {});
-    //     console.log(Object.values(ret).filter(x => x).length)
-    //     return ret;
-    // }, [filteredNodes, filteredLinks])
-
-    useEffect(() => {
-        simulation.current = d3
-            .forceSimulation()
-            .on("tick", ticked);
-
-        return simulation.current.stop;
-    }, []);
+    const danglings = useMemo(() => {
+        const states = new Map();
+        return filteredNodes.reduce((acc, n) => {
+            isDangling(n, simulationLinks, acc, states);
+            return acc;
+        }, {});
+    }, [simulationLinks, filteredNodes]);
 
     function ticked() {
         linkRef.current
@@ -324,59 +317,40 @@ export const Graph = function ({ dim }) {
 
     useEffect(() => {
         simulation.current.force("charge", d3.forceManyBody().strength(forceManyBody));
-        simulation.current.alpha(.4).restart();
-    }, [forceManyBody]);
+    }, [simulation.current, forceManyBody]);
 
     useEffect(() => {
         simulation.current.force("x", d3.forceX(centerX).strength(forceX));
-        simulation.current.alpha(.4).restart();
-    }, [forceX, centerX]);
+    }, [simulation.current, forceX, centerX]);
 
     useEffect(() => {
         simulation.current.force("y", d3.forceY(centerY).strength(forceY));
-        simulation.current.alpha(.4).restart();
-    }, [forceY, centerY]);
+    }, [simulation.current, forceY, centerY]);
+    
+    useEffect(() => {
+        updateNodeRef(nodeRef, [], [], () => "", simulation);
+    }, [danglings, simulation.current, nodeRef]);
+    
+    useEffect(() => {
+        updateLinkRef(linkRef, [], []);
+    }, [danglings, simulation.current, linkRef]);
 
     useEffect(() => {
-        console.log("udpate with force")
-        // console.log(simulationNodes);
-        // console.log(simulationLinks);
-        const danglings = filteredNodes.reduce((acc, n) => {
-            (isDangling(n, filteredLinks, acc));
-            return acc;
-        }, {});
-        console.log(danglings)
-        updateNodeRef(nodeRef, [], [], () => "#fff");
-        updateLinkRef(linkRef, [], []);
-        updateNodeRef(nodeRef, simulationNodes, danglings, colorMap);
-        updateLinkRef(linkRef, simulationLinks, danglings);
-        simulation.current.nodes(simulationNodes);
-        simulation.current.force("link", d3.forceLink(simulationLinks).id(d => d.id).strength(d => {
-            const f = n => simulationLinks.filter(l => nodeEq(n, l.source) || nodeEq(n, l.target)).length;
-            const x = Math.min(2, (Math.sqrt(Math.sqrt(d.value))))
-            return x / Math.min(f(d.source), f(d.target));
-        }));
-        simulation.current.alpha(.4).restart();
-    }, [simulationNodes, simulationLinks/* , danglings */, colorMap]);
-    //
-    // useEffect(() => {
-    //     updateLinkRef(simulationLinks);
-    //     simulation.current.force("link", d3.forceLink(simulationLinks).id(d => d.id).strength(d => {
-    //         const f = n => simulationLinks.filter(l => nodeEq(n, l.source) || nodeEq(n, l.target)).length;
-    //         const x = Math.min(2, (Math.sqrt(Math.sqrt(d.value))))
-    //         return x / Math.min(f(d.source), f(d.target));
-    //     }));
-    //     simulation.current.alpha(.4).restart();
-    // }, [simulationLinks]);
+        updateNodeRef(nodeRef, simulationNodes, danglings, colorMap, simulation);
+    }, [simulationNodes, colorMap, simulation.current]);
 
-    // useEffect(() => {
-    //     console.log(Object.values(danglings).filter(x => x).length)
-    //     if (!danglings) return;
-    //     updateNodeRef([]);
-    //     updateLinkRef([]);
-    //     updateNodeRef(simulationNodes);
-    //     updateLinkRef(simulationLinks);
-    // }, [danglings]);
+    useEffect(() => {
+        updateLinkRef(linkRef, simulationLinks, danglings);
+    }, [simulationLinks, danglings]);
+    
+    useEffect(() => {
+        simulation.current.restart();
+        return simulation.current.stop;
+    }, [simulation.current]);
+    
+    useEffect(() => {
+        simulation.current.alpha(.5).restart();
+    }, [simulation.current, forceX, centerX, forceY, centerY, forceManyBody, colorMap, danglings, simulationNodes, simulationLinks]);
 
     return (
         <svg id="graph" ref={ref} />

@@ -7,7 +7,7 @@ import { nodeEq } from '@/Components/Graph';
 function Node({ node }) {
     const { setNodes, resetLinksForNode } = useGraph();
     const onDelete = () => {
-        setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: true, index: undefined, x: undefined, y: undefined } : n));
+        setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: true } : n));
         resetLinksForNode(node);
     };
     const onRestore = () => {

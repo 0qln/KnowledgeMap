@@ -16,8 +16,8 @@ export const GraphProvider = ({ children }) => {
     const [filters, setFilters] = useState({
         tagBlacklist: [],
         tagsAsNodes: false,
-        orphans: false,
-        showDeletedNodes: false,
+        orphans: true,
+        showDeletedNodes: true,
         query: "",
         queryIsCaseSensitive: false,
         allowedDegreesOfSeparation: 2,
