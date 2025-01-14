@@ -18,6 +18,7 @@ export const GraphProvider = ({ children }) => {
         tagsAsNodes: false,
         orphans: true,
         showDeletedNodes: true,
+        showDeletedEdges: false,
         query: "",
         queryIsCaseSensitive: false,
         allowedDegreesOfSeparation: 2,

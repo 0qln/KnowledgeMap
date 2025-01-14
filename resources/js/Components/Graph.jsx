@@ -40,7 +40,7 @@ function isDangling(node, links, cache = {}, nodeStates = new Map()) {
     while (stack.length) {
         const node = stack.pop();
         switch (nodeStates.get(node.id)) {
-            default: 
+            default:
             case states.UNVISITED:
                 if (node.deleted) {
                     cache[node.id] = true;
@@ -228,20 +228,25 @@ export const Graph = function ({ dim }) {
             return node.tags.some(t => blacklistedTagIds.includes(t.id));
         }
 
-        const filteredNodes = nodes.filter(n => (
+        const filteredNodes = nodes.filter(n =>
             true
             && (filters.showDeletedNodes || !n.deleted)
             && (filters.orphans || !orphan(n, links))
             && !blacklisted(n)
             && matches(n, filters.allowedDegreesOfSeparation)
-        ));
-        const filteredLinks = links.filter(l => (
-            filteredNodes.some(n => nodeEq(n, l.source)) &&
-            filteredNodes.some(n => nodeEq(n, l.target))
-        ));
-        console.log(links.length);
-        console.log(filteredLinks.length);
-        console.log(filteredNodes.length);
+        );
+
+        function nodesExist(link) {
+            return (
+                filteredNodes.some(n => nodeEq(n, link.source)) &&
+                filteredNodes.some(n => nodeEq(n, link.target))
+            );
+        }
+        const filteredLinks = links.filter(l =>
+            true
+            && nodesExist(l)
+            && (filters.showDeletedEdges || !l.deleted)
+        );
         return { filteredNodes, filteredLinks };
     }, [filters, nodes, links]);
 
@@ -286,7 +291,7 @@ export const Graph = function ({ dim }) {
                 (acc, r) => acc + (r.width * r.height), 0
             ),
         [dim, aversion, displayRules.avoidRects]);
-    
+
     useEffect(() => {
     }, [simulationNodes, simulation.current]);
 
@@ -332,11 +337,11 @@ export const Graph = function ({ dim }) {
     useEffect(() => {
         simulation.current.force("y", d3.forceY(centerY).strength(forceY));
     }, [simulation.current, forceY, centerY]);
-    
+
     useEffect(() => {
         updateNodeRef(nodeRef, [], [], () => "", simulation);
     }, [danglings, simulation.current, nodeRef]);
-    
+
     useEffect(() => {
         updateLinkRef(linkRef, [], []);
     }, [danglings, simulation.current, linkRef]);
@@ -348,12 +353,12 @@ export const Graph = function ({ dim }) {
     useEffect(() => {
         updateLinkRef(linkRef, simulationLinks, danglings);
     }, [simulationLinks, danglings]);
-    
+
     useEffect(() => {
         simulation.current.restart();
         return simulation.current.stop;
     }, [simulation.current]);
-    
+
     useEffect(() => {
         simulation.current.alpha(.5).restart();
     }, [simulation.current, forceX, centerX, forceY, centerY, forceManyBody, colorMap, danglings, simulationNodes, simulationLinks]);
