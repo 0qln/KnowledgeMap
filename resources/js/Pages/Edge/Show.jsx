@@ -62,7 +62,7 @@ function Edge({ edge, from, to, }) {
                                 </Link>
                             )}
                         </div>
-                        <div className="dark:text-white text-xl inline break-words">
+                        <div className={`dark:text-white text-xl inline break-words ${edge.is_deleted ? "line-through" : ""}`}>
                             Edge #{edge.id}
                         </div>
                     </div>

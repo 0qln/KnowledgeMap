@@ -98,7 +98,7 @@ class EdgeController extends Controller
         $edge->is_deleted = false;
         $edge->save();
         
-        return to_route('dashboard.edge.show', $edge->id)
+        return to_route('dashboard.edges.show', $edge->id)
             ->with('success', 'Edge restored successfully');
     }
 }

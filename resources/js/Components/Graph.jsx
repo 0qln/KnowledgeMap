@@ -5,10 +5,12 @@ import * as d3 from "d3";
 import "lodash.product";
 import { range, product } from "lodash";
 
+export function nodeId(node) {
+    return typeof node == "object" ? node.id : node;
+}
+
 export function nodeEq(a, b) {
-    const aId = typeof a == "object" ? a.id : a;
-    const bId = typeof b == "object" ? b.id : b;
-    return aId === bId;
+    return nodeId(a) === nodeId(b);
 }
 
 function lerp(a, b, t) {
@@ -62,8 +64,8 @@ function isDangling(node, links, cache = {}, nodeStates = new Map()) {
                 break;
 
             case states.PROCESSING:
-                const allIncomingDangling = () => incoming(node, links).every(l => cache[l.source.id] === true);
-                const allOutgoingDangling = () => outgoing(node, links).every(l => cache[l.target.id] === true);
+                const allIncomingDangling = () => incoming(node, links).every(l => cache[nodeId(l.source)] === true);
+                const allOutgoingDangling = () => outgoing(node, links).every(l => cache[nodeId(l.target)] === true);
                 cache[node.id] = allIncomingDangling() && allOutgoingDangling();
                 nodeStates.set(node.id, states.PROCESSED);
                 break;
@@ -136,8 +138,9 @@ function updateLinkRef(linkRef, links, danglings) {
     linkRef.current.exit().remove();
     linkRef.current = linkRef.current.enter()
         .append("line")
+        .attr("stroke", d => d.deleted ? "#f00" : "#888")
         .attr("stroke-width", d => Math.sqrt(d.value))
-        .attr("stroke-opacity", d => d.deleted || danglings[d.source.id] || danglings[d.target.id] ? "0.1" : "0.6")
+        .attr("stroke-opacity", d => d.deleted || danglings[nodeId(d.source)] || danglings[nodeId(d.target)] ? "0.1" : "0.6")
         // .on("contextmenu", (e, d) => {
         //     removeLink(d.source, d.target);
         //     e.preventDefault();
@@ -167,7 +170,7 @@ export const Graph = function ({ dim }) {
 
     useEffect(() => {
         const svg = d3.select(ref.current);
-        linkRef.current = svg.append("g").attr("stroke", "#888").selectAll();
+        linkRef.current = svg.append("g").selectAll();
         nodeRef.current = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1).selectAll();
 
         return d3.select(ref.current).selectAll("*").remove;
@@ -236,6 +239,9 @@ export const Graph = function ({ dim }) {
             filteredNodes.some(n => nodeEq(n, l.source)) &&
             filteredNodes.some(n => nodeEq(n, l.target))
         ));
+        console.log(links.length);
+        console.log(filteredLinks.length);
+        console.log(filteredNodes.length);
         return { filteredNodes, filteredLinks };
     }, [filters, nodes, links]);
 
