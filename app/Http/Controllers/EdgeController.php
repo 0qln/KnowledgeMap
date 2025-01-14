@@ -25,7 +25,9 @@ class EdgeController extends Controller
      */
     public function create()
     {
-        //
+        return inertia(
+            'Edge/Create',
+        );
     }
 
     /**
@@ -33,7 +35,10 @@ class EdgeController extends Controller
      */
     public function store(StoreEdgeRequest $request)
     {
-        //
+        $data = $request->validated();
+        $edge = Edge::create($data);
+        return to_route('dashboard.edges.show', $edge->id)
+            ->with('success', 'Edge created successfully');
     }
 
     /**
