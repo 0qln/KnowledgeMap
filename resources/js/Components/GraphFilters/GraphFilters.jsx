@@ -3,6 +3,7 @@ import { Orphans } from "./Orphans";
 import { SearchNodeTitles } from "./SearchNodeTitles";
 import GraphFilterLayout from "../../Layouts/GraphFilterLayout";
 import { BlacklistTags } from "./BlacklistTags";
+import { Deletions } from "./Deletions";
 
 export function GraphFilters({ filters, updateFilter, tags }) {
     const searchFieldChanged = (name, value) => {
@@ -15,6 +16,7 @@ export function GraphFilters({ filters, updateFilter, tags }) {
                 <SearchNodeTitles filters={filters} searchFieldChanged={searchFieldChanged} />
                 <DegreesOfSeparation filters={filters} searchFieldChanged={searchFieldChanged} />
                 <Orphans filters={filters} searchFieldChanged={searchFieldChanged} />
+                <Deletions filters={filters} searchFieldChanged={searchFieldChanged} />
                 <BlacklistTags filters={filters} updateFilter={updateFilter} tags={tags} />
             </div>
         </GraphFilterLayout>

@@ -88,6 +88,22 @@ class NodeController extends Controller
      */
     public function destroy(Node $node)
     {
-        //
+        $node->is_deleted = true;
+        $node->save();
+        
+        return to_route('dashboard')
+            ->with('success', 'Node deleted successfully');
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore(Node $node)
+    {
+        $node->is_deleted = false;
+        $node->save();
+        
+        return to_route('dashboard.nodes.show', $node->id)
+            ->with('success', 'Node restored successfully');
     }
 }

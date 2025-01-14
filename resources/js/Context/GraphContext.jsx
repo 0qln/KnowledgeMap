@@ -1,6 +1,7 @@
 import React, { createContext, useState, useRef, useMemo, useCallback, useEffect } from "react";
 import * as d3 from "d3";
 import axios from "axios";
+import { nodeEq } from "@/Components/Graph";
 
 export const GraphContext = createContext();
 
@@ -15,7 +16,8 @@ export const GraphProvider = ({ children }) => {
     const [filters, setFilters] = useState({
         tagBlacklist: [],
         tagsAsNodes: false,
-        orphans: false,
+        orphans: true,
+        showDeletedNodes: true,
         query: "",
         queryIsCaseSensitive: false,
         allowedDegreesOfSeparation: 2,
@@ -32,7 +34,8 @@ export const GraphProvider = ({ children }) => {
     });
 
     const simulation = useRef(null);
-    const resetFn = useRef(null);
+    const updateNodeRef = useRef(null);
+    const updateLinkRef = useRef(null);
 
     const idToIndex = useCallback((x) => x - 1, []);
     const indexToId = useCallback((x) => x + 1, []);
@@ -85,6 +88,12 @@ export const GraphProvider = ({ children }) => {
         );
     };
 
+    const resetLinksForNode = (node) => {
+        setLinks(prevLinks => prevLinks.map(l => nodeEq(node, l.source) || nodeEq(node, l.target)
+            ? { ...l, source: l.source.id, target: l.target.id }
+            : l));
+    }
+
     // Fetch initial graph data.
     // We either have to send the graph data for every route
     // or we have to fetch it once in the first render. Fetching 
@@ -93,9 +102,9 @@ export const GraphProvider = ({ children }) => {
     // We will have to use axios to fetch the data.
     useEffect(() => {
         if (loading || (
-                links.length !== 0 && 
-                nodes.length !== 0 && 
-                tags.length !== 0)) return;
+            links.length !== 0 &&
+            nodes.length !== 0 &&
+            tags.length !== 0)) return;
 
         console.log("Fetching graph data...");
         const fetchData = async () => {
@@ -107,6 +116,7 @@ export const GraphProvider = ({ children }) => {
                 ]);
                 setNodes(nodesRes.data.map(d => ({
                     id: d.id,
+                    deleted: d.is_deleted,
                     title: d.title,
                     tags: d.tags,
                 })));
@@ -140,7 +150,6 @@ export const GraphProvider = ({ children }) => {
                 displayRules,
                 updateDisplayRule,
                 simulation,
-                resetFn,
                 removeNode,
                 removeLink,
                 tags,
@@ -148,7 +157,10 @@ export const GraphProvider = ({ children }) => {
                 colorMap,
                 idToIndex,
                 indexToId,
-                loading
+                resetLinksForNode,
+                loading,
+                updateLinkRef,
+                updateNodeRef,
             }}
         >
             {children}
