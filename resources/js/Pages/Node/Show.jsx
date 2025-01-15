@@ -19,11 +19,11 @@ function Node({ node }) {
         <div>
             <Head title={`${node.title}`} />
 
-            <div className="flex flex-row-reverse flex-between min-w-80">
+            <div className="flex flex-row-reverse flex-between min-w-70">
 
                 <div className="flex flex-col w-full space-y-3">
                     <div className="">
-                        <div className="float-right flex flex-row-reverse">
+                        <div className="float-right flex flex-row-reverse right-0">
                             <Link
                                 title="Back"
                                 href={route('dashboard')}

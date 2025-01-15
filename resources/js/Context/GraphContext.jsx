@@ -73,22 +73,6 @@ export const GraphProvider = ({ children }) => {
     const updateFilter = (key, value) => setFilters((prev) => ({ ...prev, [key]: value }));
     const updateDisplayRule = (key, value) => setDisplayRules((prev) => ({ ...prev, [key]: value }));
 
-    // todo: state update needed?
-    const removeNode = (node) => {
-        setNodes(prevNodes => prevNodes.filter(n => n !== node));
-        setLinks(prevLinks => prevLinks.filter(l => l.source !== node && l.target !== node));
-    };
-
-    const removeLink = (source, target) => {
-        setLinks((prevLinks) =>
-            prevLinks.filter(
-                link =>
-                    !(link.source === source && link.target === target) &&
-                    !(link.source === target && link.target === source)
-            )
-        );
-    };
-
     const resetLinksForNode = (node) => {
         setLinks(prevLinks => prevLinks.map(l => nodeEq(node, l.source) || nodeEq(node, l.target)
             ? { ...l, source: nodeId(l.source), target: nodeId(l.target) }
@@ -152,8 +136,6 @@ export const GraphProvider = ({ children }) => {
                 displayRules,
                 updateDisplayRule,
                 simulation,
-                removeNode,
-                removeLink,
                 tags,
                 setTags,
                 colorMap,
