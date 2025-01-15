@@ -1,28 +1,23 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EdgeController;
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\TagController;
-use Inertia\Inertia;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => false,
-    ]);
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+
+    return redirect()->route('login');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/nodes', [NodeController::class, 'index'])->name('dashboard.nodes');
     Route::get('/dashboard/nodes/create', [NodeController::class, 'create'])->name('dashboard.nodes.create');
     Route::post('/dashboard/nodes/store', [NodeController::class, 'store'])->name('dashboard.nodes.store');
@@ -48,10 +43,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/dashboard/tags/{tag}/destroy', [TagController::class, 'destroy'])->name('dashboard.tags.destroy');
 });
 
-Route::get('/auth/redirect', function () {
-    return Socialite::driver('azure')->redirect();
-})->name('microsoft.login');
-
-Route::get('/auth/callback', [AuthenticatedSessionController::class, 'store']);
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
