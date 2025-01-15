@@ -9,6 +9,15 @@ export function nodeId(node) {
     return typeof node == "object" ? node.id : node;
 }
 
+export function nodeFromId(id, nodes) {
+    return nodes.find(n => n.id === id);
+}
+
+// Safety: the caller guarantees, that nodes is a valid list
+function nodeFromIdUnsafe(id, nodes) {
+    return nodes[id - 1];
+}
+
 export function nodeEq(a, b) {
     return nodeId(a) === nodeId(b);
 }
@@ -103,7 +112,6 @@ function dragended(event, simulation) {
 }
 
 function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation) {
-    console.log("update node ref")
     nodeRef.current = nodeRef.current.data(nodes, d => d.id);
     nodeRef.current.exit().remove();
     nodeRef.current = nodeRef.current
@@ -133,7 +141,6 @@ function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation) {
 }
 
 function updateLinkRef(linkRef, links, danglings) {
-    console.log("update link ref")
     linkRef.current = linkRef.current.data(links, d => d.id);
     linkRef.current.exit().remove();
     linkRef.current = linkRef.current.enter()
@@ -149,10 +156,6 @@ function updateLinkRef(linkRef, links, danglings) {
             router.visit(route("dashboard.edges.show", d.id));
         })
         .merge(linkRef.current);
-
-    linkRef.current
-        .append("title")
-        .text(d => `${d.source.title} -> ${d.target.title}`);
 }
 
 export const Graph = function ({ dim }) {
@@ -217,9 +220,10 @@ export const Graph = function ({ dim }) {
         const matchOutgoing = filters.allowedSeparationOutgoing;
         const matchIncoming = filters.allowedSeparationIncoming;
         function matches(node, depth) {
+            // Safety: `nodes` is a valid list.
             return queryMatches(node) || depth > 0 && (
-                (matchIncoming && outgoing(node, links).some(l => matches(l.target, depth - 1))) ||
-                (matchOutgoing && incoming(node, links).some(l => matches(l.source, depth - 1)))
+                (matchIncoming && outgoing(node, links).some(l => matches(nodeFromIdUnsafe(nodeId(l.target), nodes), depth - 1))) ||
+                (matchOutgoing && incoming(node, links).some(l => matches(nodeFromIdUnsafe(nodeId(l.source), nodes), depth - 1)))
             );
         }
 
@@ -242,11 +246,13 @@ export const Graph = function ({ dim }) {
                 filteredNodes.some(n => nodeEq(n, link.target))
             );
         }
+
         const filteredLinks = links.filter(l =>
             true
             && nodesExist(l)
             && (filters.showDeletedEdges || !l.deleted)
         );
+
         return { filteredNodes, filteredLinks };
     }, [filters, nodes, links]);
 
