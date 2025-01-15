@@ -10,8 +10,8 @@ import Dropdown from "@/Components/Dropdown";
 
 export default function AppLayout({ childrenRight }) {
     const [refGraphContainer, dimGraphContainer] = useContainerDimensions();
-    const [refChildrenRight, dimChildrenRight] = useContainerDimensions();
-    const [refChildrenLeft, dimChildrenLeft] = useContainerDimensions();
+    const [refChildrenRight, dimChildrenRight] = useContainerDimensions(6);
+    const [refChildrenLeft, dimChildrenLeft] = useContainerDimensions(6);
     const { filters, updateFilter, updateDisplayRule, tags } = useGraph();
 
     useEffect(() => {
