@@ -77,15 +77,15 @@ function Node({ node }) {
                     </div>
                     <br />
                     <ExpansionMenu>
-                        <ExpansionMenu.Option id="tags">
-                            <ExpansionMenu.Option.Trigger>
+                        <ExpansionMenu.Option>
+                            <ExpansionMenu.Option.Trigger id="tags">
                                 <div className="flex flex-row dark:text-gray-200 items-center">
                                     <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
                                     <div>Tags</div>
                                     <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
                                 </div>
                             </ExpansionMenu.Option.Trigger>
-                            <ExpansionMenu.Option.Content>
+                            <ExpansionMenu.Option.Content id="tags">
                                 <div className="overflow-auto max-h-60">
                                     {node.tags && (
                                         <div className="flex flex-wrap text-sm break-words">
@@ -102,15 +102,15 @@ function Node({ node }) {
                                 </div>
                             </ExpansionMenu.Option.Content>
                         </ExpansionMenu.Option>
-                        <ExpansionMenu.Option id="links">
-                            <ExpansionMenu.Option.Trigger>
+                        <ExpansionMenu.Option>
+                            <ExpansionMenu.Option.Trigger id="links">
                                 <div className="flex flex-row dark:text-gray-200 items-center">
                                     <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
                                     <div>Links</div>
                                     <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
                                 </div>
                             </ExpansionMenu.Option.Trigger>
-                            <ExpansionMenu.Option.Content>
+                            <ExpansionMenu.Option.Content id="links">
                                 <div>
                                     <div className="overflow-auto max-h-60">
                                         {node.tags && (

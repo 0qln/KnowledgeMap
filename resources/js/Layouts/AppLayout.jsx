@@ -4,14 +4,13 @@ import { useContainerDimensions } from "../Hooks/useContainerDimensions";
 import { useGraph } from "@/Hooks/useGraph";
 import { useEffect } from "react";
 import { GraphFilters } from "../Components/GraphFilters/GraphFilters";
-import { Link } from "@inertiajs/react";
 import GraphDetailsLayout from "./GraphDetailsLayout";
 import Dropdown from "@/Components/Dropdown";
 
 export default function AppLayout({ childrenRight }) {
     const [refGraphContainer, dimGraphContainer] = useContainerDimensions();
-    const [refChildrenRight, dimChildrenRight] = useContainerDimensions(6);
-    const [refChildrenLeft, dimChildrenLeft] = useContainerDimensions(6);
+    const [refChildrenRight, dimChildrenRight] = useContainerDimensions(1);
+    const [refChildrenLeft, dimChildrenLeft] = useContainerDimensions();
     const { filters, updateFilter, updateDisplayRule, tags } = useGraph();
 
     useEffect(() => {
