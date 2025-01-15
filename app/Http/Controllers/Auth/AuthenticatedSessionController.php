@@ -44,12 +44,9 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+        $azureLogoutUrl = Socialite::driver('azure')->getLogoutUrl(route('login'));
+        return redirect($azureLogoutUrl);
     }
 
     /**
@@ -58,18 +55,8 @@ class AuthenticatedSessionController extends Controller
     public function handleMicrosoftCallback(): RedirectResponse
     {
         $user = Socialite::driver('azure')->user();
-
-        $user = User::updateOrCreate([
-            'azure_id' => $user->id,
-        ], [
-            'name' => $user->name,
-            'email' => $user->email,
-            'azure_token' => $user->token,
-            'azure_refresh_token' => $user->refreshToken,
-        ]);
-
+        $user = User::updateOrCreate([ 'email' => $user->email, ], [ 'name' => $user->name, ]);
         Auth::login($user);
-
         return redirect('/dashboard');
     }
 }
