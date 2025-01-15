@@ -20,22 +20,18 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Login', [
-            'canResetPassword' => Route::has('password.request'),
-            'status' => session('status'),
-        ]);
+        return Inertia::render('Auth/Login');
     }
 
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(): RedirectResponse
     {
-        $request->authenticate();
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Socialite::driver('azure')->user();
+        $user = User::updateOrCreate([ 'email' => $user->email, ], [ 'name' => $user->name, ]);
+        Auth::login($user);
+        return redirect('dashboard');
     }
 
     /**
@@ -47,16 +43,5 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $azureLogoutUrl = Socialite::driver('azure')->getLogoutUrl(route('login'));
         return redirect($azureLogoutUrl);
-    }
-
-    /**
-     * Handle Microsoft authentication callback.
-     */
-    public function handleMicrosoftCallback(): RedirectResponse
-    {
-        $user = Socialite::driver('azure')->user();
-        $user = User::updateOrCreate([ 'email' => $user->email, ], [ 'name' => $user->name, ]);
-        Auth::login($user);
-        return redirect('/dashboard');
     }
 }

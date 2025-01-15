@@ -48,16 +48,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/dashboard/tags/{tag}/destroy', [TagController::class, 'destroy'])->name('dashboard.tags.destroy');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
 Route::get('/auth/redirect', function () {
     return Socialite::driver('azure')->redirect();
 })->name('microsoft.login');
 
-Route::get('/auth/callback', [AuthenticatedSessionController::class, 'handleMicrosoftCallback']);
+Route::get('/auth/callback', [AuthenticatedSessionController::class, 'store']);
 
 require __DIR__.'/auth.php';
