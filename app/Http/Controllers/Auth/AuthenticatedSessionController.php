@@ -28,11 +28,18 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(): RedirectResponse
     {
-        $user = Socialite::driver('azure')->user();
-        $user = User::updateOrCreate([ 'email' => $user->email, ], [ 'name' => $user->name, ]);
+        $socialiteUser = Socialite::driver('azure')->user();
+
+        $user = User::updateOrCreate(
+            ['email' => $socialiteUser->email],
+            ['name' => $socialiteUser->name,]
+        );
+
         Auth::login($user);
+
         return redirect('dashboard');
     }
+
 
     /**
      * Destroy an authenticated session.
@@ -41,6 +48,8 @@ class AuthenticatedSessionController extends Controller
     {
         Auth::guard('web')->logout();
         $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         $azureLogoutUrl = Socialite::driver('azure')->getLogoutUrl(route('login'));
         return redirect($azureLogoutUrl);
     }
