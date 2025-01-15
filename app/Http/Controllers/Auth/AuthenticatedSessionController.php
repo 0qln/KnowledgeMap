@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -48,5 +50,26 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    /**
+     * Handle Microsoft authentication callback.
+     */
+    public function handleMicrosoftCallback(): RedirectResponse
+    {
+        $user = Socialite::driver('azure')->user();
+
+        $user = User::updateOrCreate([
+            'azure_id' => $user->id,
+        ], [
+            'name' => $user->name,
+            'email' => $user->email,
+            'azure_token' => $user->token,
+            'azure_refresh_token' => $user->refreshToken,
+        ]);
+
+        Auth::login($user);
+
+        return redirect('/dashboard');
     }
 }
