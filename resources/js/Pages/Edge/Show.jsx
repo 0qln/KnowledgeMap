@@ -6,6 +6,9 @@ import { useState } from 'react';
 import { Button } from '@headlessui/react';
 
 function Edge({ edge, from, to, }) {
+    edge.origin = from;
+    edge.target = to;
+
     const { setLinks, resetLinksForNode, updateDisplayRule } = useGraph();
     const onDelete = () => {
         setLinks(prevLinks => prevLinks.map(l => l.id === edge.id ? { ...l, deleted: true } : l));
@@ -22,7 +25,8 @@ function Edge({ edge, from, to, }) {
 
         setTimeout(() => {
             updateDisplayRule("highlightLinks", prev => prev.filter(id => id !== edge.id)); 
-            resetLinksForNode(edge);
+            resetLinksForNode(edge.origin);
+            resetLinksForNode(edge.target);
         }, 2000);
     };
     const highlightNode = node => {

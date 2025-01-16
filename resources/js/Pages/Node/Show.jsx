@@ -20,14 +20,22 @@ function Node({ node }) {
 
     const incomingLinks = incoming(node, links);
     const outgoingLinks = outgoing(node, links);
-    const highlightNode = node => {
-        updateDisplayRule("highlightNodes", [node.id]);
 
-        setTimeout(() => {
-            updateDisplayRule("highlightNodes", []); 
-            resetLinksForNode(node);
-        }, 2000);
-    };
+    const highlightNode = node => {
+        updateDisplayRule("highlightNodes", prev => [...prev.filter(id => id !== node.id), node.id]);
+    }
+    const dimmNode = node => {
+        updateDisplayRule("highlightNodes", prev => prev.filter(id => id !== node.id));
+        resetLinksForNode(node);
+    }
+    const highlightEdge = edge => {
+        updateDisplayRule("highlightLinks", prev => [...prev.filter(id => id !== edge.id), edge.id]);
+    }
+    const dimmEdge = edge => {
+        updateDisplayRule("highlightLinks", prev => prev.filter(id => id !== edge.id));
+        resetLinksForNode(edge.origin);
+        resetLinksForNode(edge.target);
+    }
 
     return (
         <div>
@@ -78,7 +86,10 @@ function Node({ node }) {
                                 </Link>
                             )}
                             <Button
-                                onClick={() => highlightNode(node)}
+                                onClick={() => {
+                                    highlightNode(node);
+                                    setTimeout(() => dimmNode(node), 2000);
+                                }}
                                 title="Highlight"
                                 className="rounded-md bg-slate-600 w-6 h-6 mr-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 p-0">
@@ -135,6 +146,9 @@ function Node({ node }) {
                                     <div className="flex flex-wrap text-sm break-words">
                                         {incomingLinks.map(link => (
                                             <Link
+                                                onMouseEnter={() => highlightEdge(link)}
+                                                onMouseLeave={() => setTimeout(() => dimmEdge(link), 200)}
+                                                onMouseDown={() => dimmEdge(link)}
                                                 href={route('dashboard.edges.show', link.id)}
                                                 key={link.id}
                                                 className="items-center m-1 hover:underline text-white py-1 px-2 transition duration-150 ease-in-out flex flex-row space-x-1">
@@ -158,6 +172,9 @@ function Node({ node }) {
                                     <div className="flex flex-col text-sm break-words">
                                         {outgoingLinks.map(link => (
                                             <Link
+                                                onMouseEnter={() => highlightEdge(link)}
+                                                onMouseLeave={() => setTimeout(() => dimmEdge(link), 200)}
+                                                onMouseDown={() => dimmEdge(link)}
                                                 href={route('dashboard.edges.show', link.id)}
                                                 key={link.id}
                                                 className="items-center m-1 hover:underline text-white py-1 px-2 transition duration-150 ease-in-out flex flex-row space-x-1">
@@ -171,7 +188,7 @@ function Node({ node }) {
                     </ExpansionMenu>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

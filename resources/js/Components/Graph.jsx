@@ -197,7 +197,7 @@ export const Graph = function ({ dim }) {
                 .append("animate")
                 .attr("attributeName", "stdDeviation")
                 .attr("values", `2;${x};2`)
-                .attr("dur", "4s")
+                .attr("dur", "3s")
                 .attr("repeatCount", "indefinite");
         }
         const dimm = defs.append("filter")
@@ -207,7 +207,11 @@ export const Graph = function ({ dim }) {
             .attr("width", "400%")
             .attr("height", "400%")
         dimm.append("feGaussianBlur")
-            .attr("stdDeviation", 2);
+            .attr("stdDeviation", 0)
+            .append("animate")
+            .attr("attributeName", "stdDeviation")
+            .attr("values", "0;2;0")
+            .attr("repeatCount", "1");
 
         linkRef.current = svg.append("g").selectAll();
         nodeRef.current = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1).selectAll();

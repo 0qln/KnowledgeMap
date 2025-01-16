@@ -1,9 +1,19 @@
+import { useGraph } from "@/Hooks/useGraph";
 import GraphDetailsLayout from "@/Layouts/GraphDetailsLayout";
 import GraphLayout from "@/Layouts/GraphLayout";
+import { Button } from "@headlessui/react";
 import { Head, Link } from "@inertiajs/react";
 
 
 const Tag = ({ tag }) => {
+    const { updateDisplayRule, resetLinksForNode } = useGraph();
+    const highlightNode = node => {
+        updateDisplayRule("highlightNodes", prev => [ ...prev.filter(id => id !== node.id), node.id ]);
+    }
+    const dimmNode = node => {
+        updateDisplayRule("highlightNodes", prev => prev.filter(id => id !== node.id)); 
+        resetLinksForNode(node);
+    }
     return (
         <div>
             <Head title={`${tag.title}`} />
@@ -28,6 +38,21 @@ const Tag = ({ tag }) => {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" className="stroke-white" />
                                     </svg>
                                 </Link>
+                                <Button
+                                    onClick={() => tag.nodes.forEach((node, i) => {
+                                        setTimeout(() => {
+                                            highlightNode(node);
+                                            setTimeout(() => {
+                                                dimmNode(node);
+                                            }, 2000)
+                                        }, i * 30);
+                                    })}
+                                    title="Highlight"
+                                    className="rounded-md bg-slate-600 w-6 h-6 mr-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 p-0">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672ZM12 2.25V4.5m5.834.166-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243-1.59-1.59" className="stroke-white" />
+                                    </svg>
+                                </Button>
                             </div>
                             <div className="dark:text-white text-xl inline break-words">
                                 {tag.name}
@@ -52,6 +77,9 @@ const Tag = ({ tag }) => {
                             <div className="flex flex-wrap text-sm break-words">
                                 {tag.nodes.map(node => (
                                     <Link
+                                        onMouseEnter={() => highlightNode(node)}
+                                        onMouseLeave={() => setTimeout(() => dimmNode(node), 200)}
+                                        onMouseDown={() => dimmNode(node)}
                                         href={route('dashboard.nodes.show', node.id)}
                                         key={node.id}
                                         className="items-center m-1 text-white bg-gray-700 py-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
