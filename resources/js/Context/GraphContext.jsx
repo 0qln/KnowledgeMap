@@ -30,6 +30,8 @@ export const GraphProvider = ({ children }) => {
         centerOffsetX: 0,
         centerOffsetY: 0,
         avoidRects: [],
+        highlightNodes: [],
+        highlightLinks: [],
     });
 
     const simulation = useRef(null);
@@ -69,7 +71,13 @@ export const GraphProvider = ({ children }) => {
     }, [tags]);
 
     const updateFilter = (key, value) => setFilters((prev) => ({ ...prev, [key]: value }));
-    const updateDisplayRule = (key, value) => setDisplayRules((prev) => ({ ...prev, [key]: value }));
+    const updateDisplayRule = (key, value) => {
+        setDisplayRules((prev) => {
+            const newValue = typeof value === 'function' ? value(prev[key]) : value;
+            return { ...prev, [key]: newValue };
+        });
+    };
+
 
     const resetLinksForNode = (node) => {
         setLinks(prevLinks => prevLinks.map(l => nodeEq(node, l.source) || nodeEq(node, l.target)

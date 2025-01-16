@@ -2,9 +2,11 @@ import { Head, Link } from '@inertiajs/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
 import { useGraph } from '@/Hooks/useGraph';
+import { useState } from 'react';
+import { Button } from '@headlessui/react';
 
 function Edge({ edge, from, to, }) {
-    const { setLinks, resetLinksForNode } = useGraph();
+    const { setLinks, resetLinksForNode, updateDisplayRule } = useGraph();
     const onDelete = () => {
         setLinks(prevLinks => prevLinks.map(l => l.id === edge.id ? { ...l, deleted: true } : l));
         resetLinksForNode(from);
@@ -15,6 +17,23 @@ function Edge({ edge, from, to, }) {
         resetLinksForNode(from);
         resetLinksForNode(to);
     };
+    const highlightEdge = edge => {
+        updateDisplayRule("highlightLinks", prev => [ ...prev.filter(id => id !== edge.id), edge.id ]);
+
+        setTimeout(() => {
+            updateDisplayRule("highlightLinks", prev => prev.filter(id => id !== edge.id)); 
+            resetLinksForNode(edge);
+        }, 2000);
+    };
+    const highlightNode = node => {
+        updateDisplayRule("highlightNodes", prev => [ ...prev.filter(id => id !== node.id), node.id ]);
+
+        setTimeout(() => {
+            updateDisplayRule("highlightNodes", prev => prev.filter(id => id !== node.id)); 
+            resetLinksForNode(node);
+        }, 2000);
+    };
+
     return (
         <div>
             <Head title={`Edge ${edge.id}`} />
@@ -61,6 +80,14 @@ function Edge({ edge, from, to, }) {
                                     </svg>
                                 </Link>
                             )}
+                            <Button
+                                onClick={() => highlightEdge(edge)}
+                                title="Highlight"
+                                className="rounded-md bg-slate-600 w-6 h-6 mr-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 p-0">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672ZM12 2.25V4.5m5.834.166-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243-1.59-1.59" className="stroke-white" />
+                                </svg>
+                            </Button>
                         </div>
                         <div className={`dark:text-white text-xl inline break-words ${edge.is_deleted ? "line-through" : ""}`}>
                             Edge #{edge.id}
@@ -68,6 +95,7 @@ function Edge({ edge, from, to, }) {
                     </div>
                     <div className="flex flex-row space-x-2 flex-wrap">
                         <Link 
+                            onMouseOver={() => highlightNode(from)}
                             href={route('dashboard.nodes.show', from.id)}
                             className="dark:text-gray-400 italic text-sm break-words hover:underline">
                             [#{from.id}] {from.title}
@@ -78,6 +106,7 @@ function Edge({ edge, from, to, }) {
                             </svg>
                         </div>
                         <Link 
+                            onMouseOver={() => highlightNode(to)}
                             href={route('dashboard.nodes.show', to.id)}
                             className="dark:text-gray-400 italic text-sm break-words hover:underline">
                             [#{to.id}] {to.title}

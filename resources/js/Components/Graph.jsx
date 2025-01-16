@@ -111,20 +111,17 @@ function dragended(event, simulation) {
     event.subject.fy = null;
 }
 
-function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation) {
+function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation, nodeHighlights) {
     nodeRef.current = nodeRef.current.data(nodes, d => d.id);
     nodeRef.current.exit().remove();
     nodeRef.current = nodeRef.current
         .enter()
         .append("circle")
         .attr("fill", d => d.deleted ? "#f00" : d.isAverionNode ? "#fff" : colorMap(d))
-        .attr("stroke-opacity", d => danglings[d.id] ? "0.15" : "1")
-        .attr("fill-opacity", d => danglings[d.id] ? "0.15" : "1")
+        .attr("stroke-opacity", d => danglings[d.id] || (nodeHighlights.length && !nodeHighlights.includes(d.id)) ? "0.15" : "1")
+        .attr("fill-opacity", d => danglings[d.id] || (nodeHighlights.length && !nodeHighlights.includes(d.id)) ? "0.15" : "1")
+        .attr("filter", d => nodeHighlights.includes(d.id) ? "url(#highlight)" : nodeHighlights.length ? "url(#dimm)" : "")
         .attr("r", d => d.isAverionNode ? 0 : 5)
-        // .on("contextmenu", (e, d) => {
-        //     removeNode(d);
-        //     e.preventDefault();
-        // }, { passive: false /* otherwise preventDefault() doesnt work */ })
         .on("click", (e, d) => {
             router.visit(route("dashboard.nodes.show", d.id));
         })
@@ -140,18 +137,23 @@ function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation) {
         .on("end", e => dragended(e, simulation)));
 }
 
-function updateLinkRef(linkRef, links, danglings) {
+function updateLinkRef(linkRef, links, danglings, nodeHighlights, linkHighlights) {
     linkRef.current = linkRef.current.data(links, d => d.id);
     linkRef.current.exit().remove();
     linkRef.current = linkRef.current.enter()
         .append("line")
         .attr("stroke", d => d.deleted ? "#f00" : "#888")
         .attr("stroke-width", d => Math.sqrt(d.value))
-        .attr("stroke-opacity", d => d.deleted || danglings[nodeId(d.source)] || danglings[nodeId(d.target)] ? "0.1" : "0.6")
-        // .on("contextmenu", (e, d) => {
-        //     removeLink(d.source, d.target);
-        //     e.preventDefault();
-        // }, { passive: false /* otherwise preventDefault() doesnt work */ })
+        .attr("stroke-opacity", d => {
+            const deleted = d.deleted;
+            const dangling = danglings[nodeId(d.source)] || danglings[nodeId(d.target)];
+            const sourceDimmed = nodeHighlights.length && !nodeHighlights.includes(nodeId(d.source));
+            const targetDimmed = nodeHighlights.length && !nodeHighlights.includes(nodeId(d.target));
+            const selfDimmed = linkHighlights.length && !linkHighlights.includes(d.id);
+            const dimmed = sourceDimmed || targetDimmed || selfDimmed;
+            return deleted || dangling || dimmed ? "0.1" : "0.6";
+        })
+        .attr("filter", d => linkHighlights.includes(d.id) ? "url(#highlight)" : linkHighlights.length ? "url(#dimm)" : "")
         .on("click", (e, d) => {
             router.visit(route("dashboard.edges.show", d.id));
         })
@@ -173,10 +175,44 @@ export const Graph = function ({ dim }) {
 
     useEffect(() => {
         const svg = d3.select(ref.current);
+
+        // Define the filter with animation
+        const defs = svg.append("defs");
+        const highlight = defs.append("filter")
+            .attr("id", "highlight")
+            .attr("x", "-500")
+            .attr("y", "-500")
+            .attr("width", "1000")
+            .attr("height", "1000");
+        
+        for (let i = 0; i < 20; i += 3) {
+            const color = "white";
+            const x = i + 1;
+            highlight.append("feDropShadow")
+                .attr("dx", "0")
+                .attr("dy", "0")
+                .attr("flood-color", color)
+                .attr("flood-opacity", "1")
+                .attr("stdDeviation", x / 2)
+                .append("animate")
+                .attr("attributeName", "stdDeviation")
+                .attr("values", `2;${x};2`)
+                .attr("dur", "4s")
+                .attr("repeatCount", "indefinite");
+        }
+        const dimm = defs.append("filter")
+            .attr("id", "dimm")
+            .attr("x", "-100%")
+            .attr("y", "-100%")
+            .attr("width", "400%")
+            .attr("height", "400%")
+        dimm.append("feGaussianBlur")
+            .attr("stdDeviation", 2);
+
         linkRef.current = svg.append("g").selectAll();
         nodeRef.current = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1).selectAll();
 
-        return d3.select(ref.current).selectAll("*").remove;
+        return () => d3.select(ref.current).selectAll("*").remove();
     }, []);
 
     simulation.current = useMemo(() => {
@@ -298,9 +334,6 @@ export const Graph = function ({ dim }) {
             ),
         [dim, aversion, displayRules.avoidRects]);
 
-    useEffect(() => {
-    }, [simulationNodes, simulation.current]);
-
     // dangling nodes are nodes that are either deleted themselfes,
     // or have only incoming and outgoing links that are dangling.
     // for large graphs, we will likely reach a stack overflow,
@@ -345,24 +378,24 @@ export const Graph = function ({ dim }) {
     }, [simulation.current, forceY, centerY]);
 
     useEffect(() => {
-        updateNodeRef(nodeRef, [], [], () => "", simulation);
-    }, [danglings, simulation.current, nodeRef]);
+        updateNodeRef(nodeRef, [], [], () => "", simulation, []);
+    }, [danglings, simulation.current, nodeRef, displayRules.highlightNodes]);
 
     useEffect(() => {
-        updateLinkRef(linkRef, [], []);
-    }, [danglings, simulation.current, linkRef]);
+        updateLinkRef(linkRef, [], [], [], []);
+    }, [danglings, simulation.current, linkRef, displayRules.highlightNodes, displayRules.highlightLinks]);
 
     useEffect(() => {
-        updateNodeRef(nodeRef, simulationNodes, danglings, colorMap, simulation);
-    }, [simulationNodes, colorMap, simulation.current]);
+        updateNodeRef(nodeRef, simulationNodes, danglings, colorMap, simulation, displayRules.highlightNodes);
+    }, [simulationNodes, colorMap, simulation.current, displayRules.highlightNodes]);
 
     useEffect(() => {
-        updateLinkRef(linkRef, simulationLinks, danglings);
-    }, [simulationLinks, danglings]);
+        updateLinkRef(linkRef, simulationLinks, danglings, displayRules.highlightNodes, displayRules.highlightLinks);
+    }, [simulationLinks, danglings, displayRules.highlightNodes, displayRules.highlightLinks]);
 
     useEffect(() => {
         simulation.current.restart();
-        return simulation.current.stop;
+        return () => simulation.current.stop();
     }, [simulation.current]);
 
     useEffect(() => {

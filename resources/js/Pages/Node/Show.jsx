@@ -4,9 +4,11 @@ import GraphLayout from '@/Layouts/GraphLayout';
 import { useGraph } from '@/Hooks/useGraph';
 import ExpansionMenu from '@/Components/ExpansionMenu';
 import { incoming, outgoing } from '@/Components/Graph';
+import { Button } from '@headlessui/react';
+import { useState } from 'react';
 
 function Node({ node }) {
-    const { setNodes, resetLinksForNode, links } = useGraph();
+    const { setNodes, resetLinksForNode, links, updateDisplayRule } = useGraph();
     const onDelete = () => {
         setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: true } : n));
         resetLinksForNode(node);
@@ -18,6 +20,14 @@ function Node({ node }) {
 
     const incomingLinks = incoming(node, links);
     const outgoingLinks = outgoing(node, links);
+    const highlightNode = node => {
+        updateDisplayRule("highlightNodes", [node.id]);
+
+        setTimeout(() => {
+            updateDisplayRule("highlightNodes", []); 
+            resetLinksForNode(node);
+        }, 2000);
+    };
 
     return (
         <div>
@@ -67,6 +77,14 @@ function Node({ node }) {
                                     </svg>
                                 </Link>
                             )}
+                            <Button
+                                onClick={() => highlightNode(node)}
+                                title="Highlight"
+                                className="rounded-md bg-slate-600 w-6 h-6 mr-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 p-0">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672ZM12 2.25V4.5m5.834.166-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243-1.59-1.59" className="stroke-white" />
+                                </svg>
+                            </Button>
                         </div>
                         <div className={`dark:text-white text-xl inline break-words ${node.is_deleted ? "line-through" : ""}`}>
                             {node.title}
