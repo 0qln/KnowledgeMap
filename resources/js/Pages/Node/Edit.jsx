@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
@@ -18,7 +18,7 @@ function Node({ node, }) {
         tags: node.tags.map(t => t.id),
     });
 
-    const { tags, setNodes } = useGraph();
+    const { tags, setTags, setNodes } = useGraph();
 
     const submit = (e) => {
         e.preventDefault();
@@ -115,6 +115,7 @@ function Node({ node, }) {
                             <TagList
                                 node={node}
                                 allTags={tags}
+                                setAllTags={setTags}
                                 data={data}
                                 setData={setData}
                                 setNodes={setNodes} />
@@ -126,15 +127,16 @@ function Node({ node, }) {
     );
 }
 
-function TagList({ node, allTags, data, setData, setNodes }) {
+function TagList({ node, allTags, setAllTags, data, setData, setNodes }) {
     const [nodeTags, setNodeTags] = useState(node.tags);
+    const [newTags, setNewTags] = useState([]);
     const [addTagExpanded, setAddTagExpanded] = useState(true);
     const [tagQueryLimit, setTagQueryLimit] = useState(10);
     const [tagsQuery, setTagsQuery] = useState("");
 
     const availableTags = useMemo(() =>
         allTags.filter(tag => !nodeTags.some(t => t.id === tag.id)),
-        [nodeTags]);
+        [nodeTags, allTags]);
 
     const sortedTags = useMemo(() => (fuzzysort
         .go(tagsQuery, availableTags, {
@@ -172,6 +174,16 @@ function TagList({ node, allTags, data, setData, setNodes }) {
         tags.length && addTag(tags[0])
     };
 
+    const addNewTag = async (name) => {
+        const values = { name };
+        const response = await axios.post(route('dashboard.tags.store'), values);
+        const tag = response.data;
+        setAllTags(prev => [...prev, tag]);
+        addTag(tag)
+    }
+
+    const shouldAddNewTag = !sortedTags.length && tagsQuery.length;
+
     return (
         <div className="dark:text-gray-200">
             <InputLabel>Tags</InputLabel>
@@ -192,11 +204,25 @@ function TagList({ node, allTags, data, setData, setNodes }) {
                     </div>
                 ))}
                 <Button
-                    onClick={() => addFirstTag(sortedTags)}
+                    onClick={() => {
+                        if (sortedTags.length && sortedTags[0].name === tagsQuery) {
+                            return addFirstTag(sortedTags);
+                        }
+                        if (tagsQuery.length) {
+                            return addNewTag(tagsQuery);
+                        }
+                    }}
                     className="items-center m-1 text-white bg-gray-700 p-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
                     <TextInput
                         placeholder="add a tag"
-                        onKeyDown={e => e.key === 'Enter' && addFirstTag(sortedTags)}
+                        onKeyDown={e => e.key === 'Enter' && (() => {
+                            if (shouldAddNewTag) {
+                                addNewTag(tagsQuery);
+                            }
+                            else {
+                                addFirstTag(sortedTags);
+                            }
+                        })()}
                         onChange={e => setTagsQuery(e.target.value)}
                         size="10"
                         className="py-0 flex flex-shrink" />
@@ -207,30 +233,38 @@ function TagList({ node, allTags, data, setData, setNodes }) {
                 {addTagExpanded && (
                     <>
                         <div className="w-full" />
-                        <div className="m-2">
-                            Available tags:
-                        </div>
-                        <div className="flex flex-row flex-wrap items-center">
-                            {sortedTags
-                                .slice(0, tagQueryLimit)
-                                .map(tag => (
-                                    <Button
-                                        onClick={() => addTag(tag)}
-                                        className="items-center m-1 text-white bg-gray-700 p-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1"
-                                        key={tag.id}>
-                                        {tag.name}
-                                    </Button>
-                                ))}
-                            {sortedTags.length > tagQueryLimit && (
-                                <div className="m-1 items-center flex flex-row">
-                                    <svg viewBox="0 0 32 24" xmlns="http://www.w3.org/2000/svg" className="size-6 fill-gray-500">
-                                        <circle r="4" cx="4" cy="12" />
-                                        <circle r="4" cx="16" cy="12" />
-                                        <circle r="4" cx="28" cy="12" />
-                                    </svg>
+                        {!shouldAddNewTag ? (
+                            <>
+                                <div className="m-2">
+                                    Available tags:
                                 </div>
-                            )}
-                        </div>
+                                <div className="flex flex-row flex-wrap items-center">
+                                    {sortedTags
+                                        .slice(0, tagQueryLimit)
+                                        .map(tag => (
+                                            <Button
+                                                onClick={() => addTag(tag)}
+                                                className="items-center m-1 text-white bg-gray-700 p-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1"
+                                                key={tag.id}>
+                                                {tag.name}
+                                            </Button>
+                                        ))}
+                                    {sortedTags.length > tagQueryLimit && (
+                                        <div className="m-1 items-center flex flex-row">
+                                            <svg viewBox="0 0 32 24" xmlns="http://www.w3.org/2000/svg" className="size-6 fill-gray-500">
+                                                <circle r="4" cx="4" cy="12" />
+                                                <circle r="4" cx="16" cy="12" />
+                                                <circle r="4" cx="28" cy="12" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="m-2">
+                                Create a new tag!
+                            </div>
+                        )}
                     </>
                 )}
             </div>

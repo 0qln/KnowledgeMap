@@ -14,7 +14,8 @@ class StoreTagRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => [ 'required', 'string', 'max:256' ],
+            'description' => [ 'nullable', 'string', 'max:1024' ],
         ];
     }
 }
