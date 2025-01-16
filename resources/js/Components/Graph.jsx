@@ -121,10 +121,6 @@ function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation) {
         .attr("stroke-opacity", d => danglings[d.id] ? "0.15" : "1")
         .attr("fill-opacity", d => danglings[d.id] ? "0.15" : "1")
         .attr("r", d => d.isAverionNode ? 0 : 5)
-        // .on("contextmenu", (e, d) => {
-        //     removeNode(d);
-        //     e.preventDefault();
-        // }, { passive: false /* otherwise preventDefault() doesnt work */ })
         .on("click", (e, d) => {
             router.visit(route("dashboard.nodes.show", d.id));
         })
@@ -148,10 +144,6 @@ function updateLinkRef(linkRef, links, danglings) {
         .attr("stroke", d => d.deleted ? "#f00" : "#888")
         .attr("stroke-width", d => Math.sqrt(d.value))
         .attr("stroke-opacity", d => d.deleted || danglings[nodeId(d.source)] || danglings[nodeId(d.target)] ? "0.1" : "0.6")
-        // .on("contextmenu", (e, d) => {
-        //     removeLink(d.source, d.target);
-        //     e.preventDefault();
-        // }, { passive: false /* otherwise preventDefault() doesnt work */ })
         .on("click", (e, d) => {
             router.visit(route("dashboard.edges.show", d.id));
         })
