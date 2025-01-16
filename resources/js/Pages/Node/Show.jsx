@@ -22,6 +22,7 @@ function Node({ node }) {
 
         setTimeout(() => {
             updateDisplayRule("highlightNodes", []); 
+            resetLinksForNode(node);
             setIsHighlighted(false);
         }, 3000);
     }

@@ -138,7 +138,6 @@ function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation, highligh
 }
 
 function updateLinkRef(linkRef, links, danglings, nodeHighlights) {
-    console.log(nodeHighlights)
     linkRef.current = linkRef.current.data(links, d => d.id);
     linkRef.current.exit().remove();
     linkRef.current = linkRef.current.enter()
@@ -211,7 +210,7 @@ export const Graph = function ({ dim }) {
         linkRef.current = svg.append("g").selectAll();
         nodeRef.current = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1).selectAll();
 
-        return d3.select(ref.current).selectAll("*").remove;
+        return () => d3.select(ref.current).selectAll("*").remove();
     }, []);
 
     simulation.current = useMemo(() => {
@@ -333,9 +332,6 @@ export const Graph = function ({ dim }) {
             ),
         [dim, aversion, displayRules.avoidRects]);
 
-    useEffect(() => {
-    }, [simulationNodes, simulation.current]);
-
     // dangling nodes are nodes that are either deleted themselfes,
     // or have only incoming and outgoing links that are dangling.
     // for large graphs, we will likely reach a stack overflow,
@@ -380,24 +376,24 @@ export const Graph = function ({ dim }) {
     }, [simulation.current, forceY, centerY]);
 
     useEffect(() => {
+        updateNodeRef(nodeRef, [], [], () => "", simulation, []);
     }, [danglings, simulation.current, nodeRef, displayRules.highlightNodes]);
 
     useEffect(() => {
+        updateLinkRef(linkRef, [], [], []);
     }, [danglings, simulation.current, linkRef, displayRules.highlightNodes]);
 
     useEffect(() => {
-        updateNodeRef(nodeRef, [], [], () => "", simulation, []);
         updateNodeRef(nodeRef, simulationNodes, danglings, colorMap, simulation, displayRules.highlightNodes);
     }, [simulationNodes, colorMap, simulation.current, displayRules.highlightNodes]);
 
     useEffect(() => {
-        updateLinkRef(linkRef, [], [], []);
         updateLinkRef(linkRef, simulationLinks, danglings, displayRules.highlightNodes);
     }, [simulationLinks, danglings, displayRules.highlightNodes]);
 
     useEffect(() => {
         simulation.current.restart();
-        return simulation.current.stop;
+        return () => simulation.current.stop();
     }, [simulation.current]);
 
     useEffect(() => {
