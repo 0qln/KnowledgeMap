@@ -11,8 +11,6 @@ export const GraphProvider = ({ children }) => {
     const [tags, setTags] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    console.log("graph provider loaded");
-
     const [filters, setFilters] = useState({
         tagBlacklist: [],
         tagsAsNodes: false,

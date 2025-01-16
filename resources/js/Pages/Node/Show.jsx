@@ -2,10 +2,11 @@ import { Head, Link } from '@inertiajs/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
 import { useGraph } from '@/Hooks/useGraph';
-import { nodeEq } from '@/Components/Graph';
+import ExpansionMenu from '@/Components/ExpansionMenu';
+import { incoming, outgoing } from '@/Components/Graph';
 
 function Node({ node }) {
-    const { setNodes, resetLinksForNode } = useGraph();
+    const { setNodes, resetLinksForNode, links } = useGraph();
     const onDelete = () => {
         setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: true } : n));
         resetLinksForNode(node);
@@ -14,6 +15,9 @@ function Node({ node }) {
         setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: false } : n));
         resetLinksForNode(node);
     };
+
+    const incomingLinks = incoming(node, links);
+    const outgoingLinks = outgoing(node, links);
 
     return (
         <div>
@@ -48,7 +52,7 @@ function Node({ node }) {
                                     onSuccess={onRestore}
                                     className="rounded-md bg-slate-600 w-6 h-6 mr-2 transition duration-150 ease-in-out hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 p-0.5">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"  className="stroke-white"/>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" className="stroke-white" />
                                     </svg>
                                 </Link>
                             ) : (
@@ -72,27 +76,81 @@ function Node({ node }) {
                         [#{node.id}] {node.full_name}
                     </div>
                     <br />
-                    <div className="dark:text-gray-200 text-sm break-words w-full">
+                    <div className="dark:text-gray-200 text-sm break-words w-full max-h-80 overflow-auto">
                         {node.description}
                     </div>
                     <br />
-                    <div className="flex flex-row dark:text-gray-200 items-center">
-                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
-                        <div>Tags</div>
-                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
-                    </div>
-                    {node.tags && (
-                        <div className="flex flex-wrap text-sm break-words">
-                            {node.tags.map(tag => (
-                                <Link
-                                    href={route('dashboard.tags.show', tag.id)}
-                                    key={tag.id}
-                                    className="items-center m-1 text-white bg-gray-700 py-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
-                                    {tag.name}
-                                </Link>
-                            ))}
-                        </div>
-                    )}
+                    <ExpansionMenu multiple={false} defaultOpen={"tags"}>
+                        {!!node.tags.length && (
+                            <div className="mb-2">
+                                <ExpansionMenu.Trigger id="tags">
+                                    <div className="flex flex-row dark:text-gray-200 items-center">
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                        <div>Tags</div>
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                    </div>
+                                </ExpansionMenu.Trigger>
+                                <ExpansionMenu.Content id="tags" className="overflow-auto max-h-60">
+                                    <div className="flex flex-wrap text-sm break-words">
+                                        {node.tags.map(tag => (
+                                            <Link
+                                                href={route('dashboard.tags.show', tag.id)}
+                                                key={tag.id}
+                                                className="items-center m-1 text-white bg-gray-700 py-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
+                                                {tag.name}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </ExpansionMenu.Content>
+                            </div>
+                        )}
+                        {!!incomingLinks.length && (
+                            <div className="mb-2">
+                                <ExpansionMenu.Trigger id="incoming-links">
+                                    <div className="flex flex-row dark:text-gray-200 items-center">
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                        <div>Incoming Links</div>
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                    </div>
+                                </ExpansionMenu.Trigger>
+                                <ExpansionMenu.Content id="incoming-links" className="overflow-auto max-h-60">
+                                    <div className="flex flex-wrap text-sm break-words">
+                                        {incomingLinks.map(link => (
+                                            <Link
+                                                href={route('dashboard.edges.show', link.id)}
+                                                key={link.id}
+                                                className="items-center m-1 hover:underline text-white py-1 px-2 transition duration-150 ease-in-out flex flex-row space-x-1">
+                                                {link.source.title}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </ExpansionMenu.Content>
+                            </div>
+                        )}
+                        {!!outgoingLinks.length && (
+                            <div className="mb-2">
+                                <ExpansionMenu.Trigger id="outgoing-links">
+                                    <div className="flex flex-row dark:text-gray-200 items-center">
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                        <div>Outgoing Links</div>
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                    </div>
+                                </ExpansionMenu.Trigger>
+                                <ExpansionMenu.Content id="outgoing-links" className="overflow-auto max-h-60">
+                                    <div className="flex flex-col text-sm break-words">
+                                        {outgoingLinks.map(link => (
+                                            <Link
+                                                href={route('dashboard.edges.show', link.id)}
+                                                key={link.id}
+                                                className="items-center m-1 hover:underline text-white py-1 px-2 transition duration-150 ease-in-out flex flex-row space-x-1">
+                                                {link.target.title}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </ExpansionMenu.Content>
+                            </div>
+                        )}
+                    </ExpansionMenu>
                 </div>
             </div>
         </div>

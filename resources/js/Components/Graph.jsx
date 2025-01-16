@@ -26,11 +26,11 @@ function lerp(a, b, t) {
     return a + (b - a) * t;
 }
 
-function outgoing(node, links) {
+export function outgoing(node, links) {
     return links.filter(l => nodeEq(node, l.source));
 }
 
-function incoming(node, links) {
+export function incoming(node, links) {
     return links.filter(l => nodeEq(node, l.target));
 }
 
