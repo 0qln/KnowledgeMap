@@ -112,16 +112,15 @@ function dragended(event, simulation) {
 }
 
 function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation, highlights) {
-    console.log(highlights);
     nodeRef.current = nodeRef.current.data(nodes, d => d.id);
     nodeRef.current.exit().remove();
     nodeRef.current = nodeRef.current
         .enter()
         .append("circle")
         .attr("fill", d => d.deleted ? "#f00" : d.isAverionNode ? "#fff" : colorMap(d))
-        .attr("stroke-opacity", d => danglings[d.id] ? "0.15" : "1")
-        .attr("fill-opacity", d => danglings[d.id] ? "0.15" : "1")
-        .attr("filter", d => highlights.includes(d.id)  ? "url(#highlight)" : "")
+        .attr("stroke-opacity", d => danglings[d.id] || (highlights.length && !highlights.includes(d.id)) ? "0.15" : "1")
+        .attr("fill-opacity", d => danglings[d.id] || (highlights.length && !highlights.includes(d.id)) ? "0.15" : "1")
+        .attr("filter", d => highlights.includes(d.id) ? "url(#highlight)" : highlights.length ? "url(#dimm)" : "")
         .attr("r", d => d.isAverionNode ? 0 : 5)
         .on("click", (e, d) => {
             router.visit(route("dashboard.nodes.show", d.id));
@@ -138,14 +137,22 @@ function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation, highligh
         .on("end", e => dragended(e, simulation)));
 }
 
-function updateLinkRef(linkRef, links, danglings) {
+function updateLinkRef(linkRef, links, danglings, nodeHighlights) {
+    console.log(nodeHighlights)
     linkRef.current = linkRef.current.data(links, d => d.id);
     linkRef.current.exit().remove();
     linkRef.current = linkRef.current.enter()
         .append("line")
         .attr("stroke", d => d.deleted ? "#f00" : "#888")
         .attr("stroke-width", d => Math.sqrt(d.value))
-        .attr("stroke-opacity", d => d.deleted || danglings[nodeId(d.source)] || danglings[nodeId(d.target)] ? "0.1" : "0.6")
+        .attr("stroke-opacity", d => {
+            const deleted = d.deleted;
+            const dangling = danglings[nodeId(d.source)] || danglings[nodeId(d.target)];
+            const sourceDimmed = nodeHighlights.length && !nodeHighlights.includes(nodeId(d.source));
+            const targetDimmed = nodeHighlights.length && !nodeHighlights.includes(nodeId(d.target));
+            const dimmed = sourceDimmed || targetDimmed;
+            return deleted || dangling || dimmed ? "0.1" : "0.6";
+        })
         .on("click", (e, d) => {
             router.visit(route("dashboard.edges.show", d.id));
         })
@@ -170,19 +177,28 @@ export const Graph = function ({ dim }) {
 
         // Define the filter with animation
         const defs = svg.append("defs");
-        defs.append("filter")
+        const highlight = defs.append("filter")
             .attr("id", "highlight")
-            .attr("x", "-100%")
-            .attr("y", "-100%")
-            .attr("width", "400%")
-            .attr("height", "400%")
-            .append("feGaussianBlur")
-            .attr("stdDeviation", 0)
-            .append("animate")
-            .attr("attributeName", "stdDeviation")
-            .attr("values", "0;10;0")
-            .attr("dur", "2s")
-            .attr("repeatCount", "indefinite");
+            .attr("x", "-500")
+            .attr("y", "-500")
+            .attr("width", "1000")
+            .attr("height", "1000");
+        
+        for (let i = 0; i < 20; i += 3) {
+            const color = "white";
+            const x = i + 1;
+            highlight.append("feDropShadow")
+                .attr("dx", "0")
+                .attr("dy", "0")
+                .attr("flood-color", color)
+                .attr("flood-opacity", "1")
+                .attr("stdDeviation", x / 2)
+                .append("animate")
+                .attr("attributeName", "stdDeviation")
+                .attr("values", `2;${x};2`)
+                .attr("dur", "4s")
+                .attr("repeatCount", "indefinite");
+        }
         const dimm = defs.append("filter")
             .attr("id", "dimm")
             .attr("x", "-100%")
@@ -190,9 +206,8 @@ export const Graph = function ({ dim }) {
             .attr("width", "400%")
             .attr("height", "400%")
         dimm.append("feGaussianBlur")
-            .attr("stdDeviation", 5);
-        // dimm.append("feOp")g
-        
+            .attr("stdDeviation", 2);
+
         linkRef.current = svg.append("g").selectAll();
         nodeRef.current = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1).selectAll();
 
@@ -365,20 +380,20 @@ export const Graph = function ({ dim }) {
     }, [simulation.current, forceY, centerY]);
 
     useEffect(() => {
-        updateNodeRef(nodeRef, [], [], () => "", simulation, []);
     }, [danglings, simulation.current, nodeRef, displayRules.highlightNodes]);
 
     useEffect(() => {
-        updateLinkRef(linkRef, [], []);
-    }, [danglings, simulation.current, linkRef]);
+    }, [danglings, simulation.current, linkRef, displayRules.highlightNodes]);
 
     useEffect(() => {
+        updateNodeRef(nodeRef, [], [], () => "", simulation, []);
         updateNodeRef(nodeRef, simulationNodes, danglings, colorMap, simulation, displayRules.highlightNodes);
     }, [simulationNodes, colorMap, simulation.current, displayRules.highlightNodes]);
 
     useEffect(() => {
-        updateLinkRef(linkRef, simulationLinks, danglings);
-    }, [simulationLinks, danglings]);
+        updateLinkRef(linkRef, [], [], []);
+        updateLinkRef(linkRef, simulationLinks, danglings, displayRules.highlightNodes);
+    }, [simulationLinks, danglings, displayRules.highlightNodes]);
 
     useEffect(() => {
         simulation.current.restart();

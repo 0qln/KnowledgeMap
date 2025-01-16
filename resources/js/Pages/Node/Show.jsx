@@ -2,11 +2,12 @@ import { Head, Link } from '@inertiajs/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
 import { useGraph } from '@/Hooks/useGraph';
-import { nodeEq } from '@/Components/Graph';
 import { Button } from '@headlessui/react';
+import { useState } from 'react';
 
 function Node({ node }) {
     const { setNodes, resetLinksForNode, updateDisplayRule } = useGraph();
+    const [ isHighlighted, setIsHighlighted ] = useState(false);
     const onDelete = () => {
         setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: true } : n));
         resetLinksForNode(node);
@@ -16,8 +17,13 @@ function Node({ node }) {
         resetLinksForNode(node);
     };
     const highlightNode = node => {
-        updateDisplayRule("highlightNodes", [node.id]); 
-        console.log("highlight node", node);
+        setIsHighlighted(true);
+        updateDisplayRule("highlightNodes", [node.id]);
+
+        setTimeout(() => {
+            updateDisplayRule("highlightNodes", []); 
+            setIsHighlighted(false);
+        }, 3000);
     }
 
     return (
@@ -69,6 +75,7 @@ function Node({ node }) {
                                 </Link>
                             )}
                             <Button
+                                disabled={isHighlighted}
                                 onClick={() => highlightNode(node)}
                                 title="Highlight"
                                 className="rounded-md bg-slate-600 w-6 h-6 mr-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2">
