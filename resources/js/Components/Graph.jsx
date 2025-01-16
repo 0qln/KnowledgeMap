@@ -111,7 +111,8 @@ function dragended(event, simulation) {
     event.subject.fy = null;
 }
 
-function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation) {
+function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation, highlights) {
+    console.log(highlights);
     nodeRef.current = nodeRef.current.data(nodes, d => d.id);
     nodeRef.current.exit().remove();
     nodeRef.current = nodeRef.current
@@ -120,6 +121,7 @@ function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation) {
         .attr("fill", d => d.deleted ? "#f00" : d.isAverionNode ? "#fff" : colorMap(d))
         .attr("stroke-opacity", d => danglings[d.id] ? "0.15" : "1")
         .attr("fill-opacity", d => danglings[d.id] ? "0.15" : "1")
+        .attr("filter", d => highlights.includes(d.id)  ? "url(#highlight)" : "")
         .attr("r", d => d.isAverionNode ? 0 : 5)
         .on("click", (e, d) => {
             router.visit(route("dashboard.nodes.show", d.id));
@@ -165,6 +167,32 @@ export const Graph = function ({ dim }) {
 
     useEffect(() => {
         const svg = d3.select(ref.current);
+
+        // Define the filter with animation
+        const defs = svg.append("defs");
+        defs.append("filter")
+            .attr("id", "highlight")
+            .attr("x", "-100%")
+            .attr("y", "-100%")
+            .attr("width", "400%")
+            .attr("height", "400%")
+            .append("feGaussianBlur")
+            .attr("stdDeviation", 0)
+            .append("animate")
+            .attr("attributeName", "stdDeviation")
+            .attr("values", "0;10;0")
+            .attr("dur", "2s")
+            .attr("repeatCount", "indefinite");
+        const dimm = defs.append("filter")
+            .attr("id", "dimm")
+            .attr("x", "-100%")
+            .attr("y", "-100%")
+            .attr("width", "400%")
+            .attr("height", "400%")
+        dimm.append("feGaussianBlur")
+            .attr("stdDeviation", 5);
+        // dimm.append("feOp")g
+        
         linkRef.current = svg.append("g").selectAll();
         nodeRef.current = svg.append("g").attr("stroke", "#eee").attr("stroke-width", 1).selectAll();
 
@@ -337,16 +365,16 @@ export const Graph = function ({ dim }) {
     }, [simulation.current, forceY, centerY]);
 
     useEffect(() => {
-        updateNodeRef(nodeRef, [], [], () => "", simulation);
-    }, [danglings, simulation.current, nodeRef]);
+        updateNodeRef(nodeRef, [], [], () => "", simulation, []);
+    }, [danglings, simulation.current, nodeRef, displayRules.highlightNodes]);
 
     useEffect(() => {
         updateLinkRef(linkRef, [], []);
     }, [danglings, simulation.current, linkRef]);
 
     useEffect(() => {
-        updateNodeRef(nodeRef, simulationNodes, danglings, colorMap, simulation);
-    }, [simulationNodes, colorMap, simulation.current]);
+        updateNodeRef(nodeRef, simulationNodes, danglings, colorMap, simulation, displayRules.highlightNodes);
+    }, [simulationNodes, colorMap, simulation.current, displayRules.highlightNodes]);
 
     useEffect(() => {
         updateLinkRef(linkRef, simulationLinks, danglings);

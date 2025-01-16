@@ -17,6 +17,7 @@ function Node({ node }) {
     };
     const highlightNode = node => {
         updateDisplayRule("highlightNodes", [node.id]); 
+        console.log("highlight node", node);
     }
 
     return (
