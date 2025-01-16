@@ -32,6 +32,7 @@ export const GraphProvider = ({ children }) => {
         centerOffsetX: 0,
         centerOffsetY: 0,
         avoidRects: [],
+        highlightNodes: [],
     });
 
     const simulation = useRef(null);
