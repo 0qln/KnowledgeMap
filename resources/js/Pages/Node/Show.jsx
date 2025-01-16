@@ -7,7 +7,6 @@ import { useState } from 'react';
 
 function Node({ node }) {
     const { setNodes, resetLinksForNode, updateDisplayRule } = useGraph();
-    const [ isHighlighted, setIsHighlighted ] = useState(false);
     const onDelete = () => {
         setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: true } : n));
         resetLinksForNode(node);
@@ -17,15 +16,13 @@ function Node({ node }) {
         resetLinksForNode(node);
     };
     const highlightNode = node => {
-        setIsHighlighted(true);
         updateDisplayRule("highlightNodes", [node.id]);
 
         setTimeout(() => {
             updateDisplayRule("highlightNodes", []); 
             resetLinksForNode(node);
-            setIsHighlighted(false);
-        }, 3000);
-    }
+        }, 2000);
+    };
 
     return (
         <div>
@@ -76,7 +73,6 @@ function Node({ node }) {
                                 </Link>
                             )}
                             <Button
-                                disabled={isHighlighted}
                                 onClick={() => highlightNode(node)}
                                 title="Highlight"
                                 className="rounded-md bg-slate-600 w-6 h-6 mr-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2">

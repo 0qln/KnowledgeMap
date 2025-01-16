@@ -111,16 +111,16 @@ function dragended(event, simulation) {
     event.subject.fy = null;
 }
 
-function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation, highlights) {
+function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation, nodeHighlights) {
     nodeRef.current = nodeRef.current.data(nodes, d => d.id);
     nodeRef.current.exit().remove();
     nodeRef.current = nodeRef.current
         .enter()
         .append("circle")
         .attr("fill", d => d.deleted ? "#f00" : d.isAverionNode ? "#fff" : colorMap(d))
-        .attr("stroke-opacity", d => danglings[d.id] || (highlights.length && !highlights.includes(d.id)) ? "0.15" : "1")
-        .attr("fill-opacity", d => danglings[d.id] || (highlights.length && !highlights.includes(d.id)) ? "0.15" : "1")
-        .attr("filter", d => highlights.includes(d.id) ? "url(#highlight)" : highlights.length ? "url(#dimm)" : "")
+        .attr("stroke-opacity", d => danglings[d.id] || (nodeHighlights.length && !nodeHighlights.includes(d.id)) ? "0.15" : "1")
+        .attr("fill-opacity", d => danglings[d.id] || (nodeHighlights.length && !nodeHighlights.includes(d.id)) ? "0.15" : "1")
+        .attr("filter", d => nodeHighlights.includes(d.id) ? "url(#highlight)" : nodeHighlights.length ? "url(#dimm)" : "")
         .attr("r", d => d.isAverionNode ? 0 : 5)
         .on("click", (e, d) => {
             router.visit(route("dashboard.nodes.show", d.id));
@@ -137,7 +137,7 @@ function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation, highligh
         .on("end", e => dragended(e, simulation)));
 }
 
-function updateLinkRef(linkRef, links, danglings, nodeHighlights) {
+function updateLinkRef(linkRef, links, danglings, nodeHighlights, linkHighlights) {
     linkRef.current = linkRef.current.data(links, d => d.id);
     linkRef.current.exit().remove();
     linkRef.current = linkRef.current.enter()
@@ -149,9 +149,11 @@ function updateLinkRef(linkRef, links, danglings, nodeHighlights) {
             const dangling = danglings[nodeId(d.source)] || danglings[nodeId(d.target)];
             const sourceDimmed = nodeHighlights.length && !nodeHighlights.includes(nodeId(d.source));
             const targetDimmed = nodeHighlights.length && !nodeHighlights.includes(nodeId(d.target));
-            const dimmed = sourceDimmed || targetDimmed;
+            const selfDimmed = linkHighlights.length && !linkHighlights.includes(d.id);
+            const dimmed = sourceDimmed || targetDimmed || selfDimmed;
             return deleted || dangling || dimmed ? "0.1" : "0.6";
         })
+        .attr("filter", d => linkHighlights.includes(d.id) ? "url(#highlight)" : linkHighlights.length ? "url(#dimm)" : "")
         .on("click", (e, d) => {
             router.visit(route("dashboard.edges.show", d.id));
         })
@@ -380,16 +382,16 @@ export const Graph = function ({ dim }) {
     }, [danglings, simulation.current, nodeRef, displayRules.highlightNodes]);
 
     useEffect(() => {
-        updateLinkRef(linkRef, [], [], []);
-    }, [danglings, simulation.current, linkRef, displayRules.highlightNodes]);
+        updateLinkRef(linkRef, [], [], [], []);
+    }, [danglings, simulation.current, linkRef, displayRules.highlightNodes, displayRules.highlightLinks]);
 
     useEffect(() => {
         updateNodeRef(nodeRef, simulationNodes, danglings, colorMap, simulation, displayRules.highlightNodes);
     }, [simulationNodes, colorMap, simulation.current, displayRules.highlightNodes]);
 
     useEffect(() => {
-        updateLinkRef(linkRef, simulationLinks, danglings, displayRules.highlightNodes);
-    }, [simulationLinks, danglings, displayRules.highlightNodes]);
+        updateLinkRef(linkRef, simulationLinks, danglings, displayRules.highlightNodes, displayRules.highlightLinks);
+    }, [simulationLinks, danglings, displayRules.highlightNodes, displayRules.highlightLinks]);
 
     useEffect(() => {
         simulation.current.restart();
