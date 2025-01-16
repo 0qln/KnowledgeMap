@@ -20,16 +20,16 @@ export function BlacklistTags({ filters, searchFieldChanged, tags }) {
 
     const id = "blacklist-tags";
     return (
-        <ExpansionMenu.Option className="text-white flex flex-col space-y-2">
-            <ExpansionMenu.Option.Trigger id={id} >
+        <div className="text-white flex flex-col space-y-2">
+            <ExpansionMenu.Trigger id={id} >
                 {({ isOpen }) => (
                     <div className="flex flex-row space-x-4">
                         {isOpen ? ChevronUp : ChevronDown}
                         <div>Blacklist Tags</div>
                     </div>
                 )}
-            </ExpansionMenu.Option.Trigger>
-            <ExpansionMenu.Option.Content id={id} className="ml-4 space-y-2 flex flex-col">
+            </ExpansionMenu.Trigger>
+            <ExpansionMenu.Content id={id} className="ml-4 space-y-2 flex flex-col">
                 <div className="flex flex-row space-x-4">
                     <Button
                         className="text-white bg-gray-700 p-1 rounded-md transition duration-150 ease-in-out hover:bg-gray-600"
@@ -61,7 +61,7 @@ export function BlacklistTags({ filters, searchFieldChanged, tags }) {
                         </div>
                     ))}
                 </div>
-            </ExpansionMenu.Option.Content>
-        </ExpansionMenu.Option>
+            </ExpansionMenu.Content>
+        </div>
     );
 }

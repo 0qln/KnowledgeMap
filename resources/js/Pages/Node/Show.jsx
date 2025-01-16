@@ -3,9 +3,10 @@ import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
 import { useGraph } from '@/Hooks/useGraph';
 import ExpansionMenu from '@/Components/ExpansionMenu';
+import { incoming, outgoing } from '@/Components/Graph';
 
 function Node({ node }) {
-    const { setNodes, resetLinksForNode } = useGraph();
+    const { setNodes, resetLinksForNode, links } = useGraph();
     const onDelete = () => {
         setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: true } : n));
         resetLinksForNode(node);
@@ -14,6 +15,9 @@ function Node({ node }) {
         setNodes(prevNodes => prevNodes.map(n => n.id === node.id ? { ...n, deleted: false } : n));
         resetLinksForNode(node);
     };
+
+    const incomingLinks = incoming(node, links);
+    const outgoingLinks = outgoing(node, links);
 
     return (
         <div>
@@ -76,59 +80,76 @@ function Node({ node }) {
                         {node.description}
                     </div>
                     <br />
-                    <ExpansionMenu>
-                        <ExpansionMenu.Option>
-                            <ExpansionMenu.Option.Trigger id="tags">
-                                <div className="flex flex-row dark:text-gray-200 items-center">
-                                    <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
-                                    <div>Tags</div>
-                                    <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
-                                </div>
-                            </ExpansionMenu.Option.Trigger>
-                            <ExpansionMenu.Option.Content id="tags">
-                                <div className="overflow-auto max-h-60">
-                                    {node.tags && (
-                                        <div className="flex flex-wrap text-sm break-words">
-                                            {node.tags.map(tag => (
-                                                <Link
-                                                    href={route('dashboard.tags.show', tag.id)}
-                                                    key={tag.id}
-                                                    className="items-center m-1 text-white bg-gray-700 py-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
-                                                    {tag.name}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </ExpansionMenu.Option.Content>
-                        </ExpansionMenu.Option>
-                        <ExpansionMenu.Option>
-                            <ExpansionMenu.Option.Trigger id="links">
-                                <div className="flex flex-row dark:text-gray-200 items-center">
-                                    <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
-                                    <div>Links</div>
-                                    <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
-                                </div>
-                            </ExpansionMenu.Option.Trigger>
-                            <ExpansionMenu.Option.Content id="links">
-                                <div>
-                                    <div className="overflow-auto max-h-60">
-                                        {node.tags && (
-                                            <div className="flex flex-wrap text-sm break-words">
-                                                {node.tags.map(tag => (
-                                                    <Link
-                                                        href={route('dashboard.tags.show', tag.id)}
-                                                        key={tag.id}
-                                                        className="items-center m-1 text-white bg-gray-700 py-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
-                                                        {tag.name}
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        )}
+                    <ExpansionMenu multiple={false} defaultOpen={"tags"}>
+                        {!!node.tags.length && (
+                            <div className="mb-2">
+                                <ExpansionMenu.Trigger id="tags">
+                                    <div className="flex flex-row dark:text-gray-200 items-center">
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                        <div>Tags</div>
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
                                     </div>
-                                </div>
-                            </ExpansionMenu.Option.Content>
-                        </ExpansionMenu.Option>
+                                </ExpansionMenu.Trigger>
+                                <ExpansionMenu.Content id="tags" className="overflow-auto max-h-60">
+                                    <div className="flex flex-wrap text-sm break-words">
+                                        {node.tags.map(tag => (
+                                            <Link
+                                                href={route('dashboard.tags.show', tag.id)}
+                                                key={tag.id}
+                                                className="items-center m-1 text-white bg-gray-700 py-1 px-2 rounded-md transition duration-150 ease-in-out hover:bg-gray-600 flex flex-row space-x-1">
+                                                {tag.name}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </ExpansionMenu.Content>
+                            </div>
+                        )}
+                        {!!incomingLinks.length && (
+                            <div className="mb-2">
+                                <ExpansionMenu.Trigger id="incoming-links">
+                                    <div className="flex flex-row dark:text-gray-200 items-center">
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                        <div>Incoming Links</div>
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                    </div>
+                                </ExpansionMenu.Trigger>
+                                <ExpansionMenu.Content id="incoming-links" className="overflow-auto max-h-60">
+                                    <div className="flex flex-wrap text-sm break-words">
+                                        {incomingLinks.map(link => (
+                                            <Link
+                                                href={route('dashboard.edges.show', link.id)}
+                                                key={link.id}
+                                                className="items-center m-1 hover:underline text-white py-1 px-2 transition duration-150 ease-in-out flex flex-row space-x-1">
+                                                {link.source.title}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </ExpansionMenu.Content>
+                            </div>
+                        )}
+                        {!!outgoingLinks.length && (
+                            <div className="mb-2">
+                                <ExpansionMenu.Trigger id="outgoing-links">
+                                    <div className="flex flex-row dark:text-gray-200 items-center">
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                        <div>Outgoing Links</div>
+                                        <div className="flex-grow border-t-[1px] mx-2 dark:border-gray-400" />
+                                    </div>
+                                </ExpansionMenu.Trigger>
+                                <ExpansionMenu.Content id="outgoing-links" className="overflow-auto max-h-60">
+                                    <div className="flex flex-col text-sm break-words">
+                                        {outgoingLinks.map(link => (
+                                            <Link
+                                                href={route('dashboard.edges.show', link.id)}
+                                                key={link.id}
+                                                className="items-center m-1 hover:underline text-white py-1 px-2 transition duration-150 ease-in-out flex flex-row space-x-1">
+                                                {link.target.title}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </ExpansionMenu.Content>
+                            </div>
+                        )}
                     </ExpansionMenu>
                 </div>
             </div>

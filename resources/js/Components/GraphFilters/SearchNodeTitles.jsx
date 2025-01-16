@@ -8,16 +8,16 @@ import { ChevronUp } from "../ChevronUp";
 export function SearchNodeTitles({ filters, searchFieldChanged }) {
     const id = "search-node-titles";
     return (
-        <ExpansionMenu.Option className="text-white flex flex-col space-y-2">
-            <ExpansionMenu.Option.Trigger id={id}>
+        <div className="text-white flex flex-col space-y-2">
+            <ExpansionMenu.Trigger id={id}>
                 {({ isOpen }) => (
                     <div className="flex flex-row space-x-4">
                         {isOpen ? ChevronUp : ChevronDown}
                         <div>Search Node Titles</div>
                     </div>
                 )}
-            </ExpansionMenu.Option.Trigger>
-            <ExpansionMenu.Option.Content id={id} className="ml-4 space-y-1">
+            </ExpansionMenu.Trigger>
+            <ExpansionMenu.Content id={id} className="ml-4 space-y-1">
                 <div className="flex flex-row space-x-4 items-center">
                     <InputLabel value="Case Sensitive" />
                     <Checkbox
@@ -27,7 +27,7 @@ export function SearchNodeTitles({ filters, searchFieldChanged }) {
                 <TextInput
                     placeholder=""
                     onChange={e => searchFieldChanged("query", e.target.value)} />
-            </ExpansionMenu.Option.Content>
-        </ExpansionMenu.Option>
+            </ExpansionMenu.Content>
+        </div>
     );
 }

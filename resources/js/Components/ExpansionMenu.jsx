@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useState, useRef, useEffect, useMemo } from 'react';
 
 const ExpansionMenuContext = createContext();
 
@@ -25,14 +25,6 @@ const ExpansionMenu = ({ children, multiple = false, defaultOpen = null }) => {
         <ExpansionMenuContext.Provider value={{ isOpen, toggleOpen }}>
             <div className="relative">{children}</div>
         </ExpansionMenuContext.Provider>
-    );
-};
-
-const Option = ({ children, className="mb-2" }) => {
-    return (
-        <div className={className}>
-            {children}
-        </div>
     );
 };
 
@@ -63,7 +55,7 @@ const Content = ({ children, id, className="p-4 rounded-md ring-1 ring-black rin
 
     return (
         <div
-            className="transition-all ease-in-out duration-300 overflow-hidden"
+            className="transition-all ease-in-out duration-500 overflow-hidden"
             style={{ maxHeight: `${height}px` }}
             ref={contentRef}
         >
@@ -74,9 +66,7 @@ const Content = ({ children, id, className="p-4 rounded-md ring-1 ring-black rin
     );
 };
 
-Option.Trigger = Trigger;
-Option.Content = Content;
-
-ExpansionMenu.Option = Option;
+ExpansionMenu.Trigger = Trigger;
+ExpansionMenu.Content = Content;
 
 export default ExpansionMenu;
