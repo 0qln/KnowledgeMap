@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/dashboard/edges/{edge}/restore', [EdgeController::class, 'restore'])->name('dashboard.edges.restore');
 
     Route::get('/dashboard/tags', [TagController::class, 'index'])->name('dashboard.tags');
+    Route::post('/dashboard/tags/store', [TagController::class, 'store'])->name('dashboard.tags.store');
     Route::get('/dashboard/tags/{tag}', [TagController::class, 'show'])->name('dashboard.tags.show');
     Route::get('/dashboard/tags/{tag}/edit', [TagController::class, 'edit'])->name('dashboard.tags.edit');
     Route::patch('/dashboard/tags/{tag}/edit', [TagController::class, 'update'])->name('dashboard.tags.update');

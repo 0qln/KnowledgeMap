@@ -4,12 +4,12 @@ import { useContainerDimensions } from "../Hooks/useContainerDimensions";
 import { useGraph } from "@/Hooks/useGraph";
 import { useEffect } from "react";
 import { GraphFilters } from "../Components/GraphFilters/GraphFilters";
-import { Link } from "@inertiajs/react";
 import GraphDetailsLayout from "./GraphDetailsLayout";
+import Dropdown from "@/Components/Dropdown";
 
 export default function AppLayout({ childrenRight }) {
     const [refGraphContainer, dimGraphContainer] = useContainerDimensions();
-    const [refChildrenRight, dimChildrenRight] = useContainerDimensions();
+    const [refChildrenRight, dimChildrenRight] = useContainerDimensions(1);
     const [refChildrenLeft, dimChildrenLeft] = useContainerDimensions();
     const { filters, updateFilter, updateDisplayRule, tags } = useGraph();
 
@@ -52,24 +52,35 @@ export default function AppLayout({ childrenRight }) {
                     className="row-start-1 col-start-1 z-10 fixed right-0 flex flex-row-reverse"
                 >
                     {childrenRight || (
-                        <GraphDetailsLayout>
+                        <GraphDetailsLayout overflow={true}>
                             <div className="flex flex-col">
-                                <Link
-                                    href={route('dashboard.nodes.create')}
-                                    className="text-white rounded-md p-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2 flex flex-row w-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" className="stroke=white" />
-                                    </svg>
-                                    Node
-                                </Link>
-                                <Link
-                                    href={route('dashboard.edges.create')}
-                                    className="text-white rounded-md p-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2 flex flex-row w-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" className="stroke=white" />
-                                    </svg>
-                                    Edge
-                                </Link>
+                                <Dropdown>
+                                    <Dropdown.Trigger>
+                                        <button type="button" className="items-center flex">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" className="stroke-white"/>
+                                            </svg>
+                                        </button>
+                                    </Dropdown.Trigger>
+                                    <Dropdown.Content>
+                                        <Dropdown.Link
+                                            href={route('dashboard.nodes.create')}
+                                            className="text-white rounded-md p-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2 flex flex-row w-full">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" className="stroke=white" />
+                                            </svg>
+                                            Node
+                                        </Dropdown.Link>
+                                        <Dropdown.Link
+                                            href={route('dashboard.edges.create')}
+                                            className="text-white rounded-md p-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2 flex flex-row w-full">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" className="stroke=white" />
+                                            </svg>
+                                            Edge
+                                        </Dropdown.Link>
+                                    </Dropdown.Content>
+                                </Dropdown>
                             </div>
                         </GraphDetailsLayout>
                     )}
@@ -83,6 +94,6 @@ export default function AppLayout({ childrenRight }) {
                     <GraphFilters filters={filters} updateFilter={updateFilter} tags={tags} />
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AuthenticatedLayout >
     );
 }

@@ -1,12 +1,23 @@
 import Checkbox from "@/Components/Checkbox";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
+import ExpansionMenu from "../ExpansionMenu";
+import { ChevronDown } from "../ChevronDown";
+import { ChevronUp } from "../ChevronUp";
 
 export function DegreesOfSeparation({ filters, searchFieldChanged }) {
+    const id = "degrees-of-separation";
     return (
         <div className="text-white flex flex-col space-y-2">
-            <div>Allowed degrees of separation</div>
-            <div className="ml-4 space-y-1">
+            <ExpansionMenu.Trigger id={id}>
+                {({ isOpen }) => (
+                    <div className="flex flex-row space-x-4">
+                        {isOpen ? ChevronUp : ChevronDown}
+                        <div>Allowed degrees of separation</div>
+                    </div>
+                )}
+            </ExpansionMenu.Trigger>
+            <ExpansionMenu.Content id={id} className="ml-4 space-y-1">
                 <div className="flex flex-row space-x-4 items-center">
                     <div className="flex flex-row space-x-2 items-center">
                         <InputLabel value="Incoming" />
@@ -26,7 +37,7 @@ export function DegreesOfSeparation({ filters, searchFieldChanged }) {
                     onChange={e => searchFieldChanged("allowedDegreesOfSeparation", e.target.value)}
                     type="number"
                     defaultValue={filters.allowedDegreesOfSeparation} />
-            </div>
+            </ExpansionMenu.Content>
         </div>
     );
 }
