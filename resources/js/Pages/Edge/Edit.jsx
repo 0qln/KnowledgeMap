@@ -6,16 +6,20 @@ import TextAreaInput from '@/Components/TextAreaInput';
 import { Transition } from '@headlessui/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
+import { useGraph } from '@/Hooks/useGraph';
 
 function Edge({ edge, from, to, }) {
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
-            description: edge.description, 
+            description: edge.description,
             weight: edge.weight,
         });
 
+    const { setLinks } = useGraph();
+
     const submit = (e) => {
         e.preventDefault();
+        setLinks(x => x.map(l => l.id === edge.id ? { ...l, value: data.weight, description: data.description } : l));
         patch(route('dashboard.edges.update', edge.id));
     }
 
@@ -67,14 +71,14 @@ function Edge({ edge, from, to, }) {
                             <TextInput
                                 className="block w-full !text-gray-400"
                                 value={`[#${from.id}] ${from.title}`}
-                                required disabled/>
+                                required disabled />
                         </div>
                         <div>
                             <InputLabel value="Target" />
                             <TextInput
                                 className="block w-full !text-gray-400"
                                 value={`[#${to.id}] ${to.title}`}
-                                required disabled/>
+                                required disabled />
                         </div>
                         <div>
                             <InputLabel htmlFor="description" value="Description" />
@@ -108,12 +112,12 @@ function Edge({ edge, from, to, }) {
     );
 }
 
-Edge.layout = (page) => 
-    (<GraphLayout childrenRight={
-        <GraphDetailsLayout children={
-            page
-        }/>
-    }/>
+Edge.layout = (page) =>
+(<GraphLayout childrenRight={
+    <GraphDetailsLayout children={
+        page
+    } />
+} />
 );
 
 export default Edge;

@@ -137,13 +137,29 @@ function updateNodeRef(nodeRef, nodes, danglings, colorMap, simulation, nodeHigh
         .on("end", e => dragended(e, simulation)));
 }
 
-function updateLinkRef(linkRef, links, danglings, nodeHighlights, linkHighlights) {
-    linkRef.current = linkRef.current.data(links, d => d.id);
-    linkRef.current.exit().remove();
-    linkRef.current = linkRef.current.enter()
+function updateLinkRefValues(linkRef, data) {
+    const links = linkRef.current.data(data, d => { d.id, d.value });
+    
+    const updateLinks = links.attr("stroke-width", d => Math.sqrt(d.value));
+    
+    console.log("update values links: " + updateLinks.size());
+    
+    linkRef.current = updateLinks;
+}
+
+function updateLinkRef(linkRef, data, danglings, nodeHighlights, linkHighlights) {
+    const links = linkRef.current.data(data, d => d.id);
+
+    links.exit().remove();
+
+    const enterLinks = links.enter()
         .append("line")
+        .on("click", (e, d) => router.visit(route("dashboard.edges.show", d.id)));
+    
+    console.log("enter links: " + enterLinks.size());
+
+    const updateLinks = links.merge(enterLinks)
         .attr("stroke", d => d.deleted ? "#f00" : "#888")
-        .attr("stroke-width", d => Math.sqrt(d.value))
         .attr("stroke-opacity", d => {
             const deleted = d.deleted;
             const dangling = danglings[nodeId(d.source)] || danglings[nodeId(d.target)];
@@ -153,11 +169,11 @@ function updateLinkRef(linkRef, links, danglings, nodeHighlights, linkHighlights
             const dimmed = sourceDimmed || targetDimmed || selfDimmed;
             return deleted || dangling || dimmed ? "0.1" : "0.6";
         })
-        .attr("filter", d => linkHighlights.includes(d.id) ? "url(#highlight)" : linkHighlights.length ? "url(#dimm)" : "")
-        .on("click", (e, d) => {
-            router.visit(route("dashboard.edges.show", d.id));
-        })
-        .merge(linkRef.current);
+        .attr("filter", d => linkHighlights.includes(d.id) ? "url(#highlight)" : linkHighlights.length ? "url(#dimm)" : "");
+    
+    console.log("update links: " + updateLinks.size());
+    
+    linkRef.current = updateLinks;
 }
 
 export const Graph = function ({ dim }) {
@@ -381,13 +397,13 @@ export const Graph = function ({ dim }) {
         simulation.current.force("y", d3.forceY(centerY).strength(forceY));
     }, [simulation.current, forceY, centerY]);
 
-    useEffect(() => {
-        updateNodeRef(nodeRef, [], [], () => "", simulation, []);
-    }, [danglings, simulation.current, nodeRef, displayRules.highlightNodes]);
-
-    useEffect(() => {
-        updateLinkRef(linkRef, [], [], [], []);
-    }, [danglings, simulation.current, linkRef, displayRules.highlightNodes, displayRules.highlightLinks]);
+    // useEffect(() => {
+    //     updateNodeRef(nodeRef, [], [], () => "", simulation, []);
+    // }, [danglings, simulation.current, nodeRef, displayRules.highlightNodes]);
+    //
+    // useEffect(() => {
+    //     updateLinkRef(linkRef, [], [], [], []);
+    // }, [danglings, simulation.current, linkRef, displayRules.highlightNodes, displayRules.highlightLinks]);
 
     useEffect(() => {
         updateNodeRef(nodeRef, simulationNodes, danglings, colorMap, simulation, displayRules.highlightNodes);
@@ -395,6 +411,7 @@ export const Graph = function ({ dim }) {
 
     useEffect(() => {
         updateLinkRef(linkRef, simulationLinks, danglings, displayRules.highlightNodes, displayRules.highlightLinks);
+        updateLinkRefValues(linkRef, simulationNodes);
     }, [simulationLinks, danglings, displayRules.highlightNodes, displayRules.highlightLinks]);
 
     useEffect(() => {

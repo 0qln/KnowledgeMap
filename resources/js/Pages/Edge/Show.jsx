@@ -2,38 +2,37 @@ import { Head, Link } from '@inertiajs/react';
 import GraphDetailsLayout from '@/Layouts/GraphDetailsLayout';
 import GraphLayout from '@/Layouts/GraphLayout';
 import { useGraph } from '@/Hooks/useGraph';
-import { useState } from 'react';
 import { Button } from '@headlessui/react';
 
 function Edge({ edge, from, to, }) {
-    edge.origin = from;
-    edge.target = to;
-
     const { setLinks, resetLinksForNode, updateDisplayRule } = useGraph();
-    const onDelete = () => {
-        setLinks(prevLinks => prevLinks.map(l => l.id === edge.id ? { ...l, deleted: true } : l));
+
+    const reset = () => {
         resetLinksForNode(from);
         resetLinksForNode(to);
+    };
+
+    const onDelete = () => {
+        setLinks(prevLinks => prevLinks.map(l => l.id === edge.id ? { ...l, deleted: true } : l));
+        reset();
     };
     const onRestore = () => {
         setLinks(prevLinks => prevLinks.map(l => l.id === edge.id ? { ...l, deleted: false } : l));
-        resetLinksForNode(from);
-        resetLinksForNode(to);
+        reset();
     };
-    const highlightEdge = edge => {
-        updateDisplayRule("highlightLinks", prev => [ ...prev.filter(id => id !== edge.id), edge.id ]);
+    const highlightEdge = () => {
+        updateDisplayRule("highlightLinks", x => [ ...x.filter(id => id !== edge.id), edge.id ]);
 
         setTimeout(() => {
-            updateDisplayRule("highlightLinks", prev => prev.filter(id => id !== edge.id)); 
-            resetLinksForNode(edge.origin);
-            resetLinksForNode(edge.target);
+            updateDisplayRule("highlightLinks", x => x.filter(id => id !== edge.id)); 
+            reset();
         }, 2000);
     };
     const highlightNode = node => {
-        updateDisplayRule("highlightNodes", prev => [ ...prev.filter(id => id !== node.id), node.id ]);
+        updateDisplayRule("highlightNodes", x => [ ...x.filter(id => id !== node.id), node.id ]);
 
         setTimeout(() => {
-            updateDisplayRule("highlightNodes", prev => prev.filter(id => id !== node.id)); 
+            updateDisplayRule("highlightNodes", x => x.filter(id => id !== node.id)); 
             resetLinksForNode(node);
         }, 2000);
     };
@@ -85,7 +84,7 @@ function Edge({ edge, from, to, }) {
                                 </Link>
                             )}
                             <Button
-                                onClick={() => highlightEdge(edge)}
+                                onClick={highlightEdge}
                                 title="Highlight"
                                 className="rounded-md bg-slate-600 w-6 h-6 mr-2 transition duration-150 ease-in-out hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 p-0">
